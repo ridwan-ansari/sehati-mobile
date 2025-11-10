@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import '../controllers/dashboard_controller.dart';
+import 'tabs/home_tab.dart';
+import 'tabs/schedule_tab.dart';
+import 'tabs/forum_tab.dart';
+import 'tabs/profile_tab.dart';
+
+class DashboardPage extends GetView<DashboardController> {
+  const DashboardPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final pages = [
+      const HomeTab(),
+      const ForumTab(),
+      const ScheduleTab(),
+      const ProfileTab(),
+    ];
+return Obx(
+  () => PopScope(
+    canPop: false,
+    onPopInvoked: (pop){
+      if(pop)return;
+      controller.onWillPop(context);
+    },
+    child: Scaffold(
+      body: pages[controller.selectedIndex.value],
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(8), // jarak dari tepi
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B2B27),
+          borderRadius: BorderRadius.circular(20), // radius di sini
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: controller.selectedIndex.value,
+            onTap: controller.changeTab,
+            showUnselectedLabels: true,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white,
+            selectedLabelStyle:
+                const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+            backgroundColor: Colors.transparent, // biar sesuai BoxDecoration
+            items: [
+              BottomNavigationBarItem(
+                icon: AppAssetUtils.svg(AppAssets.homeIcon, width: 24, height: 24),
+                label: "Home",
+              ),
+              BottomNavigationBarItem(
+                icon: AppAssetUtils.svg(AppAssets.forumIcon, width: 32, height: 32 , color: AppColors.gold),
+                label: "Forum",
+              ),
+              BottomNavigationBarItem(
+                icon: AppAssetUtils.svg(AppAssets.scheduleIcon, width: 24, height: 24),
+                label: "Schedule",
+              ),
+              BottomNavigationBarItem(
+                icon: AppAssetUtils.svg(AppAssets.profileIcon, width: 24, height: 24),
+                label: "Profile",
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  ),
+);
+
+  }
+  
+}

@@ -1,0 +1,23 @@
+import 'dart:io';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter/foundation.dart';
+
+class MainConfig {
+  Future<void> configureLocalTimeZone() async {
+    if (kIsWeb || Platform.isLinux) return;
+
+    tz.initializeTimeZones();
+
+    if (Platform.isWindows) return;
+
+    // 🔹 ambil info timezone terbaru
+    final timeZone = await FlutterTimezone.getLocalTimezone();
+
+    // 🔹 gunakan identifier (contoh: "Asia/Jakarta")
+    tz.setLocalLocation(tz.getLocation(timeZone.identifier));
+
+    print('🕒 Timezone set to: ${timeZone.identifier}');
+  }
+}
