@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/modules/auth/controllers/auth_controller.dart';
 import 'package:sehati/app/modules/auth/views/next_step/input_profile_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/nutritional_status_page.dart';
+import 'package:sehati/app/modules/auth/views/next_step/verify_otp_page.dart';
 import 'package:sehati/app/modules/auth/views/signup_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/profile_draft.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/appointment/views/appointment_detail_page.dart';
@@ -12,6 +13,7 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
+import 'package:sehati/app/modules/splash_page.dart';
 import 'package:sehati/app/routes/app_routes.dart';
 import '../modules/auth/views/login_page.dart';
 import '../modules/dashboard/views/dashboard_page.dart';
@@ -39,6 +41,7 @@ import '../modules/dashboard/views/feature/home/reminder/bindings/reminder_bindi
 
 class AppPages {
   static final routes = [
+    GetPage(name: AppRoutes.SPLASH, page: () => const SplashPage()),
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginPage(),
@@ -146,6 +149,11 @@ class AppPages {
       name: AppRoutes.SOCIAL_PROFILE,
       page: () => const ProfileDraft(),
       binding: ChattingBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.VERIFY_OTP,
+      page: () => const VerifyOtpPage(),
+      binding: AuthBinding(),
     ),
   ];
 }

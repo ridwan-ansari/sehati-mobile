@@ -25,10 +25,7 @@ class RegisterPage extends GetView<AuthController> {
                 children: [
                   const Text(
                     "Sign Up",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () => Get.toNamed('/signup'),
@@ -64,17 +61,14 @@ class RegisterPage extends GetView<AuthController> {
                 ],
               ),
               const SizedBox(height: 30),
-      
+
               // SVG Illustration
               Center(
-                child: AppAssetUtils.svg(
-                  AppAssets.logoSehati,
-                  width: 250,
-                ),
+                child: AppAssetUtils.svg(AppAssets.logoSehati, width: 250),
               ),
-      
+
               const SizedBox(height: 40),
-      
+
               // === FORM FIELD ===
               Form(
                 key: controller.formKey,
@@ -96,17 +90,19 @@ class RegisterPage extends GetView<AuthController> {
                         labelStyle: const TextStyle(color: Colors.orange),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black54,
-                          ),
+                          borderSide: const BorderSide(color: Colors.black54),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.orange,
-                          ),
+                          borderSide: const BorderSide(color: Colors.orange),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "Name cannot be empty";
+                        }
+                        return null; // valid
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -125,21 +121,17 @@ class RegisterPage extends GetView<AuthController> {
                         labelStyle: const TextStyle(color: Colors.orange),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black54,
-                          ),
+                          borderSide: const BorderSide(color: Colors.black54),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.orange,
-                          ),
+                          borderSide: const BorderSide(color: Colors.orange),
                         ),
                       ),
                       validator: Validator.email,
                     ),
                     const SizedBox(height: 16),
-      
+
                     // Password Field with eye toggle
                     Obx(() {
                       return TextFormField(
@@ -169,30 +161,31 @@ class RegisterPage extends GetView<AuthController> {
                           labelStyle: const TextStyle(color: Colors.orange),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.black54,
-                            ),
+                            borderSide: const BorderSide(color: Colors.black54),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.orange,
-                            ),
+                            borderSide: const BorderSide(color: Colors.orange),
                           ),
                         ),
                         validator: Validator.password,
                       );
                     }),
                     const SizedBox(height: 32),
-      
+
                     // Button
                     Obx(
                       () => AppButton(
-                        text: "Sign up",
+                        text: "Next",
                         isLoading: controller.isLoading.value,
                         onPressed: controller.isLoading.value
                             ? null
-                            : () => Get.toNamed('/input_profile'),
+                            : () {
+                                if (controller.formKey.currentState!
+                                    .validate()) {
+                                  Get.toNamed('/input_profile');
+                                }
+                              },
                         iconRight: AppAssetUtils.svg(AppAssets.rightIcon),
                       ),
                     ),

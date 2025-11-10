@@ -58,6 +58,8 @@ dependencies:
   url_launcher: ^6.3.2
   chat_bubbles: ^1.7.0
   swipe_to: ^1.0.6
+  flutter_otp_text_field: ^1.5.1+1
+  get_storage: ^2.1.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

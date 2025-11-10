@@ -1,4 +1,5 @@
 abstract class AppRoutes {
+  static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const SIGNUP = '/signup';
   static const NUTRITION = '/nutrition';
@@ -24,6 +25,8 @@ abstract class AppRoutes {
   static const CHAT_PRIVATE = '/chat_private';
 
   static const SOCIAL_PROFILE = '/social_profile';
+  
+  static const VERIFY_OTP = '/verify_otp';
 
 
 }

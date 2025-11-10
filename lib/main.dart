@@ -44,7 +44,7 @@ class MRAApp extends StatelessWidget {
             ? ThemeMode.dark
             : ThemeMode.light,
         builder: EasyLoading.init(),
-        initialRoute: AppRoutes.LOGIN,
+        initialRoute: AppRoutes.SPLASH,
         getPages: AppPages.routes,
       ),
     );

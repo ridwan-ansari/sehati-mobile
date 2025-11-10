@@ -1,10 +1,17 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/utils/snackbar_utils.dart';
+import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/nutritional_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
+  final _authService = AuthService();
   // === Text Controllers ===
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -41,38 +48,6 @@ class AuthController extends GetxController {
     ever(selectedDate, (_) => calculate());
   }
 
-  // === LOGIN ===
-  Future<void> login() async {
-    if (!formKey.currentState!.validate()) return;
-
-    FocusScope.of(Get.context!).unfocus();
-    EasyLoading.show(status: 'Memproses...');
-
-    // Simulasi API
-    await Future.delayed(const Duration(seconds: 2));
-    EasyLoading.dismiss();
-
-    if (emailController.text == "admin@mail.com" &&
-        passwordController.text == "123456") {
-      Get.snackbar(
-        "Berhasil",
-        "Login sukses!",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-      Get.offAllNamed('/dashboard');
-    } else {
-      Get.snackbar(
-        "Gagal",
-        "Email atau password salah",
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-    }
-  }
-
   // === REGISTER ===
   Future<void> register() async {
     if (!formKey.currentState!.validate()) return;
@@ -81,21 +56,52 @@ class AuthController extends GetxController {
     isLoading.value = true;
     EasyLoading.show(status: "Mendaftarkan akun...");
 
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await _authService.registerUser(
+        fullname: nameController.text.trim(),
+        email: emailController.text.trim(),
+        phoneNumber: phoneController.text.trim(),
+        dateOfBirth: dateOfBirth.value,
+        password: passwordController.text.trim(),
+        nickname: nicknameController.text.trim(),
+        gender: selectedGender.value.toLowerCase(),
+      );
+      if (response != null &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+        Get.offAllNamed(
+          '/verify_otp',
+          arguments: {'email': emailController.text.trim()},
+        );
+      } else {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+      }
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
 
-    isLoading.value = false;
-    EasyLoading.dismiss();
-
-    Get.snackbar(
-      "Berhasil",
-      "Akun berhasil dibuat!",
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-    );
-
-    // Lanjut ke pengisian profil
-    Get.toNamed('/profile');
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+      Get.snackbar(
+        "Error",
+        "Terjadi kesalahan: $e",
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
   }
 
   // === PILIH TANGGAL LAHIR ===
@@ -162,6 +168,118 @@ class AuthController extends GetxController {
       final dob = DateFormat('yyyy-MM-dd').parse(dateOfBirth.value);
       age.value = NutritionalService.calculateAge(dob);
     }
+  }
+
+  // Verifikasi OTP
+  Future<bool> verifyOtp(String email, String otp) async {
+    FocusScope.of(Get.context!).unfocus();
+    isLoading.value = true;
+    EasyLoading.show(status: "Verify Otp ...");
+    try {
+      final response = await _authService.verifyOtp(email: email, code: otp);
+      if (response == true) {
+        Get.offAllNamed(
+          '/login',
+          arguments: {
+            'email': emailController.text.trim(),
+            'password': passwordController.text.trim(),
+          },
+        );
+      } else {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+      }
+      return false;
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
+      return false;
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+      return false;
+    }
+  }
+
+  /// LOGIN
+  Future<void> login(String email, String password) async {
+    FocusScope.of(Get.context!).unfocus();
+    isLoading.value = true;
+    EasyLoading.show(status: 'Login...');
+
+    try {
+      final data = await _authService.login(email: email, password: password);
+
+      if (data != null) {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+
+        Get.offAllNamed('/dashboard');
+      } else {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+      }
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+    }
+  }
+
+  /// REFRESH TOKEN
+  Future<void> refreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('refresh_token');
+    if (token == null) return;
+
+    try {
+      final newAccess = await _authService.refreshToken(refreshToken: token);
+      if (newAccess != null) {
+        await prefs.setString('access_token', newAccess);
+      }
+    }on DioException catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
+    }  catch (e) {
+      log("Refresh token failed: $e");
+    }
+  }
+
+  // Resend OTP
+  Future<void> resendOtp(String email) async {
+    // await sendOtp(email);
   }
 
   @override

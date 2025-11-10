@@ -12,6 +12,7 @@ class InputProfilePage extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     final _profileFormKey = GlobalKey<FormState>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -24,14 +25,14 @@ class InputProfilePage extends GetView<AuthController> {
               children: [
                 const SizedBox(height: 24),
 
-                // ==== Header ====
+                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
+                      children: const [
+                        Text(
                           "Profile",
                           style: TextStyle(
                             fontSize: 32,
@@ -39,25 +40,14 @@ class InputProfilePage extends GetView<AuthController> {
                             color: Colors.black,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
+                        SizedBox(height: 4),
+                        Text(
                           "Complete your profile",
                           style: TextStyle(color: Colors.black54, fontSize: 14),
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
                       ],
                     ),
-                    // GestureDetector(
-                    //   onTap: () => Get.toNamed('/signup'),
-                    //   child: Container(
-                    //     padding: const EdgeInsets.all(6),
-                    //     decoration: const BoxDecoration(
-                    //       color: Colors.redAccent,
-                    //       shape: BoxShape.circle,
-                    //     ),
-                    //     child: const Icon(Icons.close, color: Colors.white),
-                    //   ),
-                    // ),
                     Center(
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -78,23 +68,35 @@ class InputProfilePage extends GetView<AuthController> {
 
                 const SizedBox(height: 24),
 
-                // ==== FORM ====
+                // Name (read-only)
                 _buildInput(
                   label: "Name",
                   icon: AppAssets.peopleIcon,
                   controller: controller.nameController,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 16),
 
+                // Nickname
                 _buildInput(
                   label: "Nick Name",
                   icon: AppAssets.peopleIcon,
                   controller: controller.nicknameController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty)
+                      return "Nickname cannot be empty";
+                    if (value.trim().length > 20) return "Nickname too long";
+                    return null;
+                  },
                 ),
-                const SizedBox(height: 16),
-                 _buildDateField(),
+
                 const SizedBox(height: 16),
 
+                // Date of Birth
+                _buildDateField(),
+                const SizedBox(height: 16),
+
+                // Gender Dropdown
                 _buildDropdown(
                   label: "Gender",
                   icon: AppAssets.genderIcon,
@@ -104,13 +106,16 @@ class InputProfilePage extends GetView<AuthController> {
                 ),
                 const SizedBox(height: 16),
 
+                // Email (read-only)
                 _buildInput(
                   label: "Email",
                   icon: AppAssets.messageIcon,
                   controller: controller.emailController,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 16),
 
+                // Password (read-only)
                 Obx(
                   () => _buildPasswordField(
                     label: "Password",
@@ -118,25 +123,40 @@ class InputProfilePage extends GetView<AuthController> {
                     textController: controller.passwordController,
                     obscureText: controller.isPasswordHidden.value,
                     controller: controller,
+                    readOnly: true,
                   ),
                 ),
                 const SizedBox(height: 16),
 
+                // Phone Number
                 _buildInput(
                   label: "Phone Number",
                   icon: AppAssets.phoneIcon,
                   controller: controller.phoneController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Phone number cannot be empty";
+                    }
+                    if (!RegExp(r'^\d{10,15}$').hasMatch(value.trim())) {
+                      return "Invalid phone number";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 32),
 
-                // ==== Button ====
+                // Next Button
                 Obx(
                   () => AppButton(
-                    text: "Next",
+                    text: "Sign up",
                     isLoading: controller.isLoading.value,
                     onPressed: controller.isLoading.value
                         ? null
-                        : () => Get.toNamed('/nutrition'),
+                        : () {
+                            if (_profileFormKey.currentState!.validate()) {
+                              controller.register();
+                            }
+                          },
                     iconRight: AppAssetUtils.svg(
                       AppAssets.rightIcon,
                       width: 22,
@@ -152,7 +172,7 @@ class InputProfilePage extends GetView<AuthController> {
       ),
     );
   }
-  
+
   // Date Picker Field
   Widget _buildDateField() {
     return GestureDetector(
@@ -192,14 +212,17 @@ class InputProfilePage extends GetView<AuthController> {
     );
   }
 
-  // ===== Widget Input Field =====
+  // Input Field
   Widget _buildInput({
     required String label,
     required String icon,
     required TextEditingController controller,
+    bool readOnly = false,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
+      readOnly: readOnly,
       decoration: InputDecoration(
         prefixIcon: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -211,20 +234,21 @@ class InputProfilePage extends GetView<AuthController> {
           ),
         ),
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.orange),
+        labelStyle: TextStyle(color: readOnly ? Colors.grey : Colors.orange),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black54),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.orange),
+          borderSide: BorderSide(color: readOnly ? Colors.grey : Colors.orange),
         ),
       ),
+      validator: validator,
     );
   }
 
-  // ===== Dropdown =====
+  // Dropdown Field
   Widget _buildDropdown({
     required String label,
     required String icon,
@@ -270,18 +294,19 @@ class InputProfilePage extends GetView<AuthController> {
     });
   }
 
-  // ===== Password Field =====
- Widget _buildPasswordField({
-  required String label,
-  required String icon,
-  required TextEditingController textController,
-  required bool obscureText,
-  required AuthController controller,
-}) {
-  return Obx(() {
+  // Password Field
+  Widget _buildPasswordField({
+    required String label,
+    required String icon,
+    required TextEditingController textController,
+    required bool obscureText,
+    required AuthController controller,
+    bool readOnly = false,
+  }) {
     return TextFormField(
       controller: textController,
-      obscureText: controller.isPasswordHidden.value,
+      readOnly: readOnly,
+      obscureText: obscureText,
       decoration: InputDecoration(
         prefixIcon: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -292,28 +317,29 @@ class InputProfilePage extends GetView<AuthController> {
             color: Colors.black,
           ),
         ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            controller.isPasswordHidden.value
-                ? Icons.visibility_off
-                : Icons.visibility,
-            color: Colors.grey.shade700,
-          ),
-          onPressed: () => controller.isPasswordHidden.toggle(), // 👈 ini kuncinya
-        ),
+        suffixIcon: readOnly
+            ? null
+            : IconButton(
+                icon: Icon(
+                  controller.isPasswordHidden.value
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  color: Colors.grey.shade700,
+                ),
+                onPressed: () => controller.isPasswordHidden.toggle(),
+              ),
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.orange),
+        labelStyle: TextStyle(color: readOnly ? Colors.grey : Colors.orange),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black54),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.orange),
+          borderSide: BorderSide(color: readOnly ? Colors.grey : Colors.orange),
         ),
       ),
-      validator: Validator.password,
+      validator: readOnly ? null : Validator.password,
     );
-  });
-}
+  }
 }

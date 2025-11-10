@@ -11,10 +11,16 @@ class LoginPage extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments ?? {};
+    final prefillEmail = args['email'] ?? '';
+    final prefillPassword = args['password'] ?? '';
+
+    controller.emailController.text = prefillEmail;
+    controller.passwordController.text = prefillPassword;
     return Scaffold(
       body: Stack(
         children: [
-          _background(), 
+          _background(),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -90,8 +96,7 @@ class LoginPage extends GetView<AuthController> {
                           ),
                           suffixIcon: IconButton(
                             onPressed: () {
-                              controller.isPasswordHidden
-                                  .toggle(); // ubah true/false
+                              controller.isPasswordHidden.toggle();
                             },
                             icon: Icon(
                               controller.isPasswordHidden.value
@@ -116,7 +121,10 @@ class LoginPage extends GetView<AuthController> {
                         isLoading: controller.isLoading.value,
                         onPressed: controller.isLoading.value
                             ? null
-                            : () async => await controller.login(),
+                            : () async => await controller.login(
+                                controller.emailController.text.trim(),
+                                controller.passwordController.text.trim(),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -144,7 +152,12 @@ class LoginPage extends GetView<AuthController> {
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(
-                              color: Color.fromARGB(255, 19, 11, 3), // oranye dari tema kamu
+                              color: Color.fromARGB(
+                                255,
+                                19,
+                                11,
+                                3,
+                              ), // oranye dari tema kamu
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
