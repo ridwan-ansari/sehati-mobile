@@ -20,6 +20,7 @@ class DashboardPage extends GetView<DashboardController> {
       const ScheduleTab(),
       const ProfileTab(),
     ];
+    
 return Obx(
   () => PopScope(
     canPop: false,
@@ -30,10 +31,10 @@ return Obx(
     child: Scaffold(
       body: pages[controller.selectedIndex.value],
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(8), // jarak dari tepi
+        margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: const Color(0xFF3B2B27),
-          borderRadius: BorderRadius.circular(20), // radius di sini
+          borderRadius: BorderRadius.circular(20), 
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -49,7 +50,7 @@ return Obx(
             currentIndex: controller.selectedIndex.value,
             onTap: controller.changeTab,
             showUnselectedLabels: true,
-            selectedItemColor: Colors.white,
+            selectedItemColor: AppColors.gold,
             unselectedItemColor: Colors.white,
             selectedLabelStyle:
                 const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),

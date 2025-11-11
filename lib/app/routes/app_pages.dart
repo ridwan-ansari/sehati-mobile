@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:sehati/app/modules/auth/controllers/auth_controller.dart';
 import 'package:sehati/app/modules/auth/views/next_step/forgot_password.dart';
 import 'package:sehati/app/modules/auth/views/next_step/input_profile_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/nutritional_status_page.dart';
@@ -14,14 +13,14 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
+import 'package:sehati/app/modules/dashboard/views/tabs/profile_tab.dart';
+import 'package:sehati/app/modules/profile/bindings/profile_binding.dart';
 import 'package:sehati/app/modules/splash_page.dart';
 import 'package:sehati/app/routes/app_routes.dart';
 import '../modules/auth/views/login_page.dart';
 import '../modules/dashboard/views/dashboard_page.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
-
-// ===== Home Feature Imports =====
 import '../modules/dashboard/views/feature/home/monitoring/views/monitoring_page.dart';
 import '../modules/dashboard/views/feature/home/appointment/views/appointment_page.dart';
 import '../modules/dashboard/views/feature/home/edutainment/views/edutainment_page.dart';
@@ -30,7 +29,6 @@ import '../modules/dashboard/views/feature/home/journal/views/journal_page.dart'
 import '../modules/dashboard/views/feature/home/chatting/views/chatting_page.dart';
 import '../modules/dashboard/views/feature/home/healthy_menu/views/healthy_menu_page.dart';
 import '../modules/dashboard/views/feature/home/reminder/views/reminder_page.dart';
-
 import '../modules/dashboard/views/feature/home/monitoring/bindings/monitoring_binding.dart';
 import '../modules/dashboard/views/feature/home/appointment/bindings/appointment_binding.dart';
 import '../modules/dashboard/views/feature/home/edutainment/bindings/edutainment_binding.dart';
@@ -57,20 +55,17 @@ class AppPages {
     GetPage(
       name: AppRoutes.SIGNUP,
       page: () => const RegisterPage(),
-      binding:AuthBinding(),
-
+      binding: AuthBinding(),
     ),
     GetPage(
       name: AppRoutes.NUTRITION,
       page: () => const NutritionalStatusPage(),
       binding: AuthBinding(),
-
     ),
     GetPage(
       name: AppRoutes.INPUTPROFILE,
       page: () => const InputProfilePage(),
       binding: AuthBinding(),
-
     ),
     GetPage(
       name: AppRoutes.DASHBOARD,
@@ -158,6 +153,11 @@ class AppPages {
       name: AppRoutes.VERIFY_OTP,
       page: () => const VerifyOtpPage(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.PROFILE,
+      page: () => const ProfileTab(),
+      binding: ProfileBinding(),
     ),
   ];
 }
