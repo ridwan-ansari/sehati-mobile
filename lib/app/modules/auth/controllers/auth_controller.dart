@@ -20,9 +20,14 @@ class AuthController extends GetxController {
   final phoneController = TextEditingController();
   final weightController = TextEditingController();
   final heightController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final otpController = TextEditingController();
 
   // === Form Key ===
-  final formKey = GlobalKey<FormState>();
+  final formKeyForgot = GlobalKey<FormState>();
+  final formKeyLogin = GlobalKey<FormState>();
+  final formKeySignup = GlobalKey<FormState>();
 
   // === Reactive Variables ===
   final isLoading = false.obs;
@@ -39,6 +44,8 @@ class AuthController extends GetxController {
   var dateOfBirth = ''.obs;
   var age = 0.obs;
 
+  final isConfirmForgotPass = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -46,11 +53,17 @@ class AuthController extends GetxController {
     weightController.addListener(calculate);
     heightController.addListener(calculate);
     ever(selectedDate, (_) => calculate());
+    final args = Get.arguments ?? {};
+    final prefillEmail = args['email'] ?? '';
+    final prefillPassword = args['password'] ?? '';
+
+    emailController.text = prefillEmail;
+    passwordController.text = prefillPassword;
   }
 
   // === REGISTER ===
   Future<void> register() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!formKeySignup.currentState!.validate()) return;
 
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
@@ -208,6 +221,9 @@ class AuthController extends GetxController {
       EasyLoading.dismiss();
       isLoading.value = false;
       return false;
+    } finally {
+      isLoading.value = false;
+      if (EasyLoading.isShow) EasyLoading.dismiss();
     }
   }
 
@@ -257,9 +273,10 @@ class AuthController extends GetxController {
     try {
       final newAccess = await _authService.refreshToken(refreshToken: token);
       if (newAccess != null) {
+        EasyLoading.dismiss();
         await prefs.setString('access_token', newAccess);
       }
-    }on DioException catch (e) {
+    } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
 
@@ -272,7 +289,7 @@ class AuthController extends GetxController {
         message = e.message!;
       }
       SnackbarUtils.show(message);
-    }  catch (e) {
+    } catch (e) {
       log("Refresh token failed: $e");
     }
   }
@@ -282,13 +299,95 @@ class AuthController extends GetxController {
     // await sendOtp(email);
   }
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    nameController.dispose();
-    nicknameController.dispose();
-    phoneController.dispose();
-    super.onClose();
+  String? confirmPasswordValidator(String? value) {
+    if (value == null || value.isEmpty) return 'Harus diisi';
+    if (value != newPasswordController.text.trim()) {
+      return 'Password tidak sama';
+    }
+    return null;
   }
+
+  Future<void> resetPassword(String email) async {
+    if (emailController.text.isEmpty) return;
+
+    isLoading.value = true;
+    EasyLoading.show(status: "Reset Password...");
+
+    try {
+      final response = await _authService.forgotPassword(email: email);
+
+      if (response == true) {
+        EasyLoading.dismiss();
+        isConfirmForgotPass.value = true;
+        isLoading.value = false;
+      } else {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+      }
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> resetPasswordConfirm(String email, String code) async {
+    if (!formKeyForgot.currentState!.validate()) return;
+    isLoading.value = true;
+    EasyLoading.show(status: "Forgot Password ...");
+    try {
+      final response = await _authService.confirmForgotPassword(
+        email: email,
+        otp: code,
+        newPassword: newPasswordController.text.trim(),
+        confirmPassword: confirmPasswordController.text.trim(),
+      );
+
+      if (response != null && response.statusCode == 200) {
+        Get.offAllNamed(
+          '/login',
+          arguments: {
+            'email': emailController.text.trim(),
+            'password': confirmPasswordController.text.trim(),
+          },
+        );
+        EasyLoading.dismiss();
+        isLoading.value = false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+    } finally {
+      isLoading.value = false;
+      EasyLoading.dismiss();
+      isLoading.value = false;
+    }
+  }
+
+  // @override
+  // void onClose() {
+  //   emailController.dispose();
+  //   passwordController.dispose();
+  //   nameController.dispose();
+  //   nicknameController.dispose();
+  //   phoneController.dispose();
+  //   weightController.dispose();
+  //   heightController.dispose();
+  //   newPasswordController.dispose();
+  //   confirmPasswordController.dispose();
+  //   otpController.dispose();
+  //   super.onClose();
+  // }
 }

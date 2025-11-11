@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:sehati/app/modules/auth/controllers/auth_controller.dart';
+import 'package:sehati/app/modules/auth/views/next_step/forgot_password.dart';
 import 'package:sehati/app/modules/auth/views/next_step/input_profile_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/nutritional_status_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/verify_otp_page.dart';
@@ -42,31 +43,34 @@ import '../modules/dashboard/views/feature/home/reminder/bindings/reminder_bindi
 class AppPages {
   static final routes = [
     GetPage(name: AppRoutes.SPLASH, page: () => const SplashPage()),
+
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginPage(),
       binding: AuthBinding(),
     ),
     GetPage(
+      name: AppRoutes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordPage(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
       name: AppRoutes.SIGNUP,
       page: () => const RegisterPage(),
-      binding: BindingsBuilder(() {
-        Get.put(AuthController());
-      }),
+      binding:AuthBinding(),
+
     ),
     GetPage(
       name: AppRoutes.NUTRITION,
       page: () => const NutritionalStatusPage(),
-      binding: BindingsBuilder(() {
-        Get.put(AuthController());
-      }),
+      binding: AuthBinding(),
+
     ),
     GetPage(
       name: AppRoutes.INPUTPROFILE,
       page: () => const InputProfilePage(),
-      binding: BindingsBuilder(() {
-        Get.put(AuthController());
-      }),
+      binding: AuthBinding(),
+
     ),
     GetPage(
       name: AppRoutes.DASHBOARD,

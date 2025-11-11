@@ -2,15 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sehati/app/data/services/local_storage_service.dart';
 import '../routes/app_routes.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
     _checkLogin();
+  }
+
+  Future<void> _checkLogin() async {
+    final token = LocalStorageService.getAccessToken();
+    print("token : $token");
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      if (token != null && token.isNotEmpty) {
+        Get.offAllNamed(AppRoutes.DASHBOARD);
+      } else {
+        Get.offAllNamed(AppRoutes.LOGIN);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -22,25 +47,10 @@ class SplashPage extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: AppAssetUtils.svg(AppAssets.logoSehati, width: 260),
-          ),
+        child: Center(
+          child: AppAssetUtils.svg(AppAssets.logoSehati, width: 260),
         ),
       ),
     );
-  }
-
-  Future<void> _checkLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    await Future.delayed(const Duration(seconds: 2));
-    if (token != null && token.isNotEmpty) {
-      Get.offAllNamed(AppRoutes.DASHBOARD);
-    } else {
-      Get.offAllNamed(AppRoutes.LOGIN);
-    }
   }
 }

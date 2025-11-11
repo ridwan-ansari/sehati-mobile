@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sehati/app/data/services/notification_service.dart';
 import 'package:sehati/app/services/notification_service.dart';
 import 'package:sehati/main_config.dart';
@@ -12,11 +13,12 @@ import 'app/global_controllers/theme_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MainConfig().configureLocalTimeZone();
+  await GetStorage.init();
   Get.put(ThemeController());
-  runApp(const MRAApp());
   await LocalStorageService.init();
   await NotificationService.init();
   configLoading();
+  runApp(const MRAApp());
 }
 
 void configLoading() {
@@ -36,7 +38,7 @@ class MRAApp extends StatelessWidget {
 
     return Obx(
       () => GetMaterialApp(
-        title: 'MRA App',
+        title: 'Sehati App',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,

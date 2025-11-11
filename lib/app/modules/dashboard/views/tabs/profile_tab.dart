@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/widgets/app_button.dart';
+import 'package:sehati/app/data/services/local_storage_service.dart'
+    show LocalStorageService;
 import 'package:sehati/app/global_controllers/theme_controller.dart';
 
 class ProfileTab extends StatelessWidget {
@@ -27,7 +29,10 @@ class ProfileTab extends StatelessWidget {
           const SizedBox(height: 16),
           AppButton(
             text: "Logout",
-            onPressed: () => Get.offAllNamed('/login'),
+            onPressed: () {
+              LocalStorageService.clearTokens();
+              Get.offAllNamed('/login');
+            },
           ),
         ],
       ),

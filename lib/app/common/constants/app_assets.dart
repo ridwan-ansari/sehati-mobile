@@ -36,6 +36,7 @@ class AppAssets {
   static const String messageIcon = 'assets/icons/message_icon.svg';
   static const String monitoringIcon = 'assets/icons/monitoring_icon.svg';
   static const String myPointIconCircle = 'assets/icons/my_point_icon_circle.svg';
+  static const String otpIcon = 'assets/icons/otp_icon.svg';
   static const String pendingChat = 'assets/icons/pending_chat.svg';
   static const String peopleIcon = 'assets/icons/people_icon.svg';
   static const String phoneIcon = 'assets/icons/phone_icon.svg';

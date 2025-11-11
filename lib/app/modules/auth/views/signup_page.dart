@@ -71,7 +71,7 @@ class RegisterPage extends GetView<AuthController> {
 
               // === FORM FIELD ===
               Form(
-                key: controller.formKey,
+                key: controller.formKeySignup,
                 child: Column(
                   children: [
                     TextFormField(
@@ -181,7 +181,7 @@ class RegisterPage extends GetView<AuthController> {
                         onPressed: controller.isLoading.value
                             ? null
                             : () {
-                                if (controller.formKey.currentState!
+                                if (controller.formKeySignup.currentState!
                                     .validate()) {
                                   Get.toNamed('/input_profile');
                                 }

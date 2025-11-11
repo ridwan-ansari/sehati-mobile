@@ -27,6 +27,7 @@ abstract class AppRoutes {
   static const SOCIAL_PROFILE = '/social_profile';
   
   static const VERIFY_OTP = '/verify_otp';
+  static const FORGOT_PASSWORD = '/forgot_password';
 
 
 }

@@ -21,6 +21,7 @@ class LocalStorageService {
     return _box.read('refresh_token');
   }
 
+
   static Future<void> clearTokens() async {
     await _box.remove('access_token');
     await _box.remove('refresh_token');

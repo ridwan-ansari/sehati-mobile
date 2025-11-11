@@ -11,12 +11,6 @@ class LoginPage extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    final args = Get.arguments ?? {};
-    final prefillEmail = args['email'] ?? '';
-    final prefillPassword = args['password'] ?? '';
-
-    controller.emailController.text = prefillEmail;
-    controller.passwordController.text = prefillPassword;
     return Scaffold(
       body: Stack(
         children: [
@@ -25,7 +19,7 @@ class LoginPage extends GetView<AuthController> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Form(
-                key: controller.formKey,
+                key: controller.formKeyLogin,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -129,9 +123,9 @@ class LoginPage extends GetView<AuthController> {
                     ),
                     const SizedBox(height: 16),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed('/forgot_password'),
                       child: const Text(
-                        "Lupa Password?",
+                        "forgot password?",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

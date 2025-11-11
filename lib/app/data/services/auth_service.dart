@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
@@ -94,15 +96,29 @@ class AuthService {
 
       if (response.statusCode == 200) {
         print("✅ LOGIN SUCCESS: ${response.data}");
-        await LocalStorageService.setAccessToken(response.data['data']['access_token']);
-        await LocalStorageService.setRefreshToken(response.data['data']['refresh_token']);
+        await LocalStorageService.setAccessToken(
+          response.data['data']['access_token'],
+        );
+        await LocalStorageService.setRefreshToken(
+          response.data['data']['refresh_token'],
+        );
         return response.data['data'];
       }
       return null;
     } on DioException catch (e) {
-      print("❌ LOGIN ERROR: ${e.response?.data ?? e.message}");
-      return null;
+      EasyLoading.dismiss();
+
+      String message = "Terjadi kesalahan";
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      SnackbarUtils.show(message);
     }
+    return null;
   }
 
   /// REFRESH TOKEN
@@ -120,14 +136,76 @@ class AuthService {
 
       if (response.statusCode == 200) {
         print("✅ REFRESH TOKEN SUCCESS: ${response.data}");
-        await LocalStorageService.setAccessToken(response.data['data']['access_token']);
-        await LocalStorageService.setRefreshToken(response.data['data']['refresh_token']);
+        await LocalStorageService.setAccessToken(
+          response.data['data']['access_token'],
+        );
+        await LocalStorageService.setRefreshToken(
+          response.data['data']['refresh_token'],
+        );
         return response.data['data']['access_token'];
       }
       return null;
     } on DioException catch (e) {
       print("❌ REFRESH TOKEN ERROR: ${e.response?.data ?? e.message}");
       return null;
+    }
+  }
+
+  /// RESET PASSWORD
+  Future<bool> forgotPassword({required String email}) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.RESET_PASSWORD}?email=$email',
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      if (response.statusCode == 200 && response.data['status_code'] == 200) {
+        print("✅ Reset password success: ${response.data}");
+        return true;
+      } else {
+        print("⚠️ Reset password failed: ${response.data}");
+        return false;
+      }
+    } on DioException catch (e) {
+      print("❌ Reset password error: ${e.response?.data ?? e.message}");
+      return false;
+    }
+  }
+
+  Future<Response?> confirmForgotPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      final data = {
+        'email': email,
+        'code': otp,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      };
+      final response = await _dio.post(
+        '${ApiEndpoints.RESET_PASSWORD_CONFIRM}',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+          },
+        ),
+        data: data,
+      );
+
+      print("✅ Reset password success: ${response.data}");
+      return response;
+    } on DioException catch (e) {
+      print("❌ Reset password error: ${e.response?.data ?? e.message}");
+      if (e.response != null) {
+        print("❌ RESET PASSWORD CONFIRM FAILED: ${e.response?.data}");
+      } else {
+        print("⚠️ NETWORK ERROR: ${e.message}");
+      }
+      rethrow;
     }
   }
 }
