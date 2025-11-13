@@ -7,8 +7,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
+import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/data/services/nutritional_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
   final _authService = AuthService();
@@ -266,16 +266,15 @@ class AuthController extends GetxController {
 
   /// REFRESH TOKEN
   Future<void> refreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('refresh_token');
+    final token = await LocalStorageService.getRefreshToken();
+
     if (token == null) return;
 
     try {
       final newAccess = await _authService.refreshToken(refreshToken: token);
       if (newAccess != null) {
         EasyLoading.dismiss();
-        await prefs.setString('access_token', newAccess);
-      }
+        LocalStorageService.setAccessToken(newAccess);}
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
@@ -20,42 +21,47 @@ class ProfileTab extends GetView<ProfileController> {
       body: Center(
         child: Obx(() {
           final profile = controller.dataProfile.value;
-          if (profile == null) {
-            return const Text("Tidak ada data profil ditemukan.");
-          }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 56,
-                  backgroundColor: Colors.grey.withOpacity(0.5),
-                  backgroundImage: (profile.picture.isNotEmpty)
-                      ? NetworkImage('$BASE_URL${profile.picture}')
-                      : null,
-                  child: (profile.picture.isEmpty)
-                      ? const Icon(Icons.person, size: 56)
-                      : null,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  profile.fullname,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+
+          return RefreshIndicator(
+            color: AppColors.orangeLight,
+            onRefresh: ()=>controller.loadProfile(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  const SizedBox(height: 56.0),
+                  CircleAvatar(
+                    radius: 56,
+                    backgroundColor: Colors.grey.withOpacity(0.5),
+                    backgroundImage:
+                        (profile != null && profile.picture.isNotEmpty)
+                        ? NetworkImage('$BASE_URL${profile.picture}')
+                        : null,
+                    child: (profile == null || profile.picture.isEmpty)
+                        ? const Icon(Icons.person, size: 56)
+                        : null,
                   ),
-                ),
-                Text(
-                  profile.email,
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 12.0),
-                _buildInfoCard(profile),
-                const SizedBox(height: 12.0),
-                _buildSettingsCard(context),
-                const SizedBox(height: 12.0),
-                _buildLogoutButton(),
-              ],
+            
+                  const SizedBox(height: 10),
+                  Text(
+                    profile?.fullname ?? "",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    profile?.email ?? "",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 12.0),
+                  _buildInfoCard(profile),
+                  const SizedBox(height: 12.0),
+                  _buildSettingsCard(context),
+                  const SizedBox(height: 12.0),
+                  _buildLogoutButton(),
+                ],
+              ),
             ),
           );
         }),
@@ -94,13 +100,29 @@ class ProfileTab extends GetView<ProfileController> {
               ),
             ),
             const SizedBox(height: 16.0),
-            _textIconDetail("Nickname", profile.nickname, AppAssets.profileIcon),
+            _textIconDetail(
+              "Nickname",
+              profile?.nickname ?? "",
+              AppAssets.profileIcon,
+            ),
             const SizedBox(height: 8.0),
-            _textIconDetail("Phone Number", profile.phoneNumber, AppAssets.phoneIcon),
+            _textIconDetail(
+              "Phone Number",
+              profile?.phoneNumber ?? "",
+              AppAssets.phoneIcon,
+            ),
             const SizedBox(height: 8.0),
-            _textIconDetail("Gender", profile.gender, AppAssets.genderIcon),
+            _textIconDetail(
+              "Gender",
+              profile?.gender ?? "",
+              AppAssets.genderIcon,
+            ),
             const SizedBox(height: 8.0),
-            _textIconDetail("Date of Birth", profile.dateOfBirth, AppAssets.dateIcon),
+            _textIconDetail(
+              "Date of Birth",
+              profile?.dateOfBirth ?? "",
+              AppAssets.dateIcon,
+            ),
           ],
         ),
       ),

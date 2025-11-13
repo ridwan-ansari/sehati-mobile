@@ -29,6 +29,7 @@ abstract class AppRoutes {
   static const VERIFY_OTP = '/verify_otp';
   static const FORGOT_PASSWORD = '/forgot_password';
   static const PROFILE = '/profile';
-
+  
+  static const EXERCISE = '/exercise';
 
 }

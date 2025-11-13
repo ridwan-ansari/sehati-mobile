@@ -18,18 +18,18 @@ class JournalPage extends GetView<JournalController> {
         "route": "/food_diary",
       },
       {
-        "title": "Food Habit",
+        "title": "Habit",
         "image":
             "https://www.shutterstock.com/image-photo/group-people-exercising-gym-600nw-1507478801.jpg",
         "reward": "100 points",
         "route": "/food_habit",
       },
       {
-        "title": "Exercise Habit",
+        "title": "Exercise",
         "image":
             "https://www.shutterstock.com/image-photo/group-people-exercising-gym-600nw-1507478801.jpg",
         "reward": "100 points",
-        "route": "/food_diary",
+        "route": "/exercise",
       },
     ];
 

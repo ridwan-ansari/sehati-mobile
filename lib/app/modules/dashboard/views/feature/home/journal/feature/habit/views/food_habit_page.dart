@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/widget/row_input_field.dart';
 import '../controllers/food_habit_controller.dart';
 
@@ -11,11 +10,6 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        logoSvg: AppAssets.dayliIcon,
-        onSearchChanged: (value) {},
-        onProfileTap: () {},
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -74,49 +68,46 @@ class FoodHabitPage extends GetView<FoodHabitController> {
             ),
 
             const SizedBox(height: 16),
-
-            // ===== SECTION 2: EATING BEHAVIOR =====
             _buildSection(
               title: "Eating Behavior",
-              child: Column(
-                children: [
-                  _buildRadioGroup("Eat while watching TV?"),
-                  _buildRadioGroup("Eat late at night?"),
-                  _buildRadioGroup("Skip breakfast?"),
-                  _buildRadioGroup("Consume sugary drinks daily?"),
-                ],
-              ),
+              child: _buildQuestionsList(),
             ),
 
             const SizedBox(height: 16),
 
-            // ===== SUBMIT BUTTON =====
             Center(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Get.snackbar(
-                    "Saved",
-                    "Your food habit data has been recorded!",
-                    backgroundColor: Colors.green,
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.TOP,
-                  );
-                },
-                icon: const Icon(Icons.save),
-                label: const Text("Save Habit Record"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 14,
+              child: Obx(() {
+                final totalSoal = controller.questions.length;
+                final jawabanTerisi = controller.questions
+                    .where((q) => q.selectedOption != null)
+                    .length;
+                final semuaTerisi = jawabanTerisi == totalSoal;
+
+                return ElevatedButton.icon(
+                  onPressed: semuaTerisi
+                      ? () {
+                         controller.submitAllAnswers(); 
+                        }
+                      : null,
+                  icon: const Icon(Icons.check),
+                  label: const Text("Submit"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: semuaTerisi
+                        ? AppColors.orangeLight
+                        : Colors.grey,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
+                );
+              }),
             ),
+
             const SizedBox(height: 54.0),
           ],
         ),
@@ -158,48 +149,73 @@ class FoodHabitPage extends GetView<FoodHabitController> {
     );
   }
 
-  // ===== Reusable Radio Group =====
-  Widget _buildRadioGroup(String question) {
-    final RxString selected = "".obs;
+  Widget _buildQuestionsList() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    return Obx(
-      () => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            question,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
+      if (controller.questions.isEmpty) {
+        return const Center(child: Text('Tidak ada pertanyaan'));
+      }
+
+      return Column(
+        children: controller.questions.map((question) {
+          return Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  question.question,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Reward: ${question.rewardPoints} coins',
+                  style: const TextStyle(fontSize: 12, color: Colors.orange),
+                ),
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile<String>(
+                        activeColor: AppColors.orangeLight,
+                        title: const Text("Yes"),
+                        value: "Yes",
+                        groupValue: question.selectedOption,
+                        onChanged: (val) {
+                          controller.selectOption(question, val!, val);
+                        },
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile<String>(
+                        activeColor: AppColors.orangeLight,
+                        title: const Text("No"),
+                        value: "No",
+                        groupValue: question.selectedOption,
+                        onChanged: (val) {
+                          controller.selectOption(question, val!, val);
+                        },
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(),
+              ],
             ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: RadioListTile<String>(
-                  title: const Text("Yes"),
-                  value: "Yes",
-                  groupValue: selected.value,
-                  onChanged: (val) => selected.value = val!,
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              Expanded(
-                child: RadioListTile<String>(
-                  title: const Text("No"),
-                  value: "No",
-                  groupValue: selected.value,
-                  onChanged: (val) => selected.value = val!,
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+          );
+        }).toList(),
+      );
+    });
   }
 }

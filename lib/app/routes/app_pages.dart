@@ -8,10 +8,12 @@ import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/profile_
 import 'package:sehati/app/modules/dashboard/views/feature/home/appointment/views/appointment_detail_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/views/add_room_chat_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/views/chat_private_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/bindings/exercise_habit_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/views/exercise_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/bindings/food_diary_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/views/food_diary_page.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/bindings/food_habit_binding.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_habit/views/food_habit_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/profile_tab.dart';
 import 'package:sehati/app/modules/profile/bindings/profile_binding.dart';
@@ -158,6 +160,11 @@ class AppPages {
       name: AppRoutes.PROFILE,
       page: () => const ProfileTab(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.EXERCISE,
+      page: () => const ExerciseView(),
+      binding: ExerciseBinding(),
     ),
   ];
 }

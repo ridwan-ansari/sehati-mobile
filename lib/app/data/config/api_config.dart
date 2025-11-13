@@ -45,6 +45,15 @@ class ApiEndpoints {
   static const String ADMIN_RESET_PASSWORD_CONFIRM = "$BASE_URL/dashboard/reset/password/confirm";
 
   // =========================
+  // 🌐 Journal
+  // =========================
+  
+  static const String EXERCISE_LIST = "$BASE_URL/api/exercise/questions";
+  static const String HABIT_LIST = "$BASE_URL/api/habit/food/questions";
+  static const String EXERCISE_ANSWER = "$BASE_URL/api/exercise/answers";
+  static const String HABIT_ANSWER = "$BASE_URL/api/habit/food/answers";
+
+  // =========================
   // 🌐 ROOT
   // =========================
   static const String ROOT = "$BASE_URL/";
