@@ -6,12 +6,15 @@ import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
+import 'package:sehati/app/data/models/request/nutrition_req_model.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
-import 'package:sehati/app/data/services/nutritional_service.dart';
+import 'package:sehati/app/data/services/user_service.dart';
+import 'package:sehati/app/routes/app_routes.dart';
 
 class AuthController extends GetxController {
   final _authService = AuthService();
+  final _userService = UserService();
   // === Text Controllers ===
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -45,14 +48,15 @@ class AuthController extends GetxController {
   var age = 0.obs;
 
   final isConfirmForgotPass = false.obs;
+  RxBool isNutritionSaved = false.obs;
 
   @override
   void onInit() {
     super.onInit();
 
-    weightController.addListener(calculate);
-    heightController.addListener(calculate);
-    ever(selectedDate, (_) => calculate());
+    // weightController.addListener(calculate);
+    // heightController.addListener(calculate);
+    // ever(selectedDate, (_) => calculate());
     final args = Get.arguments ?? {};
     final prefillEmail = args['email'] ?? '';
     final prefillPassword = args['password'] ?? '';
@@ -68,6 +72,7 @@ class AuthController extends GetxController {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
     EasyLoading.show(status: "Mendaftarkan akun...");
+    print("dateOfBirth.value ${dateOfBirth.value}");
 
     try {
       final response = await _authService.registerUser(
@@ -161,27 +166,29 @@ class AuthController extends GetxController {
     );
 
     if (picked != null) {
-      selectedDate.value = DateFormat('yyyy-MM-dd').format(picked);
+      final formatted = DateFormat('yyyy-MM-dd').format(picked);
+      selectedDate.value = formatted;
+      dateOfBirth.value = formatted;
     }
   }
 
-  void calculate() {
-    // Update nilai dari text field
-    weight.value = double.tryParse(weightController.text) ?? 0;
-    height.value = double.tryParse(heightController.text) ?? 0;
-    dateOfBirth.value = selectedDate.value;
+  // void calculate() {
+  //   // Update nilai dari text field
+  //   weight.value = double.tryParse(weightController.text) ?? 0;
+  //   height.value = double.tryParse(heightController.text) ?? 0;
+  //   dateOfBirth.value = selectedDate.value;
 
-    if (weight.value > 0 && height.value > 0) {
-      bmi.value = NutritionalService.calculateBMI(weight.value, height.value);
-      status.value = NutritionalService.getNutritionalStatus(bmi.value);
-      idealWeight.value = NutritionalService.calculateIdealWeight(height.value);
-    }
+  //   if (weight.value > 0 && height.value > 0) {
+  //     bmi.value = NutritionalService.calculateBMI(weight.value, height.value);
+  //     status.value = NutritionalService.getNutritionalStatus(bmi.value);
+  //     idealWeight.value = NutritionalService.calculateIdealWeight(height.value);
+  //   }
 
-    if (dateOfBirth.value.isNotEmpty) {
-      final dob = DateFormat('yyyy-MM-dd').parse(dateOfBirth.value);
-      age.value = NutritionalService.calculateAge(dob);
-    }
-  }
+  //   if (dateOfBirth.value.isNotEmpty) {
+  //     final dob = DateFormat('yyyy-MM-dd').parse(dateOfBirth.value);
+  //     age.value = NutritionalService.calculateAge(dob);
+  //   }
+  // }
 
   // Verifikasi OTP
   Future<bool> verifyOtp(String email, String otp) async {
@@ -239,7 +246,11 @@ class AuthController extends GetxController {
       if (data != null) {
         EasyLoading.dismiss();
         isLoading.value = false;
-
+        var nutritionData = await _userService.getUserNutrition();
+        if (nutritionData?.length == 0) {
+          Get.toNamed(AppRoutes.NUTRITION);
+          return;
+        }
         Get.offAllNamed('/dashboard');
       } else {
         EasyLoading.dismiss();
@@ -274,7 +285,8 @@ class AuthController extends GetxController {
       final newAccess = await _authService.refreshToken(refreshToken: token);
       if (newAccess != null) {
         EasyLoading.dismiss();
-        LocalStorageService.setAccessToken(newAccess);}
+        LocalStorageService.setAccessToken(newAccess);
+      }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
@@ -372,6 +384,31 @@ class AuthController extends GetxController {
       isLoading.value = false;
       EasyLoading.dismiss();
       isLoading.value = false;
+    }
+  }
+
+  Future<void> submitNutrition() async {
+    final weightVal = double.tryParse(weightController.text) ?? 0;
+    final heightVal = double.tryParse(heightController.text) ?? 0;
+
+    if (weightVal <= 0 || heightVal <= 0) {
+      SnackbarUtils.show("Please enter valid weight & height");
+      return;
+    }
+
+    final request = NutritionCreateRequest(
+      weightKg: weightVal,
+      heightCm: heightVal,
+    );
+
+    final result = await UserService().createNutrition(request);
+
+    if (result != null) {
+      // isi ulang field dari API
+      bmi.value = result.bmi;
+      status.value = result.status;
+      idealWeight.value = result.idealWeightKg;
+      isNutritionSaved.value = true;
     }
   }
 

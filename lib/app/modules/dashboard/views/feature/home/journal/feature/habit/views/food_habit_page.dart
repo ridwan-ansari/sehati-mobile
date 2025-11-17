@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/widget/row_input_field.dart';
+import 'package:sehati/app/common/utils/time_utils.dart';
+import 'package:sehati/app/data/models/response/habit_question_model.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/widget/row_input_field.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/frequency_input_widget.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/header_title.dart';
 import '../controllers/food_habit_controller.dart';
 
 class FoodHabitPage extends GetView<FoodHabitController> {
@@ -10,12 +16,15 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.gold,
+        title: Text("Food Habit Journal"),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== HEADER =====
+            const SizedBox(height: 12.0),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -32,49 +41,67 @@ class FoodHabitPage extends GetView<FoodHabitController> {
                 textAlign: TextAlign.center,
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            // ===== SECTION 1: DAILY EATING HABIT =====
-            _buildSection(
-              title: "Daily Eating Habit",
-              child: Column(
-                children: [
-                  RowInputField(
-                    label: "Meal Frequency / Day",
-                    controller: controller.frequencyController,
-                    hintText: "e.g. 3 times/day",
-                  ),
-                  const SizedBox(height: 4.0),
-                  RowInputField(
-                    label: "Fast Food Frequency / Week",
-                    controller: controller.fastFoodController,
-                    hintText: "e.g. 2 times/week",
-                  ),
-                  const SizedBox(height: 4.0),
-                  RowInputField(
-                    label: "Fruit Intake / Day",
-                    controller: controller.fruitController,
-                    hintText: "e.g. 1 portion",
-                  ),
-                  const SizedBox(height: 4.0),
-                  RowInputField(
-                    label: "Vegetable Intake / Day",
-                    controller: controller.vegetableController,
-                    hintText: "e.g. 2 portions",
-                  ),
-                ],
-              ),
-            ),
-
             const SizedBox(height: 16),
-            _buildSection(
-              title: "Eating Behavior",
-              child: _buildQuestionsList(),
+            HeaderTitleWidget(title: "Record Your Food Habit!"),
+            const SizedBox(height: 8),
+            RowInputField(
+              isEditable: false,
+              label: "Date",
+              controller: controller.vegetableController,
+              hintText: TimeUtils.formatShortDate(DateTime.now()),
             ),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            const SizedBox(height: 16),
+              if (controller.groupedQuestions.isEmpty) {
+                return Center(child: const Text("No questions asked"));
+              }
 
+              return ListView(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                children: controller.groupedQuestions.entries.map((entry) {
+                  final category = entry.key;
+                  final questions = entry.value;
+
+                  return _buildSection(
+                    title: category,
+                    child: Obx(() {
+                      final isExpanded =
+                          controller.expandedCategories[category] ?? false;
+                      final shownQuestions = isExpanded
+                          ? questions
+                          : questions.take(1).toList();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...shownQuestions
+                              .map((q) => _buildQuestionsList(q))
+                              .toList(),
+                          if (questions.length > 1)
+                            TextButton(
+                              onPressed: () =>
+                                  controller.toggleCategory(category),
+                              child: Text(
+                                isExpanded ? "Show Less..." : "Click More...",
+                                style: const TextStyle(
+                                  color: Colors.black38,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }),
+                  );
+                }).toList(),
+              );
+            }),
+            const SizedBox(height: 12.0),
             Center(
               child: Obx(() {
                 final totalSoal = controller.questions.length;
@@ -82,11 +109,13 @@ class FoodHabitPage extends GetView<FoodHabitController> {
                     .where((q) => q.selectedOption != null)
                     .length;
                 final semuaTerisi = jawabanTerisi == totalSoal;
+                if (controller.groupedQuestions.isEmpty)
+                  return SizedBox.shrink();
 
                 return ElevatedButton.icon(
                   onPressed: semuaTerisi
                       ? () {
-                         controller.submitAllAnswers(); 
+                          controller.submitAllAnswers();
                         }
                       : null,
                   icon: const Icon(Icons.check),
@@ -115,41 +144,33 @@ class FoodHabitPage extends GetView<FoodHabitController> {
     );
   }
 
-  // ===== Reusable Section Wrapper =====
   Widget _buildSection({required String title, required Widget child}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFE082), Color(0xFFFFB74D)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        HeaderTitleWidget(title: "Record Your Food Diary!"),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.gold,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GradientLabel(
+                title: "Do you consume kind of $title listed below",
+              ),
+              Padding(padding: const EdgeInsets.all(10.0), child: child),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.yellow.shade50,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: child,
-          ),
-        ],
-      ),
+      ],
     );
   }
 
-  Widget _buildQuestionsList() {
+  Widget _buildQuestionsList(HabitQuestionModel question) {
     return Obx(() {
       if (controller.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
@@ -159,62 +180,84 @@ class FoodHabitPage extends GetView<FoodHabitController> {
         return const Center(child: Text('Tidak ada pertanyaan'));
       }
 
-      return Column(
-        children: controller.questions.map((question) {
-          return Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  question.question,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: question.selectedOption == 'yes' ? 3 : 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    question.question,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Reward: ${question.rewardPoints} coins',
-                  style: const TextStyle(fontSize: 12, color: Colors.orange),
-                ),
-                const SizedBox(height: 8),
-
-                Row(
+                  const SizedBox(height: 6),
+                  Text(
+                    'Reward: ${question.rewardPoints} coins',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            if (question.selectedOption == 'yes')
+              Flexible(
+                flex: 2,
+                child: Row(
                   children: [
-                    Expanded(
-                      child: RadioListTile<String>(
-                        activeColor: AppColors.orangeLight,
-                        title: const Text("Yes"),
-                        value: "Yes",
-                        groupValue: question.selectedOption,
+                    Flexible(
+                      child: YesNoSwitch(
+                        value: true,
                         onChanged: (val) {
-                          controller.selectOption(question, val!, val);
+                          controller.selectOption(
+                            question,
+                            val ? "yes" : "no",
+                            val ? "yes" : "no",
+                            val == 'yes' ? 1 : 0,
+                          );
                         },
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
-                    Expanded(
-                      child: RadioListTile<String>(
-                        activeColor: AppColors.orangeLight,
-                        title: const Text("No"),
-                        value: "No",
-                        groupValue: question.selectedOption,
-                        onChanged: (val) {
-                          controller.selectOption(question, val!, val);
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: FrequencyInputWidget(
+                        initialValue: question.frequency ?? 0,
+                        onChanged: (value) {
+                          question.frequency = value;
+                          controller.questions.refresh();
                         },
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
                   ],
                 ),
-                Divider(),
-              ],
-            ),
-          );
-        }).toList(),
+              )
+            else
+              Flexible(
+                flex: 0,
+                child: YesNoSwitch(
+                  value: false,
+                  onChanged: (val) {
+                    print(val);
+                    controller.selectOption(
+                      question,
+                      val ? "yes" : "no",
+                      val ? "yes" : "no",
+                      val == 'true' ? 0 : 1,
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       );
     });
   }

@@ -69,7 +69,7 @@ class HabitService {
       }
     } on DioException catch (e) {
       final msg = e.response?.data['message'] ?? "Failed to send reply";
-      SnackbarUtils.show(msg);
+      SnackbarUtils.show(msg + "(${e.response?.statusCode})");
       return false;
     }
   }

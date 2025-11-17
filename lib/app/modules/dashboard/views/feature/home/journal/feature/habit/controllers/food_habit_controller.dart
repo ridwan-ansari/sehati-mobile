@@ -12,6 +12,8 @@ class FoodHabitController extends GetxController {
   final HabitService _service = HabitService();
   var isLoading = false.obs;
   var questions = <HabitQuestionModel>[].obs;
+  var groupedQuestions = <String, List<HabitQuestionModel>>{}.obs;
+  var expandedCategories = <String, bool>{}.obs;
 
   @override
   void onInit() {
@@ -19,11 +21,16 @@ class FoodHabitController extends GetxController {
     fetchQuestions();
   }
 
+  void toggleCategory(String category) {
+    expandedCategories[category] = !(expandedCategories[category] ?? false);
+  }
+
   Future<void> fetchQuestions() async {
     try {
       isLoading.value = true;
       final data = await _service.getFoodQuestions();
       questions.assignAll(data ?? []);
+      await groupQuestions();
     } catch (e) {
       print('Error fetching questions: $e');
     } finally {
@@ -31,20 +38,36 @@ class FoodHabitController extends GetxController {
     }
   }
 
-  void selectOption(HabitQuestionModel question, String key, String value) {
+  Future<void> groupQuestions() async {
+    groupedQuestions.clear();
+
+    for (var q in questions) {
+      final cat = q.category;
+
+      if (!groupedQuestions.containsKey(cat)) {
+        groupedQuestions[cat] = [];
+      }
+      groupedQuestions[cat]!.add(q);
+      q.answerText = 'false';
+      q.selectedOption = 'false';
+    }
+    questions.refresh();
+  }
+
+  void selectOption(HabitQuestionModel question, String key, String value , int? frequency) {
     question.selectedOption = key;
     question.answerText = value;
+    question.frequency = frequency;
     questions.refresh();
   }
 
   Future<void> submitAllAnswers() async {
     List<Map<String, dynamic>> answers = [];
     for (var question in questions) {
-      print('ini apa ya : ${question.selectedOption}');
       answers.add({
         "question_id": question.id,
         "answer": question.selectedOption?.toLowerCase(),
-        "frequency": 0,
+        "frequency": question.frequency,
       });
     }
     final success = await _service.submiteHabitAnswer(answers: answers);

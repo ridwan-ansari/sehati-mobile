@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label_right.dart';
 import '../controllers/journal_controller.dart';
 
 class JournalPage extends GetView<JournalController> {
@@ -12,67 +14,65 @@ class JournalPage extends GetView<JournalController> {
     final journals = [
       {
         "title": "Food Diary",
-        "image":
-            "https://www.shutterstock.com/image-photo/group-people-exercising-gym-600nw-1507478801.jpg",
+        "image": AppAssets.foodDiary,
         "reward": "100 points",
         "route": "/food_diary",
       },
       {
-        "title": "Habit",
-        "image":
-            "https://www.shutterstock.com/image-photo/group-people-exercising-gym-600nw-1507478801.jpg",
+        "title": "Food Habit",
+        "image": AppAssets.habits,
         "reward": "100 points",
         "route": "/food_habit",
       },
       {
-        "title": "Exercise",
-        "image":
-            "https://www.shutterstock.com/image-photo/group-people-exercising-gym-600nw-1507478801.jpg",
+        "title": "Exercise Habit",
+        "image": AppAssets.exercise,
         "reward": "100 points",
         "route": "/exercise",
       },
     ];
 
     return Scaffold(
-      appBar: CustomAppBar(
-        logoSvg: AppAssets.dayliIcon,
-        onSearchChanged: (value) {},
-        onProfileTap: () {},
+      appBar: AppBar(
+        backgroundColor: AppColors.gold,
+        title: Text("Daily Journal"),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.brown.shade700,
-                borderRadius: BorderRadius.circular(6),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12.0),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(color: Colors.black87),
+            child: const Text(
+              "Write Down Your Daily Journal, Here!",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              child: const Text(
-                "Write Down Your Daily Journal, Here!",
-                style: TextStyle(color: Colors.white, fontSize: 14),
-                textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: AppColors.yellowLight,
+              child: Column(
+                children: [
+                  ListView.builder(
+                    itemCount: journals.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final item = journals[index];
+                      return _buildJournalCard(item);
+                    },
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-
-            // List item
-            ListView.builder(
-              itemCount: journals.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final item = journals[index];
-                return _buildJournalCard(item);
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -80,24 +80,12 @@ class JournalPage extends GetView<JournalController> {
   Widget _buildJournalCard(Map<String, String> item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF176),
-        borderRadius: BorderRadius.circular(12),
-      ),
+
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gambar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              item["image"]!,
-              width: 120,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-          ),
+          AppAssetUtils.image(item['image']??'' , width: 125),
           const SizedBox(width: 12),
 
           // Informasi
@@ -105,40 +93,17 @@ class JournalPage extends GetView<JournalController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header orange
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.orangeAccent, Colors.deepOrange],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    item["title"]!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
+                GradienLabelRight(title: item["title"] ?? "", fontSize: 14),
+                const SizedBox(height: 8),
 
-                // Tombol start journalling
                 ElevatedButton(
                   onPressed: () {
                     Get.toNamed(item['route'] ?? '');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent.shade100,
+                    backgroundColor: Colors.green,
                     foregroundColor: Colors.black,
-                    side: const BorderSide(color: Colors.green, width: 2),
+                    side: const BorderSide(color: Colors.black, width: 2),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
@@ -153,7 +118,6 @@ class JournalPage extends GetView<JournalController> {
                   ),
                 ),
                 const SizedBox(height: 6),
-
                 Text(
                   "Reward: ${item["reward"]}",
                   style: const TextStyle(

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/bodyweight_chart.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_card.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_field.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_section_header.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/stepcount_chart.dart';
+
 import '../controllers/monitoring_controller.dart';
 
 class MonitoringPage extends GetView<MonitoringController> {
@@ -16,73 +14,63 @@ class MonitoringPage extends GetView<MonitoringController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        logoSvg: AppAssets.monitoringIcon,
-        onSearchChanged: (value) {},
-        onProfileTap: () {},
+        appBar: AppBar(
+        backgroundColor: AppColors.gold,
+        title: Text("Self Monitoring"),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            color: Colors.brown.shade700,
-            child: const Text(
-              "Welcome to your self–monitoring page!",
-              style: TextStyle(color: Colors.white, fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.amber.shade100,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: controller.tabController,
-              indicator: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF80AB), Color(0xFFFFC107)],
-                ),
-                borderRadius: BorderRadius.circular(8),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              color: Colors.black,
+              child: const Text(
+                "Welcome to your self–monitoring page!",
+                style: TextStyle(color: Colors.white, fontSize: 14),
+                textAlign: TextAlign.center,
               ),
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              tabs: const [
-                Tab(text: "Bodyweight"),
-                Tab(text: "Step Count"),
-              ],
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: controller.tabController,
-              children: [
-                _buildBodyweightMonitoring(),
-                _buildStepCountMonitoring(),
-              ],
-            ),
-          ),
-        ],
+            // Container(
+            //   margin: const EdgeInsets.all(12),
+            //   decoration: BoxDecoration(
+            //     color: Colors.amber.shade100,
+            //     borderRadius: BorderRadius.circular(12),
+            //   ),
+            //   child: TabBar(
+            //     controller: controller.tabController,
+            //     indicator: BoxDecoration(
+            //       gradient: const LinearGradient(
+            //         colors: [Color(0xFFFF80AB), Color(0xFFFFC107)],
+            //       ),
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     labelColor: Colors.black,
+            //     unselectedLabelColor: Colors.grey,
+            //     tabs: const [
+            //       Tab(text: "Bodyweight"),
+            //       Tab(text: "Step Count"),
+            //     ],
+            //   ),
+            // ),
+            // Expanded(
+            //   child: TabBarView(
+            //     controller: controller.tabController,
+            //     children: [
+            //       _buildStepCountMonitoring(),
+            //     ],
+            //   ),
+            // ),
+            _buildBodyweightMonitoring(),
+          ],
+        ),
       ),
     );
   }
 
   // ===== Bodyweight Monitoring =====
   Widget _buildBodyweightMonitoring() {
-    final data = [
-      {"date": "05/06", "actual": 70.0, "ideal": 60.0},
-      {"date": "06/06", "actual": 68.5, "ideal": 60.0},
-      {"date": "07/06", "actual": 67.0, "ideal": 60.0},
-      {"date": "08/06", "actual": 66.0, "ideal": 60.0},
-      {"date": "09/06", "actual": 65.0, "ideal": 60.0},
-      {"date": "10/06", "actual": 64.0, "ideal": 60.0},
-      {"date": "11/06", "actual": 63.0, "ideal": 60.0},
-      {"date": "12/06", "actual": 62.0, "ideal": 60.0},
-    ];
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -93,15 +81,27 @@ class MonitoringPage extends GetView<MonitoringController> {
             children: [
               _buildRow("Date of measurement", _buildDateField()),
               _buildRow(
-                "Result (kg)",
+                "Result (cm)",
                 MonitoringInputField(
-                  controller: controller.resultController,
-                  hint: "55",
+                  controller: controller.resultCmController,
+                  hint: '0',
                 ),
               ),
               _buildRow(
+                "Result (kg)",
+                MonitoringInputField(
+                  controller: controller.resultController,
+                  hint: '0',
+                ),
+              ),
+
+              const SizedBox(height: 16.0),
+              _saveButton(onPressed: controller.submitNutrition),
+              const SizedBox(height: 16.0),
+              _buildRow(
                 "IMT (kg/m²)",
                 MonitoringInputField(
+                  isEdit: true,
                   controller: controller.imtController,
                   hint: "Autofill",
                 ),
@@ -109,6 +109,7 @@ class MonitoringPage extends GetView<MonitoringController> {
               _buildRow(
                 "IMT/U Z-Score",
                 MonitoringInputField(
+                  isEdit: true,
                   controller: controller.zScoreController,
                   hint: "Autofill",
                 ),
@@ -116,77 +117,89 @@ class MonitoringPage extends GetView<MonitoringController> {
               _buildRow(
                 "Ideal Bodyweight (kg)",
                 MonitoringInputField(
+                  isEdit: true,
                   controller: controller.idealController,
                   hint: "Autofill",
                 ),
               ),
+              const SizedBox(height: 8.0),
+              Text(
+                "Record your body weight at least once a week!",
+                style: TextStyle(fontSize: 12.0, color: Colors.black54),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-          _saveButton(),
-          const SizedBox(height: 20),
-          BodyweightChart(data: data),
+          const SizedBox(height: 20.0),
+          Obx(() {
+            if (controller.chartData.isEmpty) {
+              return const Text("No data yet.");
+            }
+            return BodyweightChart(data: controller.chartData);
+          }),
+
+          const SizedBox(height: 40),
         ],
       ),
     );
   }
 
   // ===== Step Count Monitoring =====
-  Widget _buildStepCountMonitoring() {
-    final data = List.generate(20, (i) {
-      return {
-        "date": "${(i + 1).toString().padLeft(2, '0')}/06/25",
-        "actual": 3000 + (i * 200),
-        "target": 6000 + ((i % 3) * 500),
-      };
-    });
+  // Widget _buildStepCountMonitoring() {
+  //   final data = List.generate(20, (i) {
+  //     return {
+  //       "date": "${(i + 1).toString().padLeft(2, '0')}/06/25",
+  //       "actual": 3000 + (i * 200),
+  //       "target": 6000 + ((i % 3) * 500),
+  //     };
+  //   });
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          MonitoringSectionHeader(title: "Step Count Monitoring"),
-          const SizedBox(height: 16),
-          MonitoringInputCard(
-            children: [
-              _buildRow(
-                "Date of measurement",
-                MonitoringInputField(
-                  controller: TextEditingController(),
-                  hint: "Autorecord",
-                ),
-              ),
-              _buildRow(
-                "Actual step counts",
-                MonitoringInputField(
-                  controller: TextEditingController(),
-                  hint: "Autorecord",
-                ),
-              ),
-              _buildRow(
-                "Your target daily steps",
-                MonitoringInputField(
-                  controller: TextEditingController(),
-                  hint: "6000",
-                ),
-              ),
-              _buildRow(
-                "You need more",
-                MonitoringInputField(
-                  controller: TextEditingController(),
-                  hint: "Autofill",
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _saveButton(),
-          const SizedBox(height: 20),
-          StepCountChart(data: data),
-        ],
-      ),
-    );
-  }
+  //   return SingleChildScrollView(
+  //     padding: const EdgeInsets.all(16),
+  //     child: Column(
+  //       children: [
+  //         MonitoringSectionHeader(title: "Step Count Monitoring"),
+  //         const SizedBox(height: 16),
+  //         MonitoringInputCard(
+  //           children: [
+  //             _buildRow(
+  //               "Date of measurement",
+  //               MonitoringInputField(
+  //                 controller: TextEditingController(),
+  //                 hint: "Autorecord",
+  //               ),
+  //             ),
+  //             _buildRow(
+  //               "Actual step counts",
+  //               MonitoringInputField(
+  //                 isEdit: true,
+  //                 controller: TextEditingController(),
+  //                 hint: "Autorecord",
+  //               ),
+  //             ),
+  //             _buildRow(
+  //               "Your target daily steps",
+  //               MonitoringInputField(
+  //                 isEdit: true,
+  //                 controller: TextEditingController(),
+  //                 hint: "6000",
+  //               ),
+  //             ),
+  //             _buildRow(
+  //               "You need more",
+  //               MonitoringInputField(
+  //                 isEdit: true,
+  //                 controller: TextEditingController(),
+  //                 hint: "Autofill",
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 20),
+  //         StepCountChart(data: data),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildRow(String label, Widget input) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 6),
@@ -200,19 +213,20 @@ class MonitoringPage extends GetView<MonitoringController> {
     ),
   );
 
-  Widget _saveButton() => SizedBox(
+  Widget _saveButton({required void Function()? onPressed}) => SizedBox(
     width: double.infinity,
     child: ElevatedButton.icon(
-      onPressed: () => Get.snackbar(
-        "Success",
-        "Monitoring data saved successfully!",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+      onPressed: onPressed,
+      icon: const Icon(Icons.calculate, color: AppColors.orangeLight, size: 24),
+      label: const Text(
+        "Calculate",
+        style: TextStyle(
+          color: AppColors.orangeLight,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      icon: const Icon(Icons.save),
-      label: const Text("Save / Submit"),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.orange.shade400,
+        backgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),

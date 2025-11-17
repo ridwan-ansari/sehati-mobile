@@ -8,12 +8,14 @@ class MonitoringInputField extends StatelessWidget {
   final String hint;
   final bool isDateField;
   final MonitoringController? monitoringController;
+  final bool isEdit;
 
   const MonitoringInputField({
     required this.controller,
     required this.hint,
     this.isDateField = false,
     this.monitoringController,
+     this.isEdit = false,
     super.key,
   });
 
@@ -46,6 +48,7 @@ class MonitoringInputField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         textAlign: TextAlign.center,
+        readOnly: isEdit,
         keyboardType: const TextInputType.numberWithOptions(),
         decoration: InputDecoration(
           hintText: hint,

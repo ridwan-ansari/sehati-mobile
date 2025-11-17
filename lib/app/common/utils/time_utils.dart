@@ -56,6 +56,11 @@ class TimeUtils {
     return DateFormat('dd/MM/yyyy').format(dateTime);
   }
 
+    /// Format tanggal pendek seperti: 03/11/2025
+  static String formatDayMonth(DateTime dateTime) {
+    return DateFormat('dd/MM').format(dateTime);
+  }
+
   /// Format hanya bulan dan tahun seperti: November 2025
   static String formatMonthYear(DateTime dateTime) {
     return DateFormat('MMMM yyyy', 'id_ID').format(dateTime);

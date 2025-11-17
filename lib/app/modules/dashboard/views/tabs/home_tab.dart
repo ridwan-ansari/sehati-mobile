@@ -13,6 +13,7 @@ class HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        logoSvg: AppAssets.logoSehati,
         onSearchChanged: (value) {
           print("Search keyword: $value");
         },

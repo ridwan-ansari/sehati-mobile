@@ -4,6 +4,7 @@ import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/data/services/user_service.dart';
 import '../routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   final _authService = AuthService();
+  final _userService = UserService();
 
   Future<void> _checkLogin() async {
     final token = LocalStorageService.getAccessToken();
@@ -31,6 +33,11 @@ class _SplashPageState extends State<SplashPage> {
     if (mounted) {
       if (token != null && token.isNotEmpty) {
         refreshToken();
+        var nutritionData = await _userService.getUserNutrition();
+        if(nutritionData?.length == 0){
+          Get.toNamed(AppRoutes.NUTRITION);
+          return;
+        }
         Get.offAllNamed(AppRoutes.DASHBOARD);
       } else {
         Get.offAllNamed(AppRoutes.LOGIN);

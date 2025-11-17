@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 
 class MonitoringInputCard extends StatelessWidget {
   final List<Widget> children;
@@ -11,9 +12,9 @@ class MonitoringInputCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.amber.shade50,
+        color: AppColors.gold,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange, width: 1.5),
+        border: Border.all(color: AppColors.gold, width: 1.5),
       ),
       child: Column(children: children),
     );

@@ -14,6 +14,7 @@ class HabitQuestionModel {
   // User answer
   String? selectedOption;
   String? answerText;
+  int? frequency;
 
   HabitQuestionModel({
     required this.id,
@@ -27,6 +28,7 @@ class HabitQuestionModel {
     this.example,
     this.selectedOption,
     this.answerText,
+    this.frequency
   });
 
   factory HabitQuestionModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class HabitQuestionModel {
       updatedAt: json['updated_at'],
       deletedAt: json['deleted_at'],
       example: json['example'],
+      frequency: json['frequency']??0
     );
   }
 
@@ -56,6 +59,7 @@ class HabitQuestionModel {
       'example': example,
       'selected_option': selectedOption,
       'answer_text': answerText,
+      'frequency': frequency,
     };
   }
 }

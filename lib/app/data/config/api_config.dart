@@ -43,6 +43,11 @@ class ApiEndpoints {
   static String adminUserDetail(int userId) => "$BASE_URL/dashboard/users/$userId";
   static const String ADMIN_RESET_PASSWORD = "$BASE_URL/dashboard/reset/password";
   static const String ADMIN_RESET_PASSWORD_CONFIRM = "$BASE_URL/dashboard/reset/password/confirm";
+  static const String FOOD_DIARY_ANALYSIS = "$BASE_URL/api/habit/food/diary/analysis";
+
+  static const String VIDEO = "$BASE_URL/api/video/";
+  static const String VIDEO_CLAIM_REWARD = "$BASE_URL/api/video/claim-reward";
+
 
   // =========================
   // 🌐 Journal
@@ -52,6 +57,10 @@ class ApiEndpoints {
   static const String HABIT_LIST = "$BASE_URL/api/habit/food/questions";
   static const String EXERCISE_ANSWER = "$BASE_URL/api/exercise/answers";
   static const String HABIT_ANSWER = "$BASE_URL/api/habit/food/answers";
+  static const String FOOD_ANSWER = "$BASE_URL/api/habit/food/diary";
+  static const String NUTRITION_LATEST = "$BASE_URL/api/user/nutrition/latest";
+  static const String NUTRITION_CALCULATOR  = "$BASE_URL/api/user/nutrition/calculator";
+  static const String FOOD = "$BASE_URL/api/habit/food";
 
   // =========================
   // 🌐 ROOT

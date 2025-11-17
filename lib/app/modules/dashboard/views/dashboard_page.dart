@@ -54,7 +54,7 @@ return Obx(
             unselectedItemColor: Colors.white,
             selectedLabelStyle:
                 const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
-            backgroundColor: Colors.transparent, // biar sesuai BoxDecoration
+            backgroundColor: Colors.transparent, 
             items: [
               BottomNavigationBarItem(
                 icon: AppAssetUtils.svg(AppAssets.homeIcon, width: 24, height: 24),

@@ -17,94 +17,108 @@ class NutritionalStatusPage extends GetView<AuthController> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                // Title
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Nutritional\nStatus",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        height: 1.2,
-                      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Nutritional\nStatus",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      height: 1.2,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black54),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: AppAssetUtils.svg(
-                        AppAssets.profileIcon,
-                        width: 48,
-                        height: 48,
-                        color: Colors.black,
-                      ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 40),
+                    child: AppAssetUtils.svg(
+                      AppAssets.profileIcon,
+                      width: 48,
+                      height: 48,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
 
-                // === FORM ===
+              const SizedBox(height: 40),
 
-                _buildTextField(
-                  "Current Bodyweight",
-                  AppAssets.bodyWeightIcon,
-                  controller.weightController,
-                ),
-                const SizedBox(height: 16),
+              // WEIGHT
+              _buildTextField(
+                "Current Bodyweight",
+                AppAssets.bodyWeightIcon,
+                controller.weightController,
+              ),
+              const SizedBox(height: 16),
 
-                _buildTextField(
-                  "Current Bodyheight",
-                  AppAssets.bodyHeightIcon,
-                  controller.heightController,
-                ),
-                const SizedBox(height: 16),
+              // HEIGHT
+              _buildTextField(
+                "Current Bodyheight",
+                AppAssets.bodyHeightIcon,
+                controller.heightController,
+              ),
+              const SizedBox(height: 16),
 
-                _buildAutoFillField(
+              // === SAVE BUTTON (AMAN) ===
+              Obx(() {
+                print(controller.bmi.value);
+                final disable = controller.bmi.value != 0.0;
+
+                return disable
+                    ? const SizedBox()
+                    : AppButton(
+                        text: "Canculate",
+                        onPressed: () => controller.submitNutrition(),
+                      );
+              }),
+
+              const SizedBox(height: 16),
+
+              // AUTO-FILL FIELDS
+              Obx(
+                () => _buildAutoFillField(
                   "BMI",
                   AppAssets.bmiIcon,
                   controller.bmi.stringObs,
                 ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
 
-                _buildAutoFillField(
-                  "Nutritional Status",
-                  AppAssets.bmiIcon,
-                  controller.status,
-                ),
-                const SizedBox(height: 16),
+              _buildAutoFillField(
+                "Nutritional Status",
+                AppAssets.bmiIcon,
+                controller.status,
+              ),
+              const SizedBox(height: 16),
 
-                _buildAutoFillField(
+              Obx(
+                () => _buildAutoFillField(
                   "Ideal Bodyweight",
                   AppAssets.bodyHeightIcon,
                   controller.idealWeight.stringObs,
                 ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
 
-                _buildDropdownField("Type of Activity", AppAssets.activityIcon),
-                const SizedBox(height: 32),
-
-                // Finish Button
-                AppButton(
-                  text: "Finish",
-                  onPressed: () => Get.offAllNamed('/dashboard'),
-                  iconRight: AppAssetUtils.svg(
-                    AppAssets.rightIcon,
-                    width: 20,
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
+              // FINISH BUTTON
+              Obx(() {
+                return controller.isNutritionSaved.value
+                    ? AppButton(
+                        text: "Finish",
+                        onPressed: () => Get.offAllNamed('/dashboard'),
+                      )
+                    : const SizedBox();
+              }),
+            ],
           ),
         ),
       ),
@@ -120,7 +134,6 @@ class NutritionalStatusPage extends GetView<AuthController> {
     return TextFormField(
       controller: textController,
       keyboardType: TextInputType.number,
-      onChanged: (_) => controller.calculate(),
       decoration: InputDecoration(
         prefixIcon: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -192,70 +205,5 @@ class NutritionalStatusPage extends GetView<AuthController> {
         ),
       ),
     );
-    // Column(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: [
-    // TextFormField(
-    //   enabled: false,
-    //   decoration: InputDecoration(
-    //     prefixIcon: Padding(
-    //       padding: const EdgeInsets.all(12.0),
-    //       child: AppAssetUtils.svg(
-    //         iconPath,
-    //         width: 20,
-    //         height: 20,
-    //         color: Colors.black,
-    //       ),
-    //     ),
-    //     labelText: label,
-    //     labelStyle: const TextStyle(color: Colors.orange),
-    //     border: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(8),
-    //       borderSide: const BorderSide(color: Colors.black54),
-    //     ),
-    //   ),
-    // ),
-    // const SizedBox(height: 6),
-    // Text(
-    //   value.value.isEmpty ? '-' : value.value,
-    //   style: const TextStyle(
-    //     fontSize: 14,
-    //     color: Colors.black,
-    //     fontWeight: FontWeight.w500,
-    //   ),
-    // ),
-    // const SizedBox(height: 12),
-    // ],
-    // ));
   }
-
-  // Dropdown
-  Widget _buildDropdownField(String label, String iconPath) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black54),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          AppAssetUtils.svg(
-            iconPath,
-            width: 22,
-            height: 22,
-            color: Colors.black,
-          ),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              "Type of Activity",
-              style: TextStyle(color: Colors.orange, fontSize: 16),
-            ),
-          ),
-          const Icon(Icons.arrow_drop_down, color: Colors.black),
-        ],
-      ),
-    );
-  }
-  
 }

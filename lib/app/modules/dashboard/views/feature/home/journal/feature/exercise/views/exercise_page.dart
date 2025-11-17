@@ -11,6 +11,10 @@ class ExerciseView extends GetView<ExerciseController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.gold,
+        title: Text("Exercise Diary Journal"),
+      ),
       backgroundColor: const Color(0xFFF5F5F5),
       body: Obx(() {
         if (controller.isLoading.value) {

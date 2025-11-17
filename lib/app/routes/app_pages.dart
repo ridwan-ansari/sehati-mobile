@@ -10,8 +10,8 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/views/a
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/views/chat_private_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/bindings/exercise_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/views/exercise_page.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/bindings/food_diary_binding.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food_diary/views/food_diary_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/bindings/food_diary_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/views/food_diary_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
@@ -39,40 +39,56 @@ import '../modules/dashboard/views/feature/home/journal/bindings/journal_binding
 import '../modules/dashboard/views/feature/home/chatting/bindings/chatting_binding.dart';
 import '../modules/dashboard/views/feature/home/healthy_menu/bindings/healthy_menu_binding.dart';
 import '../modules/dashboard/views/feature/home/reminder/bindings/reminder_binding.dart';
-
 class AppPages {
   static final routes = [
-    GetPage(name: AppRoutes.SPLASH, page: () => const SplashPage()),
+    GetPage(
+      name: AppRoutes.SPLASH,
+      page: () => const SplashPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
 
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginPage(),
       binding: AuthBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.FORGOT_PASSWORD,
       page: () => const ForgotPasswordPage(),
       binding: AuthBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.SIGNUP,
       page: () => const RegisterPage(),
       binding: AuthBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.NUTRITION,
       page: () => const NutritionalStatusPage(),
       binding: AuthBinding(),
+      transition: Transition.downToUp,
+      transitionDuration: Duration(milliseconds: 350),
     ),
     GetPage(
       name: AppRoutes.INPUTPROFILE,
       page: () => const InputProfilePage(),
       binding: AuthBinding(),
+      transition: Transition.downToUp,
+      transitionDuration: Duration(milliseconds: 350),
     ),
     GetPage(
       name: AppRoutes.DASHBOARD,
       page: () => const DashboardPage(),
       binding: DashboardBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 300),
     ),
 
     // ==== Home Feature Routes ====
@@ -80,91 +96,127 @@ class AppPages {
       name: AppRoutes.MONITORING,
       page: () => const MonitoringPage(),
       binding: MonitoringBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.APPOINTMENT,
       page: () => const AppointmentPage(),
       binding: AppointmentBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.EDUTAINMENT,
       page: () => const EdutainmentPage(),
       binding: EdutainmentBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.GAME,
       page: () => const GamePage(),
       binding: GameBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.JOURNAL,
       page: () => const JournalPage(),
       binding: JournalBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.CHATTING,
       page: () => const ChattingPage(),
       binding: ChattingBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.HEALTHY_MENU,
       page: () => const HealthyMenuPage(),
       binding: HealthyMenuBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.REMINDER,
       page: () => const ReminderPage(),
       binding: ReminderBinding(),
+      transition: Transition.native,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.APPOINTMENT_DETAIL,
       page: () => const AppointmentDetailPage(),
       binding: AppointmentBinding(),
+      transition: Transition.downToUp,
+      transitionDuration: Duration(milliseconds: 350),
     ),
     GetPage(
       name: AppRoutes.FOOD_DIARY,
       page: () => const FoodDiaryPage(),
       binding: FoodDiaryBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.FOOD_HABIT,
       page: () => const FoodHabitPage(),
       binding: FoodHabitBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.ADD_REMINDER,
       page: () => const AddReminderPage(),
       binding: ReminderBinding(),
+      transition: Transition.downToUp,
+      transitionDuration: Duration(milliseconds: 350),
     ),
     GetPage(
       name: AppRoutes.ADD_ROOM_CHAT,
       page: () => const AddRoomChatPage(),
       binding: ChattingBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.CHAT_PRIVATE,
       page: () => const ChatPrivatePage(),
       binding: ChattingBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.SOCIAL_PROFILE,
       page: () => const ProfileDraft(),
       binding: ChattingBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.VERIFY_OTP,
       page: () => const VerifyOtpPage(),
       binding: AuthBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.PROFILE,
       page: () => const ProfileTab(),
       binding: ProfileBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.EXERCISE,
       page: () => const ExerciseView(),
       binding: ExerciseBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
     ),
   ];
 }

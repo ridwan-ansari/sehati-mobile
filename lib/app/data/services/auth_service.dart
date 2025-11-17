@@ -3,9 +3,11 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:get/get.dart' as go;
 
 class AuthService {
   final Dio _dio = Dio(
@@ -41,6 +43,7 @@ class AuthService {
         "nickname": nickname,
         "gender": gender,
       });
+      print(data);
 
       final response = await _dio.post(ApiEndpoints.REGISTER, data: data);
 
@@ -134,6 +137,7 @@ class AuthService {
         ),
       );
 
+      print("✅ REFRESH TOKEN SUCCESS: ${response.statusCode}");
       if (response.statusCode == 200) {
         print("✅ REFRESH TOKEN SUCCESS: ${response.data}");
         await LocalStorageService.setAccessToken(
@@ -147,6 +151,11 @@ class AuthService {
       return null;
     } on DioException catch (e) {
       print("❌ REFRESH TOKEN ERROR: ${e.response?.data ?? e.message}");
+      if (e.response?.statusCode == 401) {
+        LocalStorageService.clearTokens();
+        SnackbarUtils.show('anda telah logout');
+        go.Get.toNamed('/login');
+      }
       return null;
     }
   }

@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-/// Widget reusable untuk memutar video YouTube.
-///
-/// ✅ Cara pakai:
-/// ```dart
-/// YoutubePlayerWidget(videoId: 'dQw4w9WgXcQ')
-/// ```
 class YoutubePlayerWidget extends StatefulWidget {
   final String videoId;
-  final double height;
+  final VoidCallback? onVideoEnded;
 
   const YoutubePlayerWidget({
-    Key? key,
+    super.key,
     required this.videoId,
-    this.height = 200,
-  }) : super(key: key);
+    this.onVideoEnded,
+  });
 
   @override
   State<YoutubePlayerWidget> createState() => _YoutubePlayerWidgetState();
@@ -23,19 +17,26 @@ class YoutubePlayerWidget extends StatefulWidget {
 
 class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
   late YoutubePlayerController _controller;
+  bool isEndedTriggered = false;
 
   @override
   void initState() {
     super.initState();
+
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoId,
       flags: const YoutubePlayerFlags(
-        autoPlay: false,
+        autoPlay: true,
         mute: false,
-        controlsVisibleAtStart: true,
-        enableCaption: true,
       ),
-    );
+    )..addListener(_listener);
+  }
+
+  void _listener() {
+    if (_controller.value.playerState == PlayerState.ended && !isEndedTriggered) {
+      isEndedTriggered = true;
+      widget.onVideoEnded?.call();
+    }
   }
 
   @override
@@ -49,13 +50,6 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
     return YoutubePlayer(
       controller: _controller,
       showVideoProgressIndicator: true,
-      progressIndicatorColor: Colors.orange,
-      bottomActions: [
-        CurrentPosition(),
-        ProgressBar(isExpanded: true),
-        RemainingDuration(),
-        const PlaybackSpeedButton(),
-      ],
     );
   }
 }

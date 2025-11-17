@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label.dart';
 
 class RowInputField extends StatelessWidget {
   final String label;
@@ -8,6 +9,7 @@ class RowInputField extends StatelessWidget {
   final VoidCallback? onTap;
   final String? hintText;
   final Color fillColor;
+  final bool isEditable;
 
   const RowInputField({
     super.key,
@@ -18,6 +20,7 @@ class RowInputField extends StatelessWidget {
     this.onTap,
     this.hintText,
     this.fillColor = const Color(0xFFFFF9C4),
+    this.isEditable = true,
   });
 
   @override
@@ -25,56 +28,48 @@ class RowInputField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFE082), Color(0xFFFFB74D)],
+          colors: [Color.fromARGB(255, 253, 234, 175), Color(0xFFFFB74D)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.only(right: 12, top: 12 , bottom: 12),
         child: Row(
           children: [
-            // Label kiri
-            Expanded(
-              flex: 2,
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-
+            Expanded(child: GradientLabel(title: label)),
             const SizedBox(width: 10),
-
-            // Input kanan
-            Expanded(
-              flex: 3,
+            IntrinsicWidth(
               child: TextFormField(
                 controller: controller,
-                readOnly: readOnly,
+                readOnly: !isEditable,
+                enabled: isEditable,
                 keyboardType: keyboardType,
                 onTap: onTap,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   hintText: hintText ?? "",
+                  isDense: true,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
+                    horizontal: 8,
+                    vertical: 8,
                   ),
+                  helperStyle: TextStyle(color: Colors.black),
                   filled: true,
-                  fillColor: fillColor,
-                  border: OutlineInputBorder(
+                  fillColor: isEditable ? fillColor : Colors.white,
+                  border: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
-                    borderSide: const BorderSide(color: Colors.orange),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: const BorderSide(color: Colors.deepOrange),
-                  ),
+                    borderSide: const BorderSide(color: Colors.white),
+                  )
+                  // border: OutlineInputBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  //   borderSide: const BorderSide(color: Colors.white),
+                  // ),
+                  // focusedBorder: OutlineInputBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  //   borderSide: const BorderSide(color: Colors.white),
+                  // ),
                 ),
               ),
             ),
