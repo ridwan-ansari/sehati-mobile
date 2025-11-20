@@ -24,7 +24,7 @@ class FoodService {
   // ---------------------------------------------------------------------------
   Future<List<FoodModel>?> getFood() async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -56,7 +56,7 @@ class FoodService {
     int offset = 0,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -90,7 +90,7 @@ class FoodService {
     required List<Map<String, dynamic>> data,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return false;
@@ -101,14 +101,12 @@ class FoodService {
         "desired_energy_requirement": desiredEnergyRequirement,
         "data": data,
       };
-      print(body);
+      print("status code : ${body}");
       final response = await _dio.post(
         ApiEndpoints.FOOD_ANSWER,
         data: body,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      print('psost status ${response.statusCode}');
-      print('psost status ${response.data}');
       if (response.statusCode == 201) {
         SnackbarUtils.show(isError: false, "Answer sent successfully");
         return true;
@@ -128,7 +126,7 @@ class FoodService {
   // ---------------------------------------------------------------------------
   Future<NutritionData?> getLatestNutrition() async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -165,7 +163,7 @@ class FoodService {
     required String activity,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -210,7 +208,7 @@ class FoodService {
     int offset = 0,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;

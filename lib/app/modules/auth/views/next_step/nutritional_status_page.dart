@@ -70,7 +70,6 @@ class NutritionalStatusPage extends GetView<AuthController> {
 
               // === SAVE BUTTON (AMAN) ===
               Obx(() {
-                print(controller.bmi.value);
                 final disable = controller.bmi.value != 0.0;
 
                 return disable

@@ -57,7 +57,7 @@ class _ChangePhotoDialogState extends State<ChangePhotoDialog> {
             backgroundImage: selectedImage != null
                 ? FileImage(selectedImage!)
                 : (currentPhoto != null && currentPhoto.isNotEmpty)
-                ? NetworkImage('${BASE_URL + currentPhoto}')
+                ? NetworkImage(BASE_URL + currentPhoto)
                 : null,
             child:
                 (selectedImage == null &&

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_to_list_in_spreads, curly_braces_in_flow_control_structures, deprecated_member_use, unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
@@ -246,7 +248,6 @@ class FoodHabitPage extends GetView<FoodHabitController> {
                 child: YesNoSwitch(
                   value: false,
                   onChanged: (val) {
-                    print(val);
                     controller.selectOption(
                       question,
                       val ? "yes" : "no",

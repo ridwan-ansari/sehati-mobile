@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -23,7 +25,7 @@ class UserService {
   /// ===============================================
   Future<List<NutritionData>?> getUserNutrition() async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -60,63 +62,58 @@ class UserService {
   /// POST create nutrition data
   /// ======================================================
   Future<NutritionData?> createNutrition(NutritionCreateRequest request) async {
- try {
-  final token = await LocalStorageService.getAccessToken();
-  if (token == null || token.isEmpty) {
-    SnackbarUtils.show("Token not found. Please log in again.");
-    return null;
-  }
+    try {
+      final token = LocalStorageService.getAccessToken();
+      if (token == null || token.isEmpty) {
+        SnackbarUtils.show("Token not found. Please log in again.");
+        return null;
+      }
 
-  EasyLoading.show(status: "Saving nutrition data...");
+      EasyLoading.show(status: "Saving nutrition data...");
 
-  print("============== REQUEST BODY ==============");
-  print(request.toJson());
-  print("==========================================");
+      final response = await _dio.post(
+        ApiEndpoints.USER_NUTRITION,
+        data: request.toJson(),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
 
-  final response = await _dio.post(
-    ApiEndpoints.USER_NUTRITION,
-    data: request.toJson(),
-    options: Options(
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    ),
-  );
+      EasyLoading.dismiss();
 
-  EasyLoading.dismiss();
+      // Cek apakah ada field "data"
+      if (response.data is Map && response.data.containsKey("data")) {
+        response.data["data"];
+      } else {
+        print("RESPONSE TIDAK PUNYA FIELD 'data' !!!");
+      }
 
-  // Cek apakah ada field "data"
-  if (response.data is Map && response.data.containsKey("data")) {
-    final rawData = response.data["data"];
+      // Parsing sesuai format yang benar
+      if (response.statusCode == 201) {
+        final raw = response.data["data"];
 
-  } else {
-    print("RESPONSE TIDAK PUNYA FIELD 'data' !!!");
-  }
-
-  // Parsing sesuai format yang benar
-  if (response.statusCode == 201) {
-    final raw = response.data["data"];
-
-    if (raw is Map<String, dynamic>) {
-      final result = NutritionData.fromJson(raw);
-      SnackbarUtils.show(isError: false, "Nutrition saved!");
-      return result;
-    } else {
-      print("❌ DATA BUKAN MAP (tidak bisa diparse NutritionData)");
-      SnackbarUtils.show(isError: false, "Nutrition saved!");
+        if (raw is Map<String, dynamic>) {
+          final result = NutritionData.fromJson(raw);
+          SnackbarUtils.show(isError: false, "Nutrition saved!");
+          return result;
+        } else {
+          print("❌ DATA BUKAN MAP (tidak bisa diparse NutritionData)");
+          SnackbarUtils.show(isError: false, "Nutrition saved!");
+          return null;
+        }
+      } else {
+        SnackbarUtils.show("Failed to save nutrition data.");
+        return null;
+      }
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
+      SnackbarUtils.show("${e.response?.data["message"] ?? 'Error'}");
       return null;
     }
-  } else {
-    SnackbarUtils.show("Failed to save nutrition data.");
-    return null;
-  }
-} on DioException catch (e) {
-  EasyLoading.dismiss();
-  SnackbarUtils.show("${e.response?.data["message"] ?? 'Error'}");
-  return null;
-}
   }
 
   Future<List<NutritionData>?> getUserNutritionPaginated({
@@ -124,7 +121,7 @@ class UserService {
     required int offset,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) return null;
 
       final response = await _dio.get(

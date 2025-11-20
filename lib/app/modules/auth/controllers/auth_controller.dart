@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_is_empty
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -72,7 +74,6 @@ class AuthController extends GetxController {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
     EasyLoading.show(status: "Mendaftarkan akun...");
-    print("dateOfBirth.value ${dateOfBirth.value}");
 
     try {
       final response = await _authService.registerUser(
@@ -277,7 +278,7 @@ class AuthController extends GetxController {
 
   /// REFRESH TOKEN
   Future<void> refreshToken() async {
-    final token = await LocalStorageService.getRefreshToken();
+    final token = LocalStorageService.getRefreshToken();
 
     if (token == null) return;
 

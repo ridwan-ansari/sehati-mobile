@@ -67,9 +67,6 @@ class ChatPrivatePage extends GetView<ChattingController> {
               InputTextFieldWithReply(
                 controller: controller.textController,
                 onSendTap: () {
-                  // aksi ketika tombol kirim ditekan
-                  String message = controller.textController.text;
-                  print("Mengirim pesan: $message");
                   controller.addChat();
                   controller.textController.clear();
                 },

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:sehati/app/data/models/reminder_model.dart';
 import 'package:sehati/app/data/services/notification_service.dart';
 import 'package:sehati/app/services/notification_service.dart';
@@ -33,7 +35,6 @@ class ReminderController extends GetxController {
           ),
         )
         .toList();
-
     print("📦 Loaded ${reminders.length} reminders from local storage");
   }
 

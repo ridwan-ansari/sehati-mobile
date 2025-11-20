@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +21,8 @@ class AppointmentController extends GetxController {
       'https://www.googleapis.com/auth/calendar.events',
     ],
     // 🔥 Ganti dengan client ID Android kamu
-    serverClientId: '993039135325-130rqo6u11jprun9mt9gq9lnv21vhsiu.apps.googleusercontent.com',
+    serverClientId:
+        '993039135325-130rqo6u11jprun9mt9gq9lnv21vhsiu.apps.googleusercontent.com',
   );
 
   GoogleSignInAccount? _user;
@@ -29,25 +32,18 @@ class AppointmentController extends GetxController {
   // Sign In Google
   // ==============================
   Future<void> signIn() async {
-    print("Sign In called");
     try {
       final account = await _googleSignIn.signIn();
       if (account == null) {
-        print("User cancelled sign in");
         return;
       }
 
       _user = account;
       final auth = await account.authentication;
 
-      print("✅ User signed in: ${account.displayName}");
-      print("🔑 Access Token: ${auth.accessToken}");
-
       // Setelah login sukses, langsung buat event ke Google Calendar
       await _createCalendarEvent(auth.accessToken);
-    } catch (e) {
-      print("❌ Google Sign-In error: $e");
-    }
+    } catch (_) {}
   }
 
   // ==============================
@@ -59,8 +55,8 @@ class AppointmentController extends GetxController {
     final dateNow = selectedDate.value;
     final timeNow = selectedTime.value;
 
+
     if (dateNow.isEmpty || timeNow.isEmpty) {
-      print("⚠️ Date or Time not selected");
       return;
     }
 
@@ -82,14 +78,18 @@ class AppointmentController extends GetxController {
           "timeZone": "Asia/Jakarta",
         },
         "end": {
-          "dateTime":
-              eventStart.add(const Duration(hours: 1)).toUtc().toIso8601String(),
+          "dateTime": eventStart
+              .add(const Duration(hours: 1))
+              .toUtc()
+              .toIso8601String(),
           "timeZone": "Asia/Jakarta",
         },
       };
 
       final response = await http.post(
-        Uri.parse("https://www.googleapis.com/calendar/v3/calendars/primary/events"),
+        Uri.parse(
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        ),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json",
@@ -98,13 +98,8 @@ class AppointmentController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print("✅ Event added to Google Calendar");
-      } else {
-        print("❌ Failed to add event: ${response.body}");
-      }
-    } catch (e) {
-      print("❌ Error creating event: $e");
-    }
+      } else {}
+    } catch (_) {}
   }
 
   // ==============================

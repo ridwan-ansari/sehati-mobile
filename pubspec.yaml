@@ -62,6 +62,8 @@ dependencies:
   get_storage: ^2.1.1
   image_picker: ^1.2.0
   connectivity_plus: ^7.0.0
+  camera: ^0.11.3
+  camerawesome: ^2.5.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

@@ -19,7 +19,7 @@ class HabitService {
   /// GET ALL EXERCISE QUESTIONS
   Future<List<HabitQuestionModel>?> getFoodQuestions() async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -46,7 +46,7 @@ class HabitService {
     required List<Map<String, dynamic>> answers,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return false;

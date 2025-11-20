@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, prefer_is_empty
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';

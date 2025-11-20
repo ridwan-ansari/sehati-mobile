@@ -5,10 +5,10 @@ class CustomAppbarJournal extends StatelessWidget implements PreferredSizeWidget
   final VoidCallback? onBackPressed;
 
   const CustomAppbarJournal({
-    Key? key,
+    super.key,
     this.title = "Journal",
     this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +31,11 @@ class CustomAppbarJournal extends StatelessWidget implements PreferredSizeWidget
         IconButton(
           icon: const Icon(Icons.search),
           onPressed: () {
-            // TODO: implement search
           },
         ),
         IconButton(
           icon: const Icon(Icons.more_vert),
           onPressed: () {
-            // TODO: implement more actions
           },
         ),
       ],

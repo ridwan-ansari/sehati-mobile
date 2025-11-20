@@ -24,7 +24,7 @@ class ProfileService {
   // ==============================
   Future<ProfileData?> getProfile() async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
@@ -64,7 +64,7 @@ class ProfileService {
   // ==============================
   Future<Map<String, dynamic>?> getUserById(int userId) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
 
       final response = await _dio.get(
         ApiEndpoints.userById(userId),
@@ -94,7 +94,7 @@ class ProfileService {
     try {
       EasyLoading.show(status: "Mengunggah foto...");
 
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
 
       final formData = FormData.fromMap({
         'file': await MultipartFile.fromFile(
@@ -142,7 +142,7 @@ class ProfileService {
     int? offset,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
 
       final response = await _dio.get(
         "$BASE_URL/api/users/",

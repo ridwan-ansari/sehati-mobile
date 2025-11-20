@@ -1,21 +1,28 @@
 enum FoodType {
   breakfast,
+  morningSnack,
   lunch,
+  afternoonSnack,
   dinner,
-  snack,
 }
 
 extension FoodTypeExtension on FoodType {
   String get label {
     switch (this) {
       case FoodType.breakfast:
-        return "Breakfast";
+        return "breakfast";
+
+      case FoodType.morningSnack:
+        return "morning_snack";
+
       case FoodType.lunch:
-        return "Lunch";
+        return "lunch";
+
+      case FoodType.afternoonSnack:
+        return "afternoon_snack";
+
       case FoodType.dinner:
-        return "Dinner";
-      case FoodType.snack:
-        return "Snack";
+        return "dinner";
     }
   }
 }

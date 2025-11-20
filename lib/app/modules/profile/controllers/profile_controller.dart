@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/services/profile_service.dart';

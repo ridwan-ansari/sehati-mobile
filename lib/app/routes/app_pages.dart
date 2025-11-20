@@ -4,6 +4,9 @@ import 'package:sehati/app/modules/auth/views/next_step/input_profile_page.dart'
 import 'package:sehati/app/modules/auth/views/next_step/nutritional_status_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/verify_otp_page.dart';
 import 'package:sehati/app/modules/auth/views/signup_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/binding/forum_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/forum/view/prepare_post_content.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/forum/view/take_photo_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/profile_draft.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/appointment/views/appointment_detail_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/views/add_room_chat_page.dart';
@@ -15,6 +18,7 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
+import 'package:sehati/app/modules/dashboard/views/tabs/forum_tab.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/profile_tab.dart';
 import 'package:sehati/app/modules/profile/bindings/profile_binding.dart';
 import 'package:sehati/app/modules/splash_page.dart';
@@ -39,6 +43,7 @@ import '../modules/dashboard/views/feature/home/journal/bindings/journal_binding
 import '../modules/dashboard/views/feature/home/chatting/bindings/chatting_binding.dart';
 import '../modules/dashboard/views/feature/home/healthy_menu/bindings/healthy_menu_binding.dart';
 import '../modules/dashboard/views/feature/home/reminder/bindings/reminder_binding.dart';
+
 class AppPages {
   static final routes = [
     GetPage(
@@ -215,6 +220,27 @@ class AppPages {
       name: AppRoutes.EXERCISE,
       page: () => const ExerciseView(),
       binding: ExerciseBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.TAKE_PHOTO,
+      page: () => const TakePhotoPage(),
+      binding: DashboardBinding(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.FORUM,
+      page: () => const ForumTab(),
+      binding: ForumBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+     GetPage(
+      name: AppRoutes.PREPARE_POST_CONTENT,
+      page: () => const PreparePostContent(),
+      binding: ForumBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),

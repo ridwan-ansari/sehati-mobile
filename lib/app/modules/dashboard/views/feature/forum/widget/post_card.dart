@@ -1,50 +1,31 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:sehati/app/data/models/post_model.dart';
+import 'package:sehati/app/common/utils/time_utils.dart';
+import 'package:sehati/app/data/config/api_config.dart';
+import 'package:sehati/app/data/models/forum_content_model.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/comment_bottomsheet.dart';
 
-class PostCard extends StatefulWidget {
-  final PostModel post;
+class PostCard extends StatelessWidget {
+  final ForumContentModel post;
 
   const PostCard({super.key, required this.post});
 
-  @override
-  State<PostCard> createState() => _PostCardState();
-}
-
-class _PostCardState extends State<PostCard> {
-  List<String> comments = ["Keren banget!", "Pemandangannya luar biasa 🌄"];
-  void toggleLike() {
-    setState(() {
-      widget.post.isLiked = !widget.post.isLiked;
-      widget.post.likesCount += widget.post.isLiked ? 1 : -1;
-    });
+  String formatDate(String date) {
+    try {
+      final parsed = DateTime.parse(date);
+      return DateFormat("d MMM").format(parsed);
+    } catch (_) {
+      return date;
+    }
   }
 
-  String formatDate(DateTime date) {
-    return DateFormat("d MMM").format(date);
-  }
-
-  void _showCommentSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return CommentBottomSheet(
-          comments: comments,
-          onAddComment: (newComment) {
-            setState(() {
-              comments.add(newComment);
-            });
-          },
-        );
-      },
-    );
-  }
   @override
   Widget build(BuildContext context) {
-    final post = widget.post;
+    final controller = Get.find<ForumController>();
 
     return Card(
       color: Colors.transparent,
@@ -54,13 +35,14 @@ class _PostCardState extends State<PostCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ===== Header User =====
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage(post.userProfileImage),
+                  backgroundImage: NetworkImage(
+                    "$BASE_URL${post.user.picture}",
+                  ),
                   radius: 21,
                 ),
                 const SizedBox(width: 8),
@@ -71,14 +53,14 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          post.userName,
+                          post.user.nickname,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
                         Text(
-                          formatDate(post.createdAt),
+                          TimeUtils.timeAgo(DateTime.parse(post.createdAt)),
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,
@@ -91,37 +73,57 @@ class _PostCardState extends State<PostCard> {
               ],
             ),
           ),
-
-          // ===== Gambar Utama =====
-          if (post.contentImage != null)
+          if (post.imageUrl.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                post.contentImage ?? '',
+                "$BASE_URL${post.imageUrl}",
                 height: 300,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
-
-          // ===== Tombol Aksi =====
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               children: [
-                IconButton(
-                  icon: Icon(
-                    post.isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: post.isLiked ? Colors.red : Colors.black,
-                  ),
-                  onPressed: toggleLike,
-                ),
+                Obx(() {
+                  final current = controller.content.firstWhere(
+                    (e) => e.id == post.id,
+                    orElse: () => post,
+                  );
+
+                  return IconButton(
+                    icon: Icon(
+                      current.isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: current.isLiked ? Colors.red : Colors.black,
+                    ),
+                    onPressed: () {
+                      controller.likePost(post.id);
+                    },
+                  );
+                }),
+
                 IconButton(
                   icon: const Icon(Icons.mode_comment_outlined),
-                  onPressed: () {
-                   _showCommentSheet();
+                  onPressed: () async {
+                    final controller = Get.find<ForumController>();
+
+                    await controller.fetchComments(post.id);
+
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => CommentBottomSheet(
+                        comments: controller.comments,
+                        onAddComment: (c) => controller.addComment(post.id, c),
+                        onRefresh: () => controller.fetchComments(post.id),
+                      ),
+                    );
                   },
                 ),
+
                 IconButton(
                   icon: const Icon(Icons.share_outlined),
                   onPressed: () {},
@@ -130,11 +132,32 @@ class _PostCardState extends State<PostCard> {
             ),
           ),
 
-          // ===== Jumlah Like =====
-          Text(
-            "${post.likesCount} like",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
+          Obx(() {
+            final current = controller.content.firstWhere(
+              (e) => e.id == post.id,
+              orElse: () => post,
+            );
+
+            return Row(
+              children: [
+                Text(
+                  "${current.likeCount} like",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  "${current.commentCount} Comment",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            );
+          }),
 
           // ===== Caption =====
           RichText(
@@ -142,10 +165,10 @@ class _PostCardState extends State<PostCard> {
               style: const TextStyle(color: Colors.black, fontSize: 14),
               children: [
                 TextSpan(
-                  text: "${post.userName} ",
+                  text: "${post.user.nickname} ",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: post.contentText),
+                TextSpan(text: post.caption),
               ],
             ),
           ),
@@ -153,6 +176,4 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
-  
-  
 }

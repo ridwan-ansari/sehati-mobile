@@ -63,7 +63,7 @@ class AuthService {
   Future<bool> verifyOtp({required String email, required String code}) async {
     try {
       final response = await _dio.post(
-        '${ApiEndpoints.VERIFY_ACCOUNT}',
+        ApiEndpoints.VERIFY_ACCOUNT,
         queryParameters: {"email": email, "code": code},
         options: Options(headers: {"Accept": "application/json"}),
       );
@@ -195,7 +195,7 @@ class AuthService {
         'confirm_password': confirmPassword,
       };
       final response = await _dio.post(
-        '${ApiEndpoints.RESET_PASSWORD_CONFIRM}',
+        ApiEndpoints.RESET_PASSWORD_CONFIRM,
         options: Options(
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

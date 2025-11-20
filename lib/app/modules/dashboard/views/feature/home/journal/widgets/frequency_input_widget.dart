@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_super_parameters
+
 import 'package:flutter/material.dart';
 
 class FrequencyInputWidget extends StatefulWidget {
@@ -37,7 +39,7 @@ class _FrequencyInputWidgetState extends State<FrequencyInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 65,
       height: 32,
       child: TextField(

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/legend_item.dart';

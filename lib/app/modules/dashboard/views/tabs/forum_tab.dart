@@ -1,41 +1,16 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/data/models/post_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/post_card.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';
 
-class ForumTab extends StatelessWidget {
+class ForumTab extends GetView<ForumController> {
   const ForumTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data feed
-    final List<PostModel> posts = [
-      PostModel(
-        id: "1",
-        userName: "Melanie",
-        userProfileImage: "assets/images/melanie.png",
-        contentText: "Yuk.. siapa yang mau samaan menu sarapan pagi ini?",
-        contentImage:
-            "https://media.istockphoto.com/id/814423752/photo/eye-of-model-with-colorful-art-make-up-close-up.jpg?s=612x612&w=0&k=20&c=l15OdMWjgCKycMMShP8UK94ELVlEGvt7GmB_esHWPYE=",
-        likesCount: 10,
-        createdAt: DateTime.now(),
-      ),
-      PostModel(
-        id: "2",
-        userName: "Aisyah",
-        userProfileImage: "assets/images/aisyah.png",
-        contentText: "Lari pagi bikin segar dan semangat!",
-        contentImage:
-            "https://media.istockphoto.com/id/517188688/photo/mountain-landscape.jpg?s=612x612&w=0&k=20&c=A63koPKaCyIwQWOTFBRWXj_PwCrR4cEoOw2S9Q7yVl8=",
-        likesCount: 8,
-        createdAt: DateTime.now(),
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -44,32 +19,50 @@ class ForumTab extends StatelessWidget {
         ),
         actions: [
           GestureDetector(
-            onTap: () => Get.toNamed('/social_profile'),
+            onTap: () => Get.toNamed('/take_photo'),
             child: AppAssetUtils.svg(
               AppAssets.socialCamera,
               width: 32,
               height: 32,
             ),
           ),
-
-          const SizedBox(width: 16.0),
-          GestureDetector(
-            onTap: () => Get.toNamed('/social_profile'),
-            child: AppAssetUtils.svg(
-              AppAssets.scoialProfile,
-              width: 32,
-              height: 32,
-            ),
-          ),
-          const SizedBox(width: 16.0),
+          const SizedBox(width: 16),
+          // GestureDetector(
+          //   onTap: () => Get.toNamed('/social_profile'),
+          //   child: AppAssetUtils.svg(
+          //     AppAssets.scoialProfile,
+          //     width: 32,
+          //     height: 32,
+          //   ),
+          // ),
+          // const SizedBox(width: 16),
         ],
         backgroundColor: Colors.white,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: posts.length,
-        itemBuilder: (context, index) => PostCard(post: posts[index]),
-      ),
+
+      // BODY
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.content.isEmpty) {
+          return const Center(child: Text("Belum ada postingan"));
+        }
+
+        return RefreshIndicator(
+          color: AppColors.orangeLight,
+          onRefresh: () async => controller.onRefreshData(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.content.length,
+            itemBuilder: (context, index) {
+              final item = controller.content[index];
+              return PostCard(post: item);
+            },
+          ),
+        );
+      }),
     );
   }
 }

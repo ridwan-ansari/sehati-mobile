@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dio/dio.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -25,15 +27,11 @@ class EdutainmentService {
     String? search,
   }) async {
     try {
-      final token = await LocalStorageService.getAccessToken();
+      final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
-
-      print("limit ${limit}");
-      print("offset ${offset}");
-      print("search ${search}");
 
       final response = await _dio.get(
         ApiEndpoints.VIDEO,
@@ -62,7 +60,7 @@ class EdutainmentService {
 
   Future<bool> claimReward(String videoId) async {
   try {
-    final token = await LocalStorageService.getAccessToken();
+    final token = LocalStorageService.getAccessToken();
     if (token == null || token.isEmpty) {
       SnackbarUtils.show("Token not found. Please login.");
       return false;

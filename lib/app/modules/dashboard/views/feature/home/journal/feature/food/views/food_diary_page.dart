@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -75,36 +77,59 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
               child: Column(
                 children: [
                   _buildMealList(
-                    FoodType.breakfast.name,
+                    FoodType.breakfast.label,
+                    "breakfast",
                     onAdd: () async {
                       await controller.openFoodDialog(
                         context,
-                        title: FoodType.breakfast.name,
+                        title: FoodType.breakfast.label,
                       );
                     },
                   ),
                   const SizedBox(height: 12),
+                  _buildMealList(
+                    FoodType.morningSnack.label,
+                    "Morning Snack",
+                    onAdd: () async {
+                      await controller.openFoodDialog(
+                        context,
+                        title: FoodType.morningSnack.label,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildMealList(
+                    FoodType.lunch.label,
+                    "Lunch",
+                    onAdd: () async {
+                      await controller.openFoodDialog(
+                        context,
+                        title: FoodType.lunch.label,
+                      );
+                    },
+                  ),
+                  _buildMealList(
+                    FoodType.afternoonSnack.label,
+                    "Afternoon Snack",
+                    onAdd: () async {
+                      await controller.openFoodDialog(
+                        context,
+                        title: FoodType.afternoonSnack.label,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildMealList(
+                    FoodType.dinner.label,
+                    "Dinner",
+                    onAdd: () async {
+                      await controller.openFoodDialog(
+                        context,
+                        title: FoodType.dinner.label,
+                      );
+                    },
+                  ),
 
-                  /// DINNER
-                  _buildMealList(
-                    FoodType.dinner.name,
-                    onAdd: () async {
-                      await controller.openFoodDialog(
-                        context,
-                        title: FoodType.dinner.name,
-                      );
-                    },
-                  ),
-                  _buildMealList(
-                    FoodType.lunch.name,
-                    onAdd: () async {
-                      await controller.openFoodDialog(
-                        context,
-                        title: FoodType.lunch.name,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
                   Obx(() {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -267,71 +292,102 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
     );
   }
 
-  Widget _buildMealList(String key, {required VoidCallback? onAdd}) {
-    return Obx(() {
-      final items = controller.getFoods(key);
+ Widget _buildMealList(
+  String key,
+  String title, {
+  required VoidCallback? onAdd,
+}) {
+  return Obx(() {
+    final items = controller.getFoods(key);
+    final expanded = controller.isExpanded(key);
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              GradientLabel(title: key.capitalizeFirst!, fontSize: 14),
-              if (onAdd != null)
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Icon(Icons.add_circle, color: Colors.deepPurple),
-                  onPressed: onAdd,
+    // tampilkan hanya 2 item kalau belum di-expand
+    final visibleItems = expanded ? items : items.take(1).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            GradientLabel(title: title.capitalizeFirst!, fontSize: 14),
+            if (onAdd != null)
+              IconButton(
+                padding: EdgeInsets.zero,
+                icon: Icon(Icons.add_circle, color: Colors.deepPurple),
+                onPressed: onAdd,
+              ),
+          ],
+        ),
+
+        const SizedBox(height: 6),
+
+        // === LIST ITEM ===
+        ...visibleItems.map(
+          (item) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              children: [
+                const Expanded(child: SizedBox()),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: Colors.orange.shade300,
+                        width: 2,
+                      ),
+                    ),
+                    child: Text(
+                      "${item.name} (${item.calories} Kcal)",
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-            ],
+                const SizedBox(width: 6),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle, color: Colors.red),
+                  onPressed: () => controller.removeFood(key, item),
+                ),
+              ],
+            ),
           ),
+        ),
 
-          const SizedBox(height: 6),
-
-          // === LIST ITEM ===
-          ...items.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Expanded(child: SizedBox()),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.orange.shade300,
-                          width: 2,
-                        ),
-                      ),
-                      child: Text(
-                        "${item.name} (${item.calories} Kcal)",
-                        overflow: TextOverflow.ellipsis,
+        // === TOGGLE LEBIH DARI 2 ===
+        if (items.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: () => controller.toggleExpand(key),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12, top: 4),
+                    child: Text(
+                      expanded ? "Hide" : "View All",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  // Tombol hapus/plus kanan
-                  IconButton(
-                    icon: Icon(Icons.remove_circle, color: Colors.red),
-                    onPressed: () {
-                      controller.removeFood(key, item);
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      );
-    });
-  }
+      ],
+    );
+  });
+}
+
 
   // === Section Container ===
   Widget _buildSection({required Widget child, Widget? actions}) {

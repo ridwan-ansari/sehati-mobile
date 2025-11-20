@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, constant_identifier_names
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';

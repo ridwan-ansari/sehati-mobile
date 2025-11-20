@@ -1,9 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/enum/activity_level.dart';
+import 'package:sehati/app/data/enum/food.dart';
 import 'package:sehati/app/data/models/response/food_diary_analysis_model.dart';
 import 'package:sehati/app/data/models/response/nutrition_calculator.dart';
 import 'package:sehati/app/data/models/response/nutrition_res_model.dart';
@@ -30,16 +33,35 @@ class FoodDiaryController extends GetxController {
   var nutritionCalculator = Rxn<NutritionCalculator>();
   var diaryAnalysis = <FoodDiaryAnalysis>[].obs;
   var chartData = <DiaryChartData>[].obs;
+  var expanded = <String, RxBool>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadProfile();
+    for (var type in FoodType.values) {
+      expanded[type.label] = false.obs;
+    }
     dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
     loadFoodData();
     loadLatestNutrition();
     loadDiaryAnalysis();
     generateChartData();
+  }
+
+  bool isExpanded(String key) {
+    return expanded[key]?.value ?? false;
+  }
+
+  void ensureKey(String key) {
+    if (!expanded.containsKey(key)) {
+      expanded[key] = false.obs;
+    }
+  }
+
+  void toggleExpand(String key) {
+    ensureKey(key);
+    expanded[key]!.value = !expanded[key]!.value;
   }
 
   Future<void> loadProfile() async {
@@ -162,7 +184,6 @@ class FoodDiaryController extends GetxController {
 
   Future<void> loadLatestNutrition() async {
     final result = await _foodService.getLatestNutrition();
-    ;
     if (result != null) {
       latestNutrition.value = result;
     }

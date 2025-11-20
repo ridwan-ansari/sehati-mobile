@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 abstract class AppRoutes {
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
@@ -31,5 +33,8 @@ abstract class AppRoutes {
   static const PROFILE = '/profile';
   
   static const EXERCISE = '/exercise';
+  static const TAKE_PHOTO = '/take_photo';
+  static const FORUM = '/forum';
+  static const PREPARE_POST_CONTENT = '/prepare_post_content';
 
 }

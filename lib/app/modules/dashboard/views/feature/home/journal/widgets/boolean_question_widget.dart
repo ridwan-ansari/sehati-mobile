@@ -103,7 +103,7 @@ class BooleanQuestionWidget extends StatelessWidget {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';

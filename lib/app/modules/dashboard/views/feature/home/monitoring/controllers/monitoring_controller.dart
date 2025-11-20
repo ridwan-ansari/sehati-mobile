@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -92,10 +94,8 @@ class MonitoringController extends GetxController
     );
 
     if (result != null && result.isNotEmpty) {
-      print("DATA ${result.length}");
       list.addAll(result);
       offset += limit;
-      print("data grafik :${chartData.length}");
     } else {
       hasMore.value = false;
     }

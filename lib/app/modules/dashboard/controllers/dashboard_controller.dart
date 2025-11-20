@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -44,8 +46,7 @@ class DashboardController extends GetxController {
                   ],
                 ),
                 child: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // << penting supaya auto-width
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
