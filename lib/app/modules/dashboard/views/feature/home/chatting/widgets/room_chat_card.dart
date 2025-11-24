@@ -1,67 +1,104 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unnecessary_string_interpolations
 
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/data/config/api_config.dart';
+import 'package:sehati/app/data/models/response/chat_room_model.dart';
 
 class RoomChatCardWidget extends StatelessWidget {
-  final void Function() onTap;
-  const RoomChatCardWidget({super.key, required this.onTap});
+  final ChatRoomModel room;
+  final VoidCallback onTap;
+
+  const RoomChatCardWidget({
+    super.key,
+    required this.onTap,
+    required this.room,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = room.receiverPicture != null
+        ? "$BASE_URL${room.receiverPicture}"
+        : null;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Avatar
             CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(
-                'https://example.com/room_chat.jpg',
-              ), // Ganti dengan URL gambar room chat
+              radius: 28,
+              backgroundColor: Colors.grey.shade200,
+              backgroundImage:
+                  imageUrl != null ? NetworkImage(imageUrl) : null,
+              child: imageUrl == null
+                  ? const Icon(Icons.person, color: Colors.grey, size: 30)
+                  : null,
             ),
-            const SizedBox(width: 16.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Fanes Setiawan',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 4.0),
-                Text(
-                  'hallo, apa kabar?',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
+
+            const SizedBox(width: 16),
+
+            // Name + ID
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    room.receiverName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    "${room.receiverId}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-            // time dan status read bisa ditambahkan di sini
-            const Spacer(),
+
+            const SizedBox(width: 12),
+
+            // Time + Read Status
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children:  [
-                Text(
-                  '12:45 PM',
+              children: [
+                const Text(
+                  "12:45 PM",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                SizedBox(height: 4.0),
-                AppAssetUtils.svg(AppAssets.read2Chat , width: 24 , height: 24)
+                const SizedBox(height: 4),
+                AppAssetUtils.svg(AppAssets.read2Chat, width: 12, height: 16),
               ],
-            ),
+            )
           ],
         ),
       ),

@@ -7,6 +7,7 @@ abstract class AppRoutes {
   static const NUTRITION = '/nutrition';
   static const INPUTPROFILE = '/input_profile';
   static const DASHBOARD = '/dashboard';
+  static const SCHEDULE = '/schedule';
 
   // ==== Home Feature Routes ====
   static const MONITORING = '/monitoring';

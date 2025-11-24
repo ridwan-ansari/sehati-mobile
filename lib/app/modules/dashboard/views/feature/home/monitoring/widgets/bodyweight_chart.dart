@@ -16,12 +16,12 @@ class BodyweightChart extends StatelessWidget {
 
     return InteractiveViewer(
       panEnabled: true,
-      scaleEnabled: false, // bisa diubah true kalau mau zoom
+      scaleEnabled: true, 
       child: SizedBox(
         width: data.length * 60.0 < MediaQuery.of(context).size.width
             ? MediaQuery.of(context).size.width
             : data.length * 60.0,
-        height: 250,
+        height: 300,
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -42,7 +42,8 @@ class BodyweightChart extends StatelessWidget {
               Expanded(
                 child: LineChart(
                   LineChartData(
-                    minY: 0,
+                    minY: 20,
+                    maxY: 200,
                     gridData: FlGridData(show: true, drawVerticalLine: false),
                     borderData: FlBorderData(show: false),
                     titlesData: FlTitlesData(

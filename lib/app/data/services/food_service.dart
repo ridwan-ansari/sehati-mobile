@@ -41,7 +41,7 @@ class FoodService {
         throw Exception(response.data['message'] ?? 'Gagal memuat data');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -52,7 +52,7 @@ class FoodService {
   // ---------------------------------------------------------------------------
   Future<List<FoodModel>?> getFoodSearch({
     required String name,
-    int limit = 50,
+    int limit = 10,
     int offset = 0,
   }) async {
     try {
@@ -66,7 +66,6 @@ class FoodService {
         "${ApiEndpoints.FOOD}?name=$name&limit=$limit&offset=$offset",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => FoodModel.fromJson(e)).toList();
@@ -75,7 +74,7 @@ class FoodService {
         return null;
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Kesalahan jaringan";
+      final msg = e.response?.data['message'] ?? "";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -146,7 +145,7 @@ class FoodService {
         return null;
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -195,7 +194,7 @@ class FoodService {
         return null;
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return null;
     }

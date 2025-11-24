@@ -64,7 +64,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   Future<void> _claimReward() async {
-    if (rewardClaimed) return; // biar ga double claim
+    if (rewardClaimed) return;
 
     final success = await EdutainmentService().claimReward(widget.video.id);
 

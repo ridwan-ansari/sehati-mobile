@@ -36,7 +36,8 @@ class HabitService {
         throw Exception(response.data['message'] ?? 'Gagal memuat soal');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
+  
       SnackbarUtils.show(isError: true, msg);
       rethrow;
     }

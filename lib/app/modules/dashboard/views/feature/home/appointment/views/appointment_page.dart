@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import 'package:sehati/app/data/config/api_config.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentPage extends GetView<AppointmentController> {
@@ -16,47 +18,58 @@ class AppointmentPage extends GetView<AppointmentController> {
         onSearchChanged: (value) {},
         onProfileTap: () {},
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader("Choose The Dietisien"),
-            const SizedBox(height: 10),
-            _buildDoctorGrid([
-              {
-                "image":
-                    "https://akcdn.detik.net.id/visual/2020/05/10/c0b52b51-183c-44bc-8cf3-f39ee0b0d5bb_43.jpeg?w=720&q=90",
-                "name": "Dewi Ariani, S.Gz",
-                "role": "Dietisien",
-              },
-              {
-                "image":
-                    "https://i.pinimg.com/236x/d7/40/8a/d7408aba4d15c64473e4b1474faa22ef.jpg",
-                "name": "Ridwan Anrari, S.Gz",
-                "role": "Dietisien",
-              },
-            ]),
-            const SizedBox(height: 30),
-            _buildSectionHeader("Choose The Psychologist"),
-            const SizedBox(height: 10),
-            _buildDoctorGrid([
-              {
-                "image":
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoULTREr8U2LeFynYw8OjOUf0Ew6WIrhPvcQ&s",
-                "name": "Ridwan Ansari",
-                "role": "Psikolog",
-              },
-              {
-                "image":
-                    "https://akcdn.detik.net.id/community/media/visual/2020/03/23/2e288e7d-c953-4e60-b4c5-c25f2a54fa6d.jpeg?q=90&w=480",
-                "name": "Diah Pratami",
-                "role": "Psikolog",
-              },
-            ]),
-          ],
-        ),
-      ),
+      body: Obx(() {
+        if (controller.profeeesionalList.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final grouped = controller.groupedBySpecialization;
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: grouped.entries.map((entry) {
+            final specialization = entry.key;
+            final professionals = entry.value;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader(specialization),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 210,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: professionals.length,
+                    itemBuilder: (context, index) {
+                      final doctor = professionals[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            print(doctor.id);
+                            Get.toNamed(
+                              '/appointment_detail',
+                              arguments: doctor,
+                            );
+                          },
+                          child: _buildDoctorCard(
+                            "$BASE_URL/${doctor.picture}",
+                            doctor.fullname ?? "",
+                            doctor.specialization ?? "",
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+              ],
+            );
+          }).toList(),
+        );
+      }),
     );
   }
 
@@ -99,65 +112,51 @@ class AppointmentPage extends GetView<AppointmentController> {
     );
   }
 
-  /// --- GRID OF DOCTORS ---
-  Widget _buildDoctorGrid(List<Map<String, String>> doctors) {
+  /// --- CARD DOKTER ---
+  Widget _buildDoctorCard(String image, String name, String role) {
     return Container(
+      width: 190,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFE082),
+        color: AppColors.yellowLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: doctors.map((doctor) {
-          return GestureDetector(
-            onTap: () {
-              Get.toNamed('/appointment_detail');
-            },
-            child: _buildDoctorCard(
-              doctor["image"]!,
-              doctor["name"]!,
-              doctor["role"]!,
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              image,
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
             ),
-          );
-        }).toList(),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            role,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+              color: Colors.black54,
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  /// --- INDIVIDUAL DOCTOR CARD ---
-  Widget _buildDoctorCard(String image, String name, String role) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            image,
-            width: 130,
-            height: 130,
-            fit: BoxFit.cover,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          name,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-            color: Colors.black87,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          role,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 12,
-            color: Colors.black54,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 }

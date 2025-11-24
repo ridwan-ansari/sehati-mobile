@@ -58,10 +58,11 @@ class _SearchListWidgetState<T> extends State<SearchListWidget<T>> {
 
           // LIST
           Flexible(
+            flex: widget.items.isEmpty ?0:1,
             child: widget.items.isEmpty
                 ? const Center(
                     child: Text(
-                      "No data found",
+                      "",
                       style: TextStyle(color: Colors.grey),
                     ),
                   )
@@ -81,7 +82,10 @@ class _SearchListWidgetState<T> extends State<SearchListWidget<T>> {
                           ),
                         ),
                         trailing: IconButton(
-                          onPressed: () => widget.onAddPressed!(item),
+                          onPressed: widget.onAddPressed != null
+                              ? () => widget.onAddPressed!(item)
+                              : null,
+
                           icon: const Icon(Icons.add, size: 22),
                         ),
                       );

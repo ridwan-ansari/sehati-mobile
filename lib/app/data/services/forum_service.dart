@@ -48,7 +48,7 @@ class ForumService {
         throw Exception(response.data['message'] ?? 'Gagal memuat data');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       print("Error: $msg");
       return null;
     }
@@ -79,7 +79,7 @@ class ForumService {
 
       return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -112,7 +112,7 @@ class ForumService {
 
       return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -139,7 +139,7 @@ class ForumService {
       );
       return response.statusCode == 201;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Kesalahan jaringan';
+      final msg = e.response?.data['message'] ?? '';
       SnackbarUtils.show(isError: true, msg);
       return false;
     }
@@ -188,7 +188,7 @@ Future<bool> createPost({
     print("data  : ${e.response?.data}");
     print("error : ${e.message}");
 
-    final msg = e.response?.data?["message"] ?? "Kesalahan jaringan";
+    final msg = e.response?.data?["message"] ?? "";
     SnackbarUtils.show(isError: true, msg);
     return false;
   }

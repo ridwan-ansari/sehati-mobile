@@ -4,7 +4,7 @@ import 'package:sehati/app/modules/auth/views/next_step/input_profile_page.dart'
 import 'package:sehati/app/modules/auth/views/next_step/nutritional_status_page.dart';
 import 'package:sehati/app/modules/auth/views/next_step/verify_otp_page.dart';
 import 'package:sehati/app/modules/auth/views/signup_page.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/binding/forum_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/forum/binding/forum_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/view/prepare_post_content.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/view/take_photo_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/profile_draft.dart';
@@ -18,8 +18,10 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/schedule/binding/schedule_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/forum_tab.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/profile_tab.dart';
+import 'package:sehati/app/modules/dashboard/views/tabs/schedule_tab.dart';
 import 'package:sehati/app/modules/profile/bindings/profile_binding.dart';
 import 'package:sehati/app/modules/splash_page.dart';
 import 'package:sehati/app/routes/app_routes.dart';
@@ -237,10 +239,17 @@ class AppPages {
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),
-     GetPage(
+    GetPage(
       name: AppRoutes.PREPARE_POST_CONTENT,
       page: () => const PreparePostContent(),
       binding: ForumBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.SCHEDULE,
+      page: () => const ScheduleTab(),
+      binding: ScheduleBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),

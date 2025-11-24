@@ -25,10 +25,12 @@ class FoodDiaryController extends GetxController {
 
   final ProfileService _profileService = ProfileService();
   final Rx<ProfileData?> dataProfile = Rx<ProfileData?>(null);
-  RxList<FoodModel> foods = <FoodModel>[].obs;
+  RxInt actualEnergy = 0.obs;
+  var foods = <FoodModel>[].obs;
 
   var foodInput = <String, List<FoodModel>>{}.obs;
-  var selectedActivity = ActivityLevel.sedentary.obs;
+  final selectedActivity = Rx<ActivityLevel?>(null);
+
   var latestNutrition = Rxn<NutritionData>();
   var nutritionCalculator = Rxn<NutritionCalculator>();
   var diaryAnalysis = <FoodDiaryAnalysis>[].obs;
@@ -43,10 +45,8 @@ class FoodDiaryController extends GetxController {
       expanded[type.label] = false.obs;
     }
     dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    loadFoodData();
+    loadData();
     loadLatestNutrition();
-    loadDiaryAnalysis();
-    generateChartData();
   }
 
   bool isExpanded(String key) {
@@ -87,6 +87,11 @@ class FoodDiaryController extends GetxController {
     await generateChartData();
   }
 
+  Future<void> loadData() async {
+    await loadDiaryAnalysis();
+    await generateChartData();
+  }
+
   void addFoodToInput(String key, FoodModel item) {
     if (!foodInput.containsKey(key)) {
       foodInput[key] = [];
@@ -107,21 +112,33 @@ class FoodDiaryController extends GetxController {
     BuildContext context, {
     required String title,
   }) async {
-    return DialogUtils.showSearchDialog<FoodModel>(
+    final result = DialogUtils.showSearchDialog<FoodModel>(
       context: context,
       title: title,
-      content: SearchListWidget<FoodModel>(
-        searchC: controllerSearch,
-        onSearch: (text) => searchFoodData(text),
-        items: foods,
-        itemLabel: (e) => "${e.name} (${e.calories} Kcal)",
-        onItemSelected: (item) {},
-        onAddPressed: (item) {
-          addFoodToInput(title, item);
-          Navigator.pop(context, item);
-        },
-      ),
+      content: Obx(() {
+        return SearchListWidget<FoodModel>(
+          searchC: controllerSearch,
+          onSearch: (text) {
+            print(text);
+            if (text.isEmpty) {
+              foods.clear();
+            } else {
+              searchFoodData(text);
+            }
+          },
+          items: foods.toList(),
+          itemLabel: (e) => "${e.name} (${e.calories} Kcal)",
+          onItemSelected: (item) {},
+          onAddPressed: (item) {
+            addFoodToInput(title, item);
+            Navigator.pop(context, item);
+          },
+        );
+      }),
     );
+    controllerSearch.clear();
+    foods.clear();
+    return result;
   }
 
   List<FoodModel> getFoods(String key) {
@@ -165,7 +182,7 @@ class FoodDiaryController extends GetxController {
     });
 
     final success = await foodService.submitFood(
-      activity: selectedActivity.value.name,
+      activity: selectedActivity.value?.name ?? "",
       desiredEnergyRequirement: int.parse(controllerDesiredEnergy.text),
       data: dataBody,
     );
@@ -200,7 +217,7 @@ class FoodDiaryController extends GetxController {
       gender: gender,
       weight: weight,
       height: height,
-      activity: selectedActivity.value.name,
+      activity: selectedActivity.value?.name ?? "",
     );
 
     if (result != null) {

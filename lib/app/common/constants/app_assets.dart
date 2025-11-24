@@ -66,6 +66,7 @@ class AppAssets {
   //---------------------- images ------------------------
   static const String backgroundChat = 'assets/images/background_chat.png';
   static const String backgroundGradation = 'assets/images/background_gradation.svg';
+  static const String bgCard = 'assets/images/bg_card.png';
   static const String exercise = 'assets/images/exercise.png';
   static const String foodDiary = 'assets/images/food_diary.png';
   static const String googleCalIcon = 'assets/images/google_cal_icon.svg';

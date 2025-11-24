@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -14,6 +15,13 @@ class ChatPrivatePage extends GetView<ChattingController> {
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments;
+
+    final String roomKey = args["room_key"];
+    final String receiverId = args["receiver_id"];
+    final String receiverName = args["receiver_name"];
+    final String? receiverPicture = args["receiver_picture"];
+    final String roomId = args["room_id"];
     return Scaffold(
       appBar: CustomChatAppbar(),
       body: Stack(

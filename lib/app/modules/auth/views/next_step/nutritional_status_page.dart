@@ -75,7 +75,7 @@ class NutritionalStatusPage extends GetView<AuthController> {
                 return disable
                     ? const SizedBox()
                     : AppButton(
-                        text: "Canculate",
+                        text: "Calculate",
                         onPressed: () => controller.submitNutrition(),
                       );
               }),

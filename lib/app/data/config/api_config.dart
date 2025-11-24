@@ -27,7 +27,7 @@ class ApiEndpoints {
   // 💬 CHAT
   // =========================
   static const String CHAT_ROOMS = "$BASE_URL/api/chat/rooms";
-  static String chatMessages(String roomKey) => "$BASE_URL/api/chat/messages/$roomKey";
+  static String CHAT_PRIVARE = "$BASE_URL/api/chat/messages";
 
   // =========================
   // 🍽️ USER NUTRITION
@@ -47,6 +47,8 @@ class ApiEndpoints {
 
   static const String VIDEO = "$BASE_URL/api/video/";
   static const String VIDEO_CLAIM_REWARD = "$BASE_URL/api/video/claim-reward";
+  static const String PROFESSIONAL_LIST = "$BASE_URL/api/appointment/professionals";
+  static const String APPOINTMENT = "$BASE_URL/api/appointment/";
 
 
   // =========================

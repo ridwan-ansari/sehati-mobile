@@ -20,7 +20,7 @@ class EdutainmentPage extends GetView<EdutainmentController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: AppColors.yellowLight,));
         }
 
         if (controller.videos.isEmpty) {

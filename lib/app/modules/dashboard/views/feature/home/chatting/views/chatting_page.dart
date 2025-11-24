@@ -17,14 +17,37 @@ class ChattingPage extends GetView<ChattingController> {
         onSearchChanged: (value) {},
         onProfileTap: () {},
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: ListView.separated(
-          itemCount: 5,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (context, index) =>  RoomChatCardWidget( onTap: ()=> Get.toNamed('/chat_private')),
-        ),
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.chatRooms.isEmpty) {
+          return const Center(child: Text("No Rooms"));
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: ListView.separated(
+            itemCount: controller.chatRooms.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              final room = controller.chatRooms[index];
+              return RoomChatCardWidget(
+                room: room,
+                onTap: () => Get.toNamed(
+                  '/chat_private',
+                  arguments: {
+                    "room_key": room.roomKey,
+                    "receiver_id": room.receiverId,
+                    "receiver_name": room.receiverName,
+                    "receiver_picture": room.receiverPicture,
+                    "room_id": room.roomId,
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      }),
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF3B2B27),
