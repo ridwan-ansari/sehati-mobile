@@ -37,5 +37,6 @@ abstract class AppRoutes {
   static const TAKE_PHOTO = '/take_photo';
   static const FORUM = '/forum';
   static const PREPARE_POST_CONTENT = '/prepare_post_content';
+  static const LEADERBOARD = '/leaderboard';
 
 }

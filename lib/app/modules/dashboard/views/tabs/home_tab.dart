@@ -3,15 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/routes/app_routes.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/controller/leaderboard_controller.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final leader = Get.put(LeaderboardController());
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -19,7 +22,6 @@ class HomeTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ======== Top Stats ========
               Container(
                 height: 192,
                 padding: const EdgeInsets.all(16),
@@ -35,47 +37,44 @@ class HomeTab extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    AppAssetUtils.svg(
-                      AppAssets.logoSehati,
-                      width: 76,
-                      height: 76,
-                    ),
-                    const SizedBox(height: 10.0),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B2B27),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildStatItem(
-                            icon: AppAssets.myPointIconCircle,
-                            label: "My Points",
-                            value: "1000 pts",
-                          ),
-                          _buildStatItem(
-                            icon: AppAssets.badgesCircleIcon,
-                            label: "My Badges",
-                            value: "3 out 6",
-                          ),
-                        ],
-                      ),
-                    ),
+                    AppAssetUtils.svg(AppAssets.logoSehati, width: 76, height: 76),
+                    const SizedBox(height: 10),
+                    Obx(() {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3B2B27),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildStatItem(
+                              icon: AppAssets.myPointIconCircle,
+                              label: "My Points",
+                              value: "${leader.myPoints} pts",
+                            ),
+                            GestureDetector(
+                              onTap: () => Get.toNamed(AppRoutes.LEADERBOARD),
+                              child: _buildStatItem(
+                                icon: AppAssets.badgesCircleIcon,
+                                label: "My Rank",
+                                value: leader.userRank == -1
+                                    ? "-"
+                                    : "#${leader.userRank}",
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
-
-              // ======== Notification ========
               Text(
                 "Notification & Recent Update!",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 10),
               Container(
@@ -86,11 +85,7 @@ class HomeTab extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    AppAssetUtils.svg(
-                      AppAssets.menuIcon,
-                      width: 24,
-                      height: 24,
-                    ),
+                    AppAssetUtils.svg(AppAssets.menuIcon, width: 24, height: 24),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -102,15 +97,12 @@ class HomeTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // ======== Features ========
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Features",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+                  Text("Features",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   AppAssetUtils.svg(
                     AppAssets.menuIcon,
                     width: 24,
@@ -128,64 +120,33 @@ class HomeTab extends StatelessWidget {
                 crossAxisSpacing: 10,
                 childAspectRatio: 0.75,
                 children: [
-                  _buildFeatureItem(
-                    AppAssets.monitoringIcon,
-                    "Self\nmonitoring",
-                    onTap: () => Get.toNamed('/monitoring'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.appointmentIcon,
-                    "Appointment",
-                    onTap: () => Get.toNamed('/appointment'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.tvIcon,
-                    "Video\nEdutainment",
-                    onTap: () => Get.toNamed('/edutainment'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.gameIcon,
-                    "Game",
-                    onTap: () => Get.toNamed('/game'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.dayliIcon,
-                    "Daily\nJournal",
-                    onTap: () => Get.toNamed('/journal'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.chatIcon,
-                    "Chatting",
-                    onTap: () => Get.toNamed('/chatting'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.healthyMenuIcon,
-                    "Healthy\nMenu",
-                    onTap: () => Get.toNamed('/healthy_menu'),
-                  ),
-                  _buildFeatureItem(
-                    AppAssets.riminderIcon,
-                    "Reminder",
-                    onTap: () => Get.toNamed('/reminder'),
-                  ),
+                  _buildFeatureItem(AppAssets.monitoringIcon, "Self\nmonitoring",
+                      onTap: () => Get.toNamed('/monitoring')),
+                  _buildFeatureItem(AppAssets.appointmentIcon, "Appointment",
+                      onTap: () => Get.toNamed('/appointment')),
+                  _buildFeatureItem(AppAssets.tvIcon, "Video\nEdutainment",
+                      onTap: () => Get.toNamed('/edutainment')),
+                  _buildFeatureItem(AppAssets.gameIcon, "Game",
+                      onTap: () => Get.toNamed('/game')),
+                  _buildFeatureItem(AppAssets.dayliIcon, "Daily\nJournal",
+                      onTap: () => Get.toNamed('/journal')),
+                  _buildFeatureItem(AppAssets.chatIcon, "Chatting",
+                      onTap: () => Get.toNamed('/chatting')),
+                  _buildFeatureItem(AppAssets.healthyMenuIcon, "Healthy\nMenu",
+                      onTap: () => Get.toNamed('/healthy_menu')),
+                  _buildFeatureItem(AppAssets.riminderIcon, "Reminder",
+                      onTap: () => Get.toNamed('/reminder')),
                 ],
               ),
               const SizedBox(height: 20),
-
-              // ======== Playing Games ========
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Playing Games",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  AppAssetUtils.svg(
-                    AppAssets.menuIcon,
-                    width: 24,
-                    height: 24,
-                    color: const Color(0xFF3B2B27),
-                  ),
+                  Text("Playing Games",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  AppAssetUtils.svg(AppAssets.menuIcon,
+                      width: 24, height: 24, color: const Color(0xFF3B2B27)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -207,8 +168,6 @@ class HomeTab extends StatelessWidget {
       ),
     );
   }
-
-  // ================== Widgets ==================
 
   Widget _buildStatItem({
     required String icon,
@@ -237,15 +196,10 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(
-    String icon,
-    String label, {
-    void Function()? onTap,
-  }) {
+  Widget _buildFeatureItem(String icon, String label, {void Function()? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 60,
@@ -289,14 +243,10 @@ class HomeTab extends StatelessWidget {
         children: [
           AppAssetUtils.svg(AppAssets.gameIcon, height: 80, width: 100),
           const SizedBox(height: 6),
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          Text(
-            "Point 15 pts",
-            style: TextStyle(fontSize: 12, color: Colors.black87),
-          ),
+          Text(title,
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          Text("Point 15 pts",
+              style: TextStyle(fontSize: 12, color: Colors.black87)),
         ],
       ),
     );
