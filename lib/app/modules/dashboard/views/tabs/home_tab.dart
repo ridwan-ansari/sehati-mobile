@@ -28,6 +28,13 @@ class HomeTab extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.orangeLight,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x19000000),
+                      blurRadius: 12,
+                      offset: Offset(0 ,6),
+                    ),
+                  ],
                   image: DecorationImage(image: AssetImage(AppAssets.bgCard)),
                   gradient: LinearGradient(
                     begin: Alignment.topRight,
@@ -37,7 +44,11 @@ class HomeTab extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    AppAssetUtils.svg(AppAssets.logoSehati, width: 76, height: 76),
+                    AppAssetUtils.svg(
+                      AppAssets.logoSehati,
+                      width: 76,
+                      height: 76,
+                    ),
                     const SizedBox(height: 10),
                     Obx(() {
                       return Container(
@@ -85,7 +96,11 @@ class HomeTab extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    AppAssetUtils.svg(AppAssets.menuIcon, width: 24, height: 24),
+                    AppAssetUtils.svg(
+                      AppAssets.menuIcon,
+                      width: 24,
+                      height: 24,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -100,14 +115,18 @@ class HomeTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Features",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  AppAssetUtils.svg(
-                    AppAssets.menuIcon,
-                    width: 24,
-                    height: 24,
-                    color: const Color(0xFF3B2B27),
+                  Text(
+                    "Features",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  GestureDetector(
+                    onTap: ()=>Get.toNamed('/menu_feature'),
+                    child: AppAssetUtils.svg(
+                      AppAssets.menuIcon,
+                      width: 24,
+                      height: 24,
+                      color: const Color(0xFF3B2B27),
+                    ),
                   ),
                 ],
               ),
@@ -120,33 +139,62 @@ class HomeTab extends StatelessWidget {
                 crossAxisSpacing: 10,
                 childAspectRatio: 0.75,
                 children: [
-                  _buildFeatureItem(AppAssets.monitoringIcon, "Self\nmonitoring",
-                      onTap: () => Get.toNamed('/monitoring')),
-                  _buildFeatureItem(AppAssets.appointmentIcon, "Appointment",
-                      onTap: () => Get.toNamed('/appointment')),
-                  _buildFeatureItem(AppAssets.tvIcon, "Video\nEdutainment",
-                      onTap: () => Get.toNamed('/edutainment')),
-                  _buildFeatureItem(AppAssets.gameIcon, "Game",
-                      onTap: () => Get.toNamed('/game')),
-                  _buildFeatureItem(AppAssets.dayliIcon, "Daily\nJournal",
-                      onTap: () => Get.toNamed('/journal')),
-                  _buildFeatureItem(AppAssets.chatIcon, "Chatting",
-                      onTap: () => Get.toNamed('/chatting')),
-                  _buildFeatureItem(AppAssets.healthyMenuIcon, "Healthy\nMenu",
-                      onTap: () => Get.toNamed('/healthy_menu')),
-                  _buildFeatureItem(AppAssets.riminderIcon, "Reminder",
-                      onTap: () => Get.toNamed('/reminder')),
+                  _buildFeatureItem(
+                    AppAssets.monitoringIcon,
+                    "Self\nmonitoring",
+                    onTap: () => Get.toNamed('/monitoring'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.appointmentIcon,
+                    "Appointment",
+                    onTap: () => Get.toNamed('/appointment'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.tvIcon,
+                    "Video\nEdutainment",
+                    onTap: () => Get.toNamed('/edutainment'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.gameIcon,
+                    "Game",
+                    onTap: () => Get.toNamed('/game'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.dayliIcon,
+                    "Daily\nJournal",
+                    onTap: () => Get.toNamed('/journal'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.chatIcon,
+                    "Chatting",
+                    onTap: () => Get.toNamed('/chatting'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.healthyMenuIcon,
+                    "Healthy\nMenu",
+                    onTap: () => Get.toNamed('/healthy_menu'),
+                  ),
+                  _buildFeatureItem(
+                    AppAssets.riminderIcon,
+                    "Reminder",
+                    onTap: () => Get.toNamed('/reminder'),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Playing Games",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  AppAssetUtils.svg(AppAssets.menuIcon,
-                      width: 24, height: 24, color: const Color(0xFF3B2B27)),
+                  Text(
+                    "Playing Games",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  AppAssetUtils.svg(
+                    AppAssets.menuIcon,
+                    width: 24,
+                    height: 24,
+                    color: const Color(0xFF3B2B27),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -196,7 +244,11 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(String icon, String label, {void Function()? onTap}) {
+  Widget _buildFeatureItem(
+    String icon,
+    String label, {
+    void Function()? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -243,10 +295,14 @@ class HomeTab extends StatelessWidget {
         children: [
           AppAssetUtils.svg(AppAssets.gameIcon, height: 80, width: 100),
           const SizedBox(height: 6),
-          Text(title,
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-          Text("Point 15 pts",
-              style: TextStyle(fontSize: 12, color: Colors.black87)),
+          Text(
+            title,
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          Text(
+            "Point 15 pts",
+            style: TextStyle(fontSize: 12, color: Colors.black87),
+          ),
         ],
       ),
     );

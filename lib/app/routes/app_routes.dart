@@ -38,5 +38,7 @@ abstract class AppRoutes {
   static const FORUM = '/forum';
   static const PREPARE_POST_CONTENT = '/prepare_post_content';
   static const LEADERBOARD = '/leaderboard';
+  static const MENU_FEATURE = '/menu_feature';
+  static const SLEEP = '/sleep';
 
 }

@@ -37,6 +37,11 @@ class ApiEndpoints {
   static const String USER_NUTRITION = "$BASE_URL/api/user/nutrition/";
 
   // =========================
+  // 🍽️ USER SLEEP
+  // =========================
+  static const String USER_SLEEP = "$BASE_URL/api/sleep/";
+
+  // =========================
   // 🧑‍💻 ADMIN DASHBOARD
   // =========================
   static const String ADMIN_LOGIN = "$BASE_URL/dashboard/login";

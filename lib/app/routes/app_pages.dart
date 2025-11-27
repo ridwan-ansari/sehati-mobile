@@ -18,7 +18,11 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/view/leaderboard_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/menu/bindings/menu_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/menu/view/menu_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/sleep/bindings/sleep_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/sleep/view/sleep_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/schedule/binding/schedule_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/forum_tab.dart';
 import 'package:sehati/app/modules/dashboard/views/tabs/profile_tab.dart';
@@ -258,6 +262,20 @@ class AppPages {
       name: AppRoutes.LEADERBOARD,
       page: () => const LeaderboardView(),
       binding: DashboardBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+     GetPage(
+      name: AppRoutes.MENU_FEATURE,
+      page: () => MenuPage(),
+      binding: MenuBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+     GetPage(
+      name: AppRoutes.SLEEP,
+      page: () => SleepPage(),
+      binding: SleepBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),

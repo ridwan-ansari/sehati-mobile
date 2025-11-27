@@ -48,6 +48,7 @@ class AppAssets {
   static const String scheduleIcon = 'assets/icons/schedule_icon.svg';
   static const String scoialProfile = 'assets/icons/scoial_profile.svg';
   static const String searchIcon = 'assets/icons/search_icon.svg';
+  static const String sleepIcon = 'assets/icons/sleep_icon.svg';
   static const String socialCamera = 'assets/icons/social_camera.svg';
   static const String socialComment = 'assets/icons/social_comment.svg';
   static const String socialLikeFalse = 'assets/icons/social_like_false.svg';
