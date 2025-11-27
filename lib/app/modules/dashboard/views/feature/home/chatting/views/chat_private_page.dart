@@ -22,8 +22,18 @@ class ChatPrivatePage extends GetView<ChattingController> {
     final String receiverName = args["receiver_name"];
     final String? receiverPicture = args["receiver_picture"];
     final String roomId = args["room_id"];
+
+    print("roomKey : ${roomKey}");
+    print("receiverId : ${receiverId}");
+    print("receiverName : ${receiverName}");
+    print("receiverPicture : ${receiverPicture}");
+    print("roomId : ${roomId}");
     return Scaffold(
-      appBar: CustomChatAppbar(),
+      appBar: CustomChatAppbar(
+        profileUrl: receiverPicture??"",
+        name: receiverName,
+        status: "online",
+      ),
       body: Stack(
         children: [
           backgroundChat(),
@@ -75,7 +85,7 @@ class ChatPrivatePage extends GetView<ChattingController> {
               InputTextFieldWithReply(
                 controller: controller.textController,
                 onSendTap: () {
-                  controller.addChat();
+                  controller.addChat(receiverId);
                   controller.textController.clear();
                 },
               ),

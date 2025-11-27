@@ -84,10 +84,26 @@ class ChatService {
     }
   }
 
-  void sendMessage(String toId, String message) {
-    final data = {"to": toId, "message": message};
+  Future<bool> sendPrivateMessage({
+    required String receiverId,
+    required String message,
+  }) async {
+    try {
+      final token = await LocalStorageService.getAccessToken();
 
-    channel.sink.add(jsonEncode(data));
+      final response = await _dio.post(
+        ApiEndpoints.CHAT_PRIVARE,
+        data: {"receiver_id": receiverId, "message": message},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      print("➡️ SendChat Response: ${response.data}");
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print("❌ ERROR SEND MESSAGE: ${e.response?.data ?? e.message}");
+      return false;
+    }
   }
 
   Stream get stream => channel.stream;
