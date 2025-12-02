@@ -83,8 +83,7 @@ class ReminderPage extends GetView<ReminderController> {
                                           style: const TextStyle(
                                             color: Colors.black54,
                                           ),
-                                          overflow: TextOverflow
-                                              .ellipsis, // ⬅️ potong otomatis pakai “...”
+                                          overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                         ),
                                       ),
@@ -93,8 +92,13 @@ class ReminderPage extends GetView<ReminderController> {
 
                                   trailing: Switch(
                                     value: reminder.isActive,
-                                    onChanged: (v) {
+                                    onChanged: (v) async {
                                       controller.toggleActive(index, v);
+                                      if (!v) {
+                                        await controller.cancelNotification(
+                                          reminder.hashCode,
+                                        );
+                                      }
                                       controller.updateReminder(
                                         ReminderModel(
                                           id: reminder.id,

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:sehati/app/common/utils/converter.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/request/sleep_req_model.dart';
 import 'package:sehati/app/data/models/response/nutrition_res_model.dart';
+import 'package:sehati/app/data/models/response/sleep_record_response.dart';
 import 'package:sehati/app/data/services/sleep_service.dart';
 
 class SleepController extends GetxController
@@ -23,7 +22,7 @@ class SleepController extends GetxController
   final selectedDate = ''.obs;
   var nutritionList = <NutritionData>[].obs;
   var chartData = <Map<String, dynamic>>[].obs;
-  var list = <NutritionData>[].obs;
+  var list = <SleepRecord>[].obs;
 
   final limit = 5;
   var offset = 0;
@@ -86,8 +85,8 @@ class SleepController extends GetxController
       firstFive.map(
         (item) => {
           "date": item.createdAt,
-          "actual": item.weightKg.toDouble(),
-          "ideal": item.idealWeightKg.toDouble(),
+          "sleepDurationHours": item.sleepDurationHours,
+          "targetSleepHours": item.targetSleepHours,
         },
       ),
     );
@@ -137,21 +136,34 @@ class SleepController extends GetxController
       );
       return;
     }
-    final startIso = Converter.timeOfDayToBackend(sleepTime.value!);
-    final wakeIso = Converter.timeOfDayToBackend(wakeUpTime.value!);
+
+    final now = DateTime.now();
+
+    DateTime combine(DateTime base, TimeOfDay t) =>
+        DateTime(base.year, base.month, base.day, t.hour, t.minute);
+
+    final startDt = combine(now, sleepTime.value!);
+    var wakeDt = combine(now, wakeUpTime.value!);
+
+    if (wakeDt.isBefore(startDt)) {
+      wakeDt = wakeDt.add(const Duration(days: 1));
+    }
+
+    // Convert to UTC untuk server
+    final startIso = startDt.toUtc().toIso8601String();
+    final wakeIso = wakeDt.toUtc().toIso8601String();
 
     final request = SleepReqModel(
-      startTime: startIso.toString(),
-      wakeUpTime: wakeIso.toString(),
+      startTime: startIso,
+      wakeUpTime: wakeIso,
       targetSleep: int.parse(targetSleepController.text),
     );
 
     final result = await _sleepService.addSleep(request);
 
     if (result) {
-    
+      _initData();
     }
-    _initData();
   }
 
   Future<void> selectDate() async {

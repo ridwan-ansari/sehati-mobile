@@ -38,6 +38,21 @@ class ReminderController extends GetxController {
     print("📦 Loaded ${reminders.length} reminders from local storage");
   }
 
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  @override
+  void onClose() {
+    titleController.dispose();
+    timeController.dispose();
+    super.onClose();
+  }
+
   Future<void> addReminder(
     String title,
     TimeOfDay time,
@@ -112,35 +127,34 @@ class ReminderController extends GetxController {
   }
 
   /// --- TEST INSTANT NOTIFICATION ---
-Future<void> testAlarm() async {
- const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'alarm_channel_v21', // ganti ID baru
-      'Alarm Notifications',
-      channelDescription: 'Play loud alarm sound',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('alarm_sound'),
-      fullScreenIntent: true,
-      enableVibration: true,
-      category: AndroidNotificationCategory.alarm,
-      visibility: NotificationVisibility.public,
+  Future<void> testAlarm() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+          'alarm_channel_v21',
+          'Alarm Notifications',
+          channelDescription: 'Play loud alarm sound',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound('alarm_sound'),
+          fullScreenIntent: true,
+          enableVibration: true,
+          category: AndroidNotificationCategory.alarm,
+          visibility: NotificationVisibility.public,
+        );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
     );
 
-const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
-await flutterLocalNotificationsPlugin.show(
-  0,
-  '⏰ Alarm Test',
-  'Sekarang harusnya bunyi!',
-  platformChannelSpecifics,
-);
-print("✅ Test alarm berhasil dikirim");
-
-}
-
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      '⏰ Alarm Test',
+      'Sekarang harusnya bunyi!',
+      platformChannelSpecifics,
+    );
+    print("✅ Test alarm berhasil dikirim");
+  }
 
   Future<void> updateReminder(ReminderModel data) async {
     try {

@@ -171,141 +171,144 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
             // === ANALYSIS SECTION ===
             _buildSection(
               actions: const Icon(Icons.menu, color: Colors.black),
-              child: Column(
-                children: [
-                  Obx(() {
-                    return _buildAnalysisRow(
-                      label: "Energy Requirement (RDA)/Day",
-                      isEdit: false,
-                      value: (controller.nutritionCalculator.value?.eer ?? 0)
-                          .toString(),
-                    );
-                  }),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Desired Energy Requirement",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    Obx(() {
+                      return _buildAnalysisRow(
+                        label: "Target Energy Intake (RDA)/Day",
+                        isEdit: false,
+                        value: (controller.nutritionCalculator.value?.eer ?? 0)
+                            .toString(),
+                      );
+                    }),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Desired Energy Requirement",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-
-                            border: Border.all(color: Colors.orange.shade300),
-                          ),
-                          child: TextFormField(
-                            controller: controller.controllerDesiredEnergy,
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              hint: Center(
-                                child: const Text(
-                                  "0.0",
-                                  style: TextStyle(color: Colors.grey),
+                
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                
+                              border: Border.all(color: Colors.orange.shade300),
+                            ),
+                            child: TextFormField(
+                              controller: controller.controllerDesiredEnergy,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                                hint: Center(
+                                  child: const Text(
+                                    "0.0",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Obx(
-                    () => _buildAnalysisRow(
-                      isEdit: false,
-                      label: "Actual Energy Intake",
-                      value: "${controller.actualEnergy()} Kcal",
-                    ),
-                  ),
-                  Obx(() {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Type of Activity ",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Container(
-                          height: 45,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: Colors.orange.shade300),
-                          ),
-
-                          child: DropdownButton<ActivityLevel>(
-                            value: controller.selectedActivity.value,
-                            underline: SizedBox(),
-                            hint: const Text("Select Activity"),
-                            items: ActivityLevel.values.map((level) {
-                              return DropdownMenuItem(
-                                value: level,
-                                child: Text(level.label),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                controller.selectedActivity.value = value;
-                                controller.submitDiary();
-                                controller.actualEnergy.value = controller.getTotalCalories();
-                              }
-                            },
-                          ),
-                        ),
                       ],
-                    );
-                  }),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 460,
-
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.amberAccent.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Obx(() {
-                        if (controller.chartData.isEmpty) {
-                          return Text("data kosong");
-                        }
-                        return FoodDiaryChart(data: controller.chartData);
-                      }),
                     ),
-                  ),
-                ],
+                    Obx(
+                      () => _buildAnalysisRow(
+                        isEdit: false,
+                        label: "Actual Energy Intake",
+                        value: "${controller.actualEnergy()} Kcal",
+                      ),
+                    ),
+                    Obx(() {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Type of Activity ",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Container(
+                            height: 45,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(color: Colors.orange.shade300),
+                            ),
+                
+                            child: DropdownButton<ActivityLevel>(
+                              value: controller.selectedActivity.value,
+                              underline: SizedBox(),
+                              hint: const Text("Select Activity"),
+                              items: ActivityLevel.values.map((level) {
+                                return DropdownMenuItem(
+                                  value: level,
+                                  child: Text(level.label),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  controller.selectedActivity.value = value;
+                                  controller.submitDiary();
+                                  controller.actualEnergy.value = controller.getTotalCalories();
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 460,
+                
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amberAccent.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Obx(() {
+                          if (controller.chartData.isEmpty) {
+                            return Text("data kosong");
+                          }
+                          return FoodDiaryChart(data: controller.chartData);
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 56.0),

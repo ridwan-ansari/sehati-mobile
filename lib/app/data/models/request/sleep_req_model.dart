@@ -1,7 +1,7 @@
 class SleepReqModel {
-  final String startTime;
-  final String wakeUpTime;
-  final int targetSleep;
+   String startTime;
+   String wakeUpTime;
+   int targetSleep;
 
   SleepReqModel({
     required this.startTime,
@@ -11,9 +11,9 @@ class SleepReqModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "start_time": startTime,
+      "sleep_time": startTime,
       "wake_up_time": wakeUpTime,
-      "target_sleep_minutes": targetSleep,
+      "target_sleep_hours": targetSleep,
     };
   }
 }

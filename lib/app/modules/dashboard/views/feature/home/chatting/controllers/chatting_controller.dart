@@ -73,7 +73,7 @@ class ChattingController extends GetxController {
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
-    if (receiverId == null || receiverId!.isEmpty) {
+    if (receiverId.isEmpty) {
       print("❌ receiverId kosong, pesan tidak dikirim");
       return;
     }

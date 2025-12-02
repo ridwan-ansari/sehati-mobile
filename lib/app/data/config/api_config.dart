@@ -29,6 +29,7 @@ class ApiEndpoints {
   static const String CHAT_ROOMS = "$BASE_URL/api/chat/rooms";
   static String CHAT_PRIVARE = "$BASE_URL/api/chat/messages";
   static const String LEADERBOARD = '$BASE_URL/api/point/leaderboard';
+  static const String RECIPE = '$BASE_URL/api/recipe/';
 
 
   // =========================

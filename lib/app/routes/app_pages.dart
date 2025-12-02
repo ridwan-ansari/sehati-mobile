@@ -17,6 +17,7 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/views/food_diary_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/bindings/food_habit_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/habit/views/food_habit_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/binding/leaderboard_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/view/leaderboard_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/menu/bindings/menu_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/menu/view/menu_page.dart';
@@ -261,7 +262,7 @@ class AppPages {
      GetPage(
       name: AppRoutes.LEADERBOARD,
       page: () => const LeaderboardView(),
-      binding: DashboardBinding(),
+      binding: LeaderboardBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),

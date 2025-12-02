@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sehati/app/data/services/notification_service.dart';
+import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sehati/app/services/notification_service.dart';
 import 'package:sehati/main_config.dart';
 import 'app/routes/app_pages.dart';
@@ -15,6 +16,7 @@ void main() async {
   await MainConfig().configureLocalTimeZone();
   await GetStorage.init();
   Get.put(ThemeController());
+  Get.put(ProfileController());
   await LocalStorageService.init();
   await NotificationService.init();
   configLoading();

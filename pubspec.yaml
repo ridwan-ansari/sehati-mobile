@@ -65,6 +65,8 @@ dependencies:
   camera: ^0.11.3
   camerawesome: ^2.5.0
   web_socket_channel: ^3.0.3
+  lottie: ^3.3.2
+  audioplayers: ^6.5.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
@@ -104,6 +106,8 @@ flutter:
     - assets/icons/
     - assets/ilustration/
     - assets/logo/
+    - assets/lottie/
+    - assets/sound/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

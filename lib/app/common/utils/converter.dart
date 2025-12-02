@@ -5,12 +5,13 @@ class Converter {
     return time.hour + time.minute / 60.0;
   }
 
-  static String timeOfDayToBackend(TimeOfDay time) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    final iso = dt.toUtc().toIso8601String();
-    return iso.substring(11); 
-  }
+static String timeOfDayToBackend(TimeOfDay time) {
+  final now = DateTime.now();
+  final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  final iso = dt.toUtc().toIso8601String();
+  return iso; // <-- gunakan ISO lengkap
+}
+
 
   static int hoursToMinutes(String hours) {
     final h = int.tryParse(hours) ?? 0;

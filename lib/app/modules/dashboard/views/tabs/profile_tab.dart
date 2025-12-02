@@ -81,6 +81,7 @@ class ProfileTab extends GetView<ProfileController> {
         textColor: Colors.white,
         onTap: () {
           LocalStorageService.clearTokens();
+          Get.offAllNamed('/splash');
           Get.offAllNamed('/login');
         },
       ),

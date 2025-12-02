@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/data/config/api_config.dart';
+import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onSearchTap;
@@ -25,6 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileController profileController = Get.find();
     return Container(
       height: 125,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -52,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           logoSvg!,
                           width: 50,
                           height: 50,
-                          color: Colors.black
+                          color: Colors.black,
                         ),
                       ),
                     )
@@ -68,7 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   height: 46, // sedikit lebih kecil biar proporsional
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFC107), // warna kuning cerah
+                    color: const Color(0xFFFFC107),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: TextField(
@@ -111,9 +115,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onTap: onProfileTap,
                 child: CircleAvatar(
                   radius: 22,
-                  backgroundImage: AssetImage(
-                    'assets/images/profile_sample.jpg',
-                  ), // ganti sesuai path kamu
+                  backgroundImage:
+                      (profileController.dataProfile.value!.picture.isNotEmpty)
+                      ? NetworkImage(
+                          "$BASE_URL${profileController.dataProfile.value!.picture}",
+                        )
+                      : AssetImage(AppAssets.profileIcon),
                 ),
               ),
             ],

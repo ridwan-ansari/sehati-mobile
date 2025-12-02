@@ -20,6 +20,8 @@ class AppAssets {
   static const String chatIcon = 'assets/icons/chat_icon.svg';
   static const String circleChecklistIcon = 'assets/icons/circle_checklist_icon.svg';
   static const String closeIcon = 'assets/icons/close_icon.svg';
+  static const String coinsIcon = 'assets/icons/coins_icon.svg';
+  static const String coinIcon = 'assets/icons/coin_icon.svg';
   static const String dateIcon = 'assets/icons/date_icon.svg';
   static const String dayliIcon = 'assets/icons/dayli_icon.svg';
   static const String doctorIcon = 'assets/icons/doctor_icon.svg';
@@ -41,10 +43,12 @@ class AppAssets {
   static const String peopleIcon = 'assets/icons/people_icon.svg';
   static const String phoneIcon = 'assets/icons/phone_icon.svg';
   static const String profileIcon = 'assets/icons/profile_icon.svg';
+  static const String rankIcon = 'assets/icons/rank_icon.svg';
   static const String read1Chat = 'assets/icons/read1_chat.svg';
   static const String read2Chat = 'assets/icons/read2_chat.svg';
   static const String rightIcon = 'assets/icons/right_icon.svg';
   static const String riminderIcon = 'assets/icons/riminder_icon.svg';
+  static const String saldoIcon = 'assets/icons/saldo_icon.svg';
   static const String scheduleIcon = 'assets/icons/schedule_icon.svg';
   static const String scoialProfile = 'assets/icons/scoial_profile.svg';
   static const String searchIcon = 'assets/icons/search_icon.svg';
@@ -78,5 +82,13 @@ class AppAssets {
   static const String logoIcon = 'assets/logo/logo_icon.svg';
   static const String logoIconApp = 'assets/logo/logo_icon_app.png';
   static const String logoSehati = 'assets/logo/logo_sehati.svg';
+
+  //---------------------- lottie ------------------------
+  static const String animationCoin = 'assets/lottie/animation_coin.json';
+  static const String coinLottie = 'assets/lottie/coin_lottie.json';
+  static const String coinLottieAnimation = 'assets/lottie/coin_lottie_animation.json';
+
+  //---------------------- sound ------------------------
+  static const String coin = 'assets/sound/coin.mp3';
 
 }

@@ -56,7 +56,7 @@ class TimeUtils {
     return DateFormat('dd/MM/yyyy').format(dateTime);
   }
 
-    /// Format tanggal pendek seperti: 03/11/2025
+  /// Format tanggal pendek seperti: 03/11
   static String formatDayMonth(DateTime dateTime) {
     return DateFormat('dd/MM').format(dateTime);
   }
@@ -90,6 +90,24 @@ class TimeUtils {
     } else {
       return DateFormat('dd MMM yyyy').format(dateTime);
     }
+  }
+
+  /// Format tanggal untuk chart food diary
+  /// Contoh: 05 Jan • 08:30
+  static String formatChartDate(DateTime dateTime) {
+    return DateFormat('dd MMM • HH:mm').format(dateTime);
+  }
+
+  /// Format chart versi pendek
+  /// Contoh: 05/01 • 08:30
+  static String formatChartDateShort(DateTime dateTime) {
+    return DateFormat('dd MMM • HH:mm').format(dateTime);
+  }
+
+  /// Format jika hanya ingin jam saja
+  /// Contoh: 08:30
+  static String formatChartTimeOnly(DateTime dateTime) {
+    return DateFormat('HH:mm').format(dateTime);
   }
 
   /// Ubah string waktu ke DateTime berdasarkan format tertentu

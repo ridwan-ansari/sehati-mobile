@@ -26,7 +26,17 @@ find "$ASSET_DIR" -type d | while read -r DIR; do
     echo "  //---------------------- $FOLDER_NAME ------------------------" >> $OUTPUT_FILE
 
     # Loop semua file di folder ini
-    find "$DIR" -maxdepth 1 -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.otf" -o -name "*.ttf" \) | while read -r FILE; do
+  find "$DIR" -maxdepth 1 -type f \( \
+  -name "*.png" -o \
+  -name "*.jpg" -o \
+  -name "*.jpeg" -o \
+  -name "*.svg" -o \
+  -name "*.otf" -o \
+  -name "*.ttf" -o \
+  -name "*.json" -o \
+  -name "*.mp3" \
+\) | while read -r FILE; do
+
       FILE_NAME=$(basename "$FILE")              # contoh: Inter-Regular.otf
       NAME_WITHOUT_EXT="${FILE_NAME%.*}"         # contoh: Inter-Regular
       VAR_NAME=$(echo "$NAME_WITHOUT_EXT" | sed -E 's/[-_]+/ /g' | awk '{for(i=1;i<=NF;i++){ if(i==1){printf tolower(substr($i,1,1)) substr($i,2)} else {printf toupper(substr($i,1,1)) substr($i,2)}}}')

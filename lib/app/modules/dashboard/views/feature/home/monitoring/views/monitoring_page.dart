@@ -53,14 +53,14 @@ class MonitoringPage extends GetView<MonitoringController> {
               children: [
                 _buildRow("Date of measurement", _buildDateField()),
                 _buildRow(
-                  "high (cm)",
+                  "body height (cm)",
                   MonitoringInputField(
                     controller: controller.resultCmController,
                     hint: '0',
                   ),
                 ),
                 _buildRow(
-                  "weight (kg)",
+                  "body  weight (kg)",
                   MonitoringInputField(
                     controller: controller.resultController,
                     hint: '0',

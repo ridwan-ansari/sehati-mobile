@@ -60,124 +60,132 @@ class _AddReminderPageState extends State<AddReminderPage> {
         title: const Text("Add Reminder"),
         backgroundColor: Colors.orange,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: controller.titleController,
-                decoration: const InputDecoration(
-                  labelText: "Reminder Title",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (v) =>
-                    v!.isEmpty ? "Please enter reminder title" : null,
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ColorScheme.light(
-                            primary: AppColors.orangeLight,
-                            onSurface: Colors.black,
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  if (picked != null) {
-                    setState(() => selectedTime = picked);
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 238, 187),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.gold),
+      body: SingleChildScrollView(
+        controller: ScrollController(),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: controller.titleController,
+                  decoration: const InputDecoration(
+                    labelText: "Reminder Title",
+                    border: OutlineInputBorder(),
                   ),
-                  child: Center(
-                    child: Text(
-                      selectedTime == null
-                          ? "Select Time"
-                          : selectedTime!.format(context),
-                      style: TextStyle(
-                        fontFamily: 'Digital7',
-                        fontSize: 67,
-                        color: Colors.black,
+                  validator: (v) =>
+                      v!.isEmpty ? "Please enter reminder title" : null,
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: AppColors.orangeLight,
+                              onSurface: Colors.black,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (picked != null) {
+                      setState(() => selectedTime = picked);
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 238, 187),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.gold),
+                    ),
+                    child: Center(
+                      child: Text(
+                        selectedTime == null
+                            ? "Select Time"
+                            : selectedTime!.format(context),
+                        style: TextStyle(
+                          fontFamily: 'Digital7',
+                          fontSize: 67,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: AlignmentGeometry.bottomLeft,
-                child: Text("Choose a Day", style: TextStyle(fontSize: 14))),
-              const SizedBox(height: 8.0),
-
-              // DAYS SELECTION
-              Wrap(
-                spacing: 8,
-                children: days
-                    .map(
-                      (d) => Obx(
-                        () => ChoiceChip(
-                          label: Text(d),
-                          selected: selectedDays.contains(d),
-                          selectedColor: Colors.orange,
-                          onSelected: (v) {
-                            v ? selectedDays.add(d) : selectedDays.remove(d);
-                          },
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const Spacer(),
-              ElevatedButton.icon(
-                onPressed: () {
-                  if (_formKey.currentState!.validate() &&
-                      selectedTime != null) {
-                    if (isEditing && editingReminder != null) {
-                      final time =
-                          "${selectedTime?.hour.toString().padLeft(2, '0')}:${selectedTime?.minute.toString().padLeft(2, '0')}";
-                      controller.updateReminder(
-                        ReminderModel(
-                          id: editingReminder!.id,
-                          title: controller.titleController.text,
-                          time: time,
-                          days: selectedDays.toList(),
-                        ),
-                      );
-                    } else {
-                      controller.addReminder(
-                        controller.titleController.text,
-                        selectedTime!,
-                        selectedDays.toList(),
-                      );
-                    }
-
-                    Get.toNamed('/reminder');
-                  }
-                },
-                icon: const Icon(Icons.save),
-                label: const Text("Save Reminder"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  minimumSize: const Size(double.infinity, 48),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: AlignmentGeometry.bottomLeft,
+                  child: Text("Choose a Day", style: TextStyle(fontSize: 14)),
                 ),
-              ),
-              const SizedBox(height: 50.0),
-            ],
+                const SizedBox(height: 8.0),
+
+                // DAYS SELECTION
+                Wrap(
+                  spacing: 8,
+                  children: days
+                      .map(
+                        (d) => Obx(
+                          () => ChoiceChip(
+                            label: Text(d),
+                            selected: selectedDays.contains(d),
+                            selectedColor: Colors.orange,
+                            onSelected: (v) {
+                              v ? selectedDays.add(d) : selectedDays.remove(d);
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                const SizedBox(height: 50.0),
+              ],
+            ),
+          ),
+        ),
+      ),
+      resizeToAvoidBottomInset: false,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(.0),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            if (_formKey.currentState!.validate() && selectedTime != null) {
+              if (isEditing && editingReminder != null) {
+                final time =
+                    "${selectedTime?.hour.toString().padLeft(2, '0')}:${selectedTime?.minute.toString().padLeft(2, '0')}";
+                controller.updateReminder(
+                  ReminderModel(
+                    id: editingReminder!.id,
+                    title: controller.titleController.text,
+                    time: time,
+                    days: selectedDays.toList(),
+                  ),
+                );
+              } else {
+                controller.addReminder(
+                  controller.titleController.text,
+                  selectedTime!,
+                  selectedDays.toList(),
+                );
+              }
+        
+              Get.toNamed('/reminder');
+            }
+          },
+          icon: const Icon(Icons.save),
+          label: const Text("Save Reminder"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            minimumSize: const Size(double.infinity, 48),
           ),
         ),
       ),

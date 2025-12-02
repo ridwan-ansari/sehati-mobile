@@ -36,9 +36,9 @@ class FoodDiaryChart extends StatelessWidget {
                 _LegendItem(color: Colors.blue, label: "Actual"),
               ],
             ),
-        
+
             const SizedBox(height: 12),
-        
+
             // ---------------- CHART ----------------
             Expanded(
               child: BarChart(
@@ -54,7 +54,7 @@ class FoodDiaryChart extends StatelessWidget {
                         FlLine(color: Colors.black12, strokeWidth: 1),
                   ),
                   borderData: FlBorderData(show: false),
-        
+
                   // ---------------- TITLES ----------------
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
@@ -74,7 +74,7 @@ class FoodDiaryChart extends StatelessWidget {
                     topTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-        
+
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -83,23 +83,30 @@ class FoodDiaryChart extends StatelessWidget {
                           if (index < 0 || index >= data.length) {
                             return const SizedBox.shrink();
                           }
-        
+
                           return Transform.rotate(
-                            angle: -0.7,
-                            child: Text(
-                              TimeUtils.formatShortDate(DateTime.parse(data[index].date)),
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            angle: -0.2,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 12.0),
+                                Text(
+                                  TimeUtils.formatShortDate(
+                                    DateTime.parse(data[index].date),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },
-                        reservedSize: 40, 
+                        reservedSize: 40,
                       ),
                     ),
                   ),
-        
+
                   barGroups: _buildGroups(),
                 ),
               ),
@@ -130,7 +137,7 @@ class FoodDiaryChart extends StatelessWidget {
       final item = data[i];
       return BarChartGroupData(
         x: i,
-        barsSpace: 12,
+        barsSpace: 0,
         barRods: [
           BarChartRodData(
             toY: item.requirement.toDouble(),

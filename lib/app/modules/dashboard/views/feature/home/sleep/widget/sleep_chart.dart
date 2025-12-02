@@ -82,7 +82,7 @@ class SleepChart extends StatelessWidget {
                       LineChartBarData(
                         spots: [
                           for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["actual"])
+                            FlSpot(i.toDouble(), data[i]["sleepDurationHours"])
                         ],
                         color: Colors.green,
                         barWidth: 3,
@@ -92,7 +92,7 @@ class SleepChart extends StatelessWidget {
                       LineChartBarData(
                         spots: [
                           for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["ideal"])
+                            FlSpot(i.toDouble(), data[i]["targetSleepHours"])
                         ],
                         color: Colors.redAccent,
                         barWidth: 3,

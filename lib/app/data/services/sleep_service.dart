@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-//TODO PERBAIKI CODE COPYAN
+//TODO PERBAIKI CPYAN
 
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,6 +8,7 @@ import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/request/sleep_req_model.dart';
 import 'package:sehati/app/data/models/response/nutrition_res_model.dart';
+import 'package:sehati/app/data/models/response/sleep_record_response.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class SleepService {
@@ -60,7 +61,6 @@ class SleepService {
     }
   }
 
-
   Future<bool> addSleep(SleepReqModel request) async {
     try {
       final token = LocalStorageService.getAccessToken();
@@ -71,6 +71,12 @@ class SleepService {
 
       EasyLoading.show();
       print("body data ; ${request.toJson()}");
+
+      if (request.targetSleep <= 0) {
+        SnackbarUtils.show("Target sleep hours must be greater than 0");
+        EasyLoading.dismiss();
+        return false;
+      }
 
       final response = await _dio.post(
         ApiEndpoints.USER_SLEEP,
@@ -84,30 +90,31 @@ class SleepService {
         ),
       );
 
+      print('sleep status : ${response.statusCode}');
+      print('sleep data : ${response.data}');
       EasyLoading.dismiss();
-      // Cek apakah ada field "data"
-      if (response.data is Map && response.data.containsKey("data")) {
-        response.data["data"];
-      } else {
-        print("RESPONSE TIDAK PUNYA FIELD 'data' !!!");
-      }
 
       if (response.statusCode == 201) {
-        SnackbarUtils.show(isError: false ,"Your sleep record has been saved successfully.");
+        SnackbarUtils.show(
+          isError: false,
+          "Your sleep record has been saved successfully.",
+        );
         return true;
       } else {
-        SnackbarUtils.show("Failed to save your sleep record. Please try again.");
+        SnackbarUtils.show(
+          "Failed to save your sleep record. Please try again.",
+        );
         return false;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("Error Post Sleep : ${e.message}");
-      SnackbarUtils.show("${e.response?.data["message"] ?? 'Error'}");
+      final errorMsg = e.response!.data["detail"]?[0]["msg"]??"Error";
+      SnackbarUtils.show(errorMsg);
       return false;
     }
   }
 
-  Future<List<NutritionData>?> getUserSleepPaginated({
+  Future<List<SleepRecord>?> getUserSleepPaginated({
     required int limit,
     required int offset,
   }) async {
@@ -116,7 +123,7 @@ class SleepService {
       if (token == null || token.isEmpty) return null;
 
       final response = await _dio.get(
-        "${ApiEndpoints.USER_NUTRITION}?limit=$limit&offset=$offset",
+        "${ApiEndpoints.USER_SLEEP}?limit=$limit&offset=$offset",
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -124,9 +131,10 @@ class SleepService {
           },
         ),
       );
-
+      print("get sleep ${response.statusCode}");
       if (response.statusCode == 200) {
-        return NutritionResponse.fromJson(response.data).data;
+        print("response : ${response.data}");
+        return SleepRecordResponse.fromJson(response.data).data;
       }
       return null;
     } on DioException catch (e) {
