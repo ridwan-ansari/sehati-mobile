@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/chat_room_model.dart';
 
@@ -73,7 +74,7 @@ class RoomChatCardWidget extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   Text(
-                    "${room.receiverId}",
+                    "${room.lastMessage}",
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
@@ -91,9 +92,9 @@ class RoomChatCardWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Text(
-                  "12:45 PM",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                Text(
+                  TimeUtils.formatTime(DateTime.parse(room.lastMessageTime??"")),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 4),
                 AppAssetUtils.svg(AppAssets.read2Chat, width: 12, height: 16),
