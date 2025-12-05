@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_chat_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
@@ -16,21 +16,20 @@ class ChatPrivatePage extends GetView<ChattingController> {
   @override
   Widget build(BuildContext context) {
     final args = Get.arguments;
-
     final String roomKey = args["room_key"];
     final String receiverId = args["receiver_id"];
     final String receiverName = args["receiver_name"];
     final String? receiverPicture = args["receiver_picture"];
-    final String roomId = args["room_id"];
 
-    print("roomKey : ${roomKey}");
-    print("receiverId : ${receiverId}");
-    print("receiverName : ${receiverName}");
-    print("receiverPicture : ${receiverPicture}");
-    print("roomId : ${roomId}");
+    // Load initial messages & socket
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadMessages(roomKey: roomKey);
+      controller.initSocket();
+    });
+
     return Scaffold(
       appBar: CustomChatAppbar(
-        profileUrl: receiverPicture??"",
+        profileUrl: receiverPicture ?? "",
         name: receiverName,
         status: "online",
       ),
@@ -43,53 +42,42 @@ class ChatPrivatePage extends GetView<ChattingController> {
           Column(
             children: [
               Expanded(
-                child: Obx(
-                  () => SizedBox(
-                    height: double.infinity,
-                    width: double.infinity,
+                child: Obx(() {
+                  return RefreshIndicator(
+                    color: AppColors.orangeLight,
+                    onRefresh: () async {
+                      await controller.refreshOldMessages();
+                    },
                     child: ListView.builder(
+                      controller: controller.chatScrollController,
+                      reverse: true,
+                      padding: EdgeInsets.zero,
                       itemCount: controller.chats.length,
                       itemBuilder: (context, index) {
                         final chat = controller.chats[index];
-
-                        if (chat.chatReply?.id == null ||
-                            chat.chatReply!.id.isEmpty) {
-                          return ChatWidget.customChatBubble(
-                            text: chat.message,
-                            time: chat.timestamp,
-                            isSender: chat.isSender,
-                            onTap: () {},
-                            onLongPress: () {},
-                            onSwipe: (_) {
-                              controller.replyChatData(chat);
-                            },
-                          );
-                        } else {
-                          // contoh placeholder reply bubble
-                          return ChatWidget.replyChatBubble(
-                            repliedText: chat.message,
-                            replyPreview: chat.chatReply?.message ?? '',
-                            time: chat.timestamp,
-                            isSender: chat.isSender,
-                            onTap: () {},
-                            onSwipe: (_) {
-                              controller.replyChatData(chat);
-                            },
-                          );
-                        }
+                        return ChatWidget.customChatBubble(
+                          text: chat.message,
+                          time: DateTime.parse(chat.createdAt),
+                          isSender: chat.type == "sender",
+                          onTap: () {},
+                          onLongPress: () {},
+                        );
                       },
                     ),
-                  ),
+                  );
+                }),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: InputTextFieldWithReply(
+                  controller: controller.textController,
+                  onSendTap: () {
+                    controller.addChat(receiverId);
+                    controller.textController.clear();
+                  },
                 ),
               ),
-              InputTextFieldWithReply(
-                controller: controller.textController,
-                onSendTap: () {
-                  controller.addChat(receiverId);
-                  controller.textController.clear();
-                },
-              ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 12.0),
             ],
           ),
         ],
@@ -97,7 +85,6 @@ class ChatPrivatePage extends GetView<ChattingController> {
     );
   }
 
-  //widget background chat
   Widget backgroundChat() {
     return AppAssetUtils.image(
       AppAssets.backgroundChat,

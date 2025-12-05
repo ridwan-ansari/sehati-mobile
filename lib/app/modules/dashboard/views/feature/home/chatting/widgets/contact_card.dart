@@ -3,8 +3,17 @@
 import 'package:flutter/material.dart';
 
 class ContactCardWidget extends StatelessWidget {
+  final String profileUrl;
+  final String name;
+  final String status;
   final void Function() onTap;
-  const ContactCardWidget({super.key, required this.onTap});
+  const ContactCardWidget({
+    super.key,
+    required this.onTap,
+    required this.profileUrl,
+    required this.name,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +35,21 @@ class ContactCardWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(
-                'https://example.com/profile.jpg',
-              ), // Ganti dengan URL gambar profil
-            ),
+            CircleAvatar(radius: 30, backgroundImage: NetworkImage(profileUrl)),
             const SizedBox(width: 16.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Nama Kontak',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(height: 4.0),
+                const SizedBox(height: 4.0),
                 Text(
-                  'Status Terakhir',
+                  status,
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],

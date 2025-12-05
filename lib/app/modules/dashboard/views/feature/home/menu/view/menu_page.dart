@@ -74,6 +74,11 @@ class MenuPage extends GetView<MenuCotroller> {
                     "Sleep",
                     onTap: () => Get.toNamed('/sleep'),
                   ),
+                  _buildFeatureItem(
+                    AppAssets.giftBoxIcon,
+                    "Merchandise",
+                    onTap: () => Get.toNamed('/merchandise'),
+                  ),
                 ],
               ),
             ],

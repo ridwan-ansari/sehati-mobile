@@ -21,6 +21,7 @@ class ReminderModelAdapter extends TypeAdapter<ReminderModel> {
       title: fields[1] as String,
       time: fields[2] as String,
       days: (fields[3] as List).cast<String>(),
+      notificationId: fields[5] as int,
       isActive: fields[4] as bool,
     );
   }
@@ -28,7 +29,7 @@ class ReminderModelAdapter extends TypeAdapter<ReminderModel> {
   @override
   void write(BinaryWriter writer, ReminderModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ReminderModelAdapter extends TypeAdapter<ReminderModel> {
       ..writeByte(3)
       ..write(obj.days)
       ..writeByte(4)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(5)
+      ..write(obj.notificationId);
   }
 
   @override

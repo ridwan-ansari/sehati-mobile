@@ -168,6 +168,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     title: controller.titleController.text,
                     time: time,
                     days: selectedDays.toList(),
+                    notificationId: editingReminder!.notificationId
                   ),
                 );
               } else {

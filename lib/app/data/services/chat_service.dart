@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_print
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/chat_message_model.dart';
 import 'package:sehati/app/data/models/response/chat_room_model.dart';
+import 'package:sehati/app/data/models/response/user_chat_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -25,7 +25,7 @@ class ChatService {
 
   /// GET CHAT ROOMS
   Future<List<ChatRoomModel>> getChatRooms({
-    int limit = 20,
+    int limit = 50,
     int offset = 0,
   }) async {
     try {
@@ -52,7 +52,7 @@ class ChatService {
   }
 
   Future<List<ChatMessageModel>> getMessages({
-    required String userId,
+    required String roomKey,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -60,8 +60,8 @@ class ChatService {
       final token = await LocalStorageService.getAccessToken();
 
       final response = await _dio.get(
-        ApiEndpoints.CHAT_PRIVARE,
-        queryParameters: {"user_id": userId, "limit": limit, "offset": offset},
+        "${ApiEndpoints.CHAT_PRIVARE}/$roomKey",
+        queryParameters: {"limit": limit, "offset": offset},
         options: Options(
           headers: {
             'Accept': 'application/json',
@@ -80,6 +80,7 @@ class ChatService {
       return [];
     } on DioException catch (e) {
       print("❌ ERROR GET MESSAGES: ${e.response?.data ?? e.message}");
+      print("❌ ERROR GET MESSAGES: ${e.response?.statusCode}");
       return [];
     }
   }
@@ -105,7 +106,43 @@ class ChatService {
       return false;
     }
   }
+  Future<List<UserChatModel>> searchUsers({
+    required String query,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    try {
+      final token = LocalStorageService.getAccessToken();
 
+      final response = await _dio.get(
+        ApiEndpoints.SEARCH_USERS,
+        queryParameters: {
+          "keyword": query,
+          "limit": limit,
+          "offset": offset,
+        },
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      print("➡️ Search Users Response: ${response.data}");
+
+      if (response.statusCode == 200) {
+        final listData = response.data['data'] as List;
+        return UserChatModel.fromJsonList(listData);
+      }
+
+      return [];
+    } on DioException catch (e) {
+      print("❌ ERROR SEARCH USERS: ${e.response?.data ?? e.message}");
+      return [];
+    }
+  }
+  
   Stream get stream => channel.stream;
 
   void dispose() {

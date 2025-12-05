@@ -26,7 +26,7 @@ class ForumService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token tidak ditemukan. Silakan login ulang.");
+        SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
 
@@ -59,7 +59,7 @@ class ForumService {
       final token = LocalStorageService.getAccessToken();
 
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token tidak ditemukan. Silakan login ulang.");
+        SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
 
@@ -90,7 +90,7 @@ class ForumService {
       final token = LocalStorageService.getAccessToken();
 
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token tidak ditemukan. Silakan login ulang.");
+        SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
 
@@ -123,7 +123,7 @@ class ForumService {
       final token = LocalStorageService.getAccessToken();
 
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token tidak ditemukan. Silakan login ulang.");
+        SnackbarUtils.show("Token not found. Please log in again.");
         return false;
       }
 
@@ -152,7 +152,7 @@ Future<bool> createPost({
     final token = LocalStorageService.getAccessToken();
 
     if (token == null || token.isEmpty) {
-      SnackbarUtils.show("Token tidak ditemukan. Silakan login ulang.");
+      SnackbarUtils.show("Token not found. Please log in again.");
       return false;
     }
 

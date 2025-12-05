@@ -21,6 +21,8 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/bind
 import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/view/leaderboard_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/menu/bindings/menu_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/menu/view/menu_page.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/merchandise/binding/merchandise_binding.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/merchandise/view/merchandise_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/views/add_reminder_page.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/sleep/bindings/sleep_binding.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/sleep/view/sleep_page.dart';
@@ -259,24 +261,31 @@ class AppPages {
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),
-     GetPage(
+    GetPage(
       name: AppRoutes.LEADERBOARD,
       page: () => const LeaderboardView(),
       binding: LeaderboardBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),
-     GetPage(
+    GetPage(
       name: AppRoutes.MENU_FEATURE,
       page: () => MenuPage(),
       binding: MenuBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),
-     GetPage(
+    GetPage(
       name: AppRoutes.SLEEP,
       page: () => SleepPage(),
       binding: SleepBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.MERCHANDISE,
+      page: () => MerchandisePage(),
+      binding: MerchandiseBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),
     ),

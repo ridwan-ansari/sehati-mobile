@@ -29,6 +29,7 @@ class AppAssets {
   static const String forumIcon = 'assets/icons/forum_icon.svg';
   static const String gameIcon = 'assets/icons/game_icon.svg';
   static const String genderIcon = 'assets/icons/gender_icon.svg';
+  static const String giftBoxIcon = 'assets/icons/gift-box-icon.svg';
   static const String healthyMenuIcon = 'assets/icons/healthy_menu_icon.svg';
   static const String hendIcon = 'assets/icons/hend_icon.svg';
   static const String homeIcon = 'assets/icons/home_icon.svg';
@@ -87,6 +88,8 @@ class AppAssets {
   static const String animationCoin = 'assets/lottie/animation_coin.json';
   static const String coinLottie = 'assets/lottie/coin_lottie.json';
   static const String coinLottieAnimation = 'assets/lottie/coin_lottie_animation.json';
+  static const String merchendiseLottie = 'assets/lottie/merchendise_lottie.json';
+  static const String surpriseGiftLottie = 'assets/lottie/surprise_gift_lottie.json';
 
   //---------------------- sound ------------------------
   static const String coin = 'assets/sound/coin.mp3';

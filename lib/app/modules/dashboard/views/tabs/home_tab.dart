@@ -151,7 +151,7 @@ class _HomeTabState extends State<HomeTab> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Get.toNamed('/menu_feature'),
+                      onTap: () => Get.toNamed('/menu_feature')?.then((_)=>leader.onInit()),
                       child: AppAssetUtils.svg(
                         AppAssets.menuIcon,
                         width: 24,
@@ -173,42 +173,41 @@ class _HomeTabState extends State<HomeTab> {
                     _buildFeatureItem(
                       AppAssets.monitoringIcon,
                       "Self\nmonitoring",
-                      onTap: () => Get.toNamed('/monitoring'),
+                      onTap: () => Get.toNamed('/monitoring')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.appointmentIcon,
                       "Appointment",
-                      onTap: () => Get.toNamed('/appointment'),
+                      onTap: () => Get.toNamed('/appointment')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.tvIcon,
                       "Video\nEdutainment",
-                      onTap: () => Get.toNamed('/edutainment'),
+                      onTap: () => Get.toNamed('/edutainment')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.gameIcon,
                       "Game",
-                      onTap: () => Get.toNamed('/game'),
-                    ),
+                      onTap: () => Get.toNamed('/game')?.then((_)=>leader.onInit()),                    ),
                     _buildFeatureItem(
                       AppAssets.dayliIcon,
                       "Daily\nJournal",
-                      onTap: () => Get.toNamed('/journal'),
+                      onTap: () => Get.toNamed('/journal')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.chatIcon,
                       "Chatting",
-                      onTap: () => Get.toNamed('/chatting'),
+                      onTap: () => Get.toNamed('/chatting')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.healthyMenuIcon,
                       "Healthy\nMenu",
-                      onTap: () => Get.toNamed('/healthy_menu'),
+                      onTap: () => Get.toNamed('/healthy_menu')?.then((_)=>leader.onInit()),
                     ),
                     _buildFeatureItem(
                       AppAssets.riminderIcon,
                       "Reminder",
-                      onTap: () => Get.toNamed('/reminder'),
+                      onTap: () => Get.toNamed('/reminder')?.then((_)=>leader.onInit()),
                     ),
                   ],
                 ),

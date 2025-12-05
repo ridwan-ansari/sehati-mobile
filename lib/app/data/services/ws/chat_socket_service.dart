@@ -2,50 +2,89 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatSocketService {
-  WebSocketChannel? _channel;
-  void connect() async {
-    final token = LocalStorageService.getAccessToken();
-    final uri = Uri.parse("wss://sehatiapps.web.id/ws/chat");
+  IOWebSocketChannel? _channel;
+  late Stream _broadcastStream;
 
-    try {
-      // Create WebSocket with custom headers
-      final socket = await WebSocket.connect(
-        uri.toString(),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+  bool _isConnecting = false;
+  bool _isConnected = false;
 
-      _channel = IOWebSocketChannel(socket);
+  /// ============================
+  /// CONNECT
+  /// ============================
+  Future<bool> connect() async {
+  if (_isConnected || _isConnecting) return _isConnected;
 
-      print("Connected to URI: $uri");
-      print(
-        "Scheme: ${uri.scheme}, Host: ${uri.host}, Port: ${uri.hasPort ? uri.port : (uri.scheme == 'wss' ? 443 : 80)}",
-      );
+  _isConnecting = true;
+  final token = LocalStorageService.getAccessToken();
+  final uri = Uri.parse("wss://sehatiapps.web.id/ws/chat");
 
-      _channel!.stream.listen(
-        (event) => print("Message received: $event"),
-        onError: (error) => print("WebSocket Error: $error"),
-        onDone: () => print("WebSocket closed"),
-      );
-    } catch (e) {
-      print("Connection error: $e");
-    }
+  try {
+    final socket = await WebSocket.connect(
+      uri.toString(),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    _channel = IOWebSocketChannel(socket);
+    _broadcastStream = _channel!.stream.asBroadcastStream();
+
+    _isConnecting = false;
+    _isConnected = true;
+
+    print("WS CONNECTED");
+
+    // listen log
+    _broadcastStream.listen(
+      (event) => print("WS EVENT [SERVICE]: $event"),
+      onDone: () {
+        print("WS CLOSED");
+        _isConnected = false;
+      },
+      onError: (e) {
+        print("WS ERROR: $e");
+        _isConnected = false;
+      },
+    );
+
+    return true; // ⬅️ sukses
+  } catch (e) {
+    print("WS CONNECT ERROR: $e");
+    _isConnecting = false;
+    _isConnected = false;
+    return false; // ⬅️ gagal
+  }
+}
+
+
+  /// ============================
+  /// STREAM GETTER
+  /// ============================
+  Stream get stream {
+    if (!_isConnected) throw Exception("Not connected");
+    return _broadcastStream;
   }
 
+  /// ============================
+  /// SEND MESSAGE
+  /// ============================
   void sendMessage(Map<String, dynamic> data) {
-    if (_channel == null) {
-      print("WebSocket belum terhubung!");
+    if (!_isConnected) {
+      print("❗ WS belum terhubung! mencoba connect…");
+      connect();
       return;
     }
 
     final jsonData = jsonEncode(data);
-    print("Kirim: $jsonData");
+    print("WS SEND: $jsonData");
     _channel!.sink.add(jsonData);
   }
 
+  /// ============================
+  /// DISCONNECT
+  /// ============================
   void disconnect() {
     _channel?.sink.close();
+    _isConnected = false;
   }
 }

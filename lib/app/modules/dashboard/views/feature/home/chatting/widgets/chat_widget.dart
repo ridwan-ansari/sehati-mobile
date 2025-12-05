@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/data/models/chat_model.dart';
+import 'package:sehati/app/data/models/response/chat_message_model.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class ChatWidget {
-  static Widget selectTextReply({ChatModel? data}) {
+  static Widget selectTextReply({ChatMessageModel? data}) {
     return Container(
       height: 100,
       width: double.infinity,

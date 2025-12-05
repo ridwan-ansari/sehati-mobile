@@ -40,5 +40,6 @@ abstract class AppRoutes {
   static const LEADERBOARD = '/leaderboard';
   static const MENU_FEATURE = '/menu_feature';
   static const SLEEP = '/sleep';
+  static const MERCHANDISE = '/merchandise';
 
 }

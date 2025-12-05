@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/reminder_model.dart';
 import 'package:sehati/app/data/services/notification_service.dart';
 import 'package:sehati/app/services/notification_service.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uuid/uuid.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ReminderController extends GetxController {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -23,6 +25,7 @@ class ReminderController extends GetxController {
   void onInit() {
     super.onInit();
     // Ambil reminder yang tersimpan
+    requestNotificationPermission();
     final savedReminders = LocalStorageService.getAllReminders();
     reminders.value = savedReminders
         .map(
@@ -32,10 +35,29 @@ class ReminderController extends GetxController {
             time: r.time,
             title: r.title,
             isActive: r.isActive,
+            notificationId: r.notificationId,
           ),
         )
         .toList();
     print("📦 Loaded ${reminders.length} reminders from local storage");
+  }
+
+  Future<void> requestNotificationPermission() async {
+    final status = await Permission.notification.status;
+
+    if (status.isDenied || status.isRestricted) {
+      final result = await Permission.notification.request();
+      if (result.isGranted) {
+        print("🔔 Notification permission granted");
+      } else {
+        print("❌ Notification permission denied");
+      }
+    } else if (status.isPermanentlyDenied) {
+      print("⚠️ Notification permission permanently denied");
+      openAppSettings();
+    } else {
+      print("🔔 Notification permission already granted");
+    }
   }
 
   Future<void> cancelNotification(int id) async {
@@ -53,6 +75,10 @@ class ReminderController extends GetxController {
     super.onClose();
   }
 
+  int generateNotificationId() {
+    return DateTime.now().microsecondsSinceEpoch % 2147483647;
+  }
+
   Future<void> addReminder(
     String title,
     TimeOfDay time,
@@ -62,6 +88,7 @@ class ReminderController extends GetxController {
       final id = _uuid.v4();
       final formattedTime =
           "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
+      final notifId = generateNotificationId();
 
       final reminder = ReminderModel(
         id: id,
@@ -69,6 +96,7 @@ class ReminderController extends GetxController {
         time: formattedTime,
         days: days,
         isActive: true,
+        notificationId: notifId,
       );
       await LocalStorageService.addReminder(reminder);
       reminders.add(reminder);
@@ -87,7 +115,7 @@ class ReminderController extends GetxController {
       }
 
       await NotificationService.scheduleAlarm(
-        id: reminder.hashCode,
+        id: reminder.notificationId,
         title: reminder.title,
         body: 'Reminder aktif untuk ${reminder.time}',
         dateTime: scheduledDate,
@@ -95,24 +123,13 @@ class ReminderController extends GetxController {
       );
 
       totalPoints.value += 20;
-      Get.snackbar(
-        "Reminder Added",
-        "You earned +20 points 🎉",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+      SnackbarUtils.show(isError: false, "Reminder Added");
 
       print("✅ Reminder berhasil ditambahkan: $title");
     } catch (e) {
       print("❌ Gagal menambahkan reminder: $e");
-      Get.snackbar(
-        "Reminder Failed",
-        "Gagal menambahkan reminder 😢",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+
+      SnackbarUtils.show("Reminder Failed");
     }
   }
 
@@ -193,23 +210,10 @@ class ReminderController extends GetxController {
 
       reminders[index] = updatedReminder;
       reminders.refresh();
-
-      Get.snackbar(
-        "Reminder Updated",
-        "Reminder berhasil diperbarui ✅",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+      SnackbarUtils.show(isError: false, "Reminder Updated");
     } catch (e) {
       print("❌ Gagal update reminder: $e");
-      Get.snackbar(
-        "Reminder Failed",
-        "Gagal update reminder 😢",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+      SnackbarUtils.show(isError: false, "Reminder Failed");
     }
   }
 }

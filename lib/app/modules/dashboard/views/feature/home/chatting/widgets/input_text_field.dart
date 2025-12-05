@@ -53,7 +53,7 @@ class InputTextFieldWithReply extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          replyData.username,
+                          replyData.message,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -70,7 +70,7 @@ class InputTextFieldWithReply extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      chatController.clearReply();
+                      // chatController.clearReply();
                     },
                     child: const Icon(Icons.close, size: 18),
                   ),

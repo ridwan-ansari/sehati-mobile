@@ -96,7 +96,7 @@ class ReminderPage extends GetView<ReminderController> {
                                       controller.toggleActive(index, v);
                                       if (!v) {
                                         await controller.cancelNotification(
-                                          reminder.hashCode,
+                                          reminder.notificationId,
                                         );
                                       }
                                       controller.updateReminder(
@@ -106,6 +106,7 @@ class ReminderPage extends GetView<ReminderController> {
                                           time: reminder.time,
                                           days: reminder.days,
                                           isActive: v,
+                                          notificationId: reminder.notificationId
                                         ),
                                       );
                                     },

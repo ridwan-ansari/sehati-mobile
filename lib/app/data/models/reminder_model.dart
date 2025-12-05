@@ -19,11 +19,15 @@ class ReminderModel extends HiveObject {
   @HiveField(4)
   bool isActive;
 
+  @HiveField(5)
+  int notificationId; 
+
   ReminderModel({
     required this.id,
     required this.title,
     required this.time,
     required this.days,
+    required this.notificationId,
     this.isActive = true,
   });
 }
