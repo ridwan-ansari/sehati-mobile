@@ -73,6 +73,7 @@ class ApiEndpoints {
   static const String NUTRITION_CALCULATOR  = "$BASE_URL/api/user/nutrition/calculator";
   static const String FOOD = "$BASE_URL/api/habit/food";
   static const String FORUM_CONTENT = "$BASE_URL/api/forum";
+  static const String GAME = "$BASE_URL/api/games/";
 
   // =========================
   // 🌐 ROOT
