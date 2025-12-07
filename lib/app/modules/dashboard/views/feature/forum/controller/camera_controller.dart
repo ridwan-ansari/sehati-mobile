@@ -7,6 +7,7 @@ import 'package:sehati/app/data/services/forum_service.dart';
 
 class CameraControllerX extends GetxController {
   final _service = ForumService();
+  RxBool showFab = false.obs;
   final ImagePicker picker = ImagePicker();
 
   Rx<File?> selectedImage = Rx<File?>(null);
@@ -20,7 +21,6 @@ class CameraControllerX extends GetxController {
       }
     } catch (_) {}
   }
-
 
   Future<void> postContent() async {
     EasyLoading.show();
@@ -45,6 +45,14 @@ class CameraControllerX extends GetxController {
     }
 
     EasyLoading.dismiss();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    Future.delayed(Duration(seconds: 0), () {
+      showFab.value = true;
+    });
   }
 
   @override

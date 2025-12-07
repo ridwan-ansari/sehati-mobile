@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/legend_item.dart';
 
@@ -40,66 +41,68 @@ class SleepChart extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: LineChart(
-                  LineChartData(
-                    minY: 0,
-                    maxY: 24,
-                    gridData: FlGridData(show: true, drawVerticalLine: false),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 30,
-                          getTitlesWidget: (value, _) => Text(
-                            value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10),
+                child: AnimatedIn(
+                  child: LineChart(
+                    LineChartData(
+                      minY: 0,
+                      maxY: 24,
+                      gridData: FlGridData(show: true, drawVerticalLine: false),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            getTitlesWidget: (value, _) => Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(fontSize: 10),
+                            ),
                           ),
                         ),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          interval: 1,
-                          getTitlesWidget: (value, _) {
-                            int index = value.toInt();
-                            if (index < 0 || index >= data.length) {
-                              return const SizedBox.shrink();
-                            }
-                            return Text(
-                              TimeUtils.formatDayMonth(data[index]['date']),
-                              style: const TextStyle(fontSize: 10),
-                            );
-                          },
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 1,
+                            getTitlesWidget: (value, _) {
+                              int index = value.toInt();
+                              if (index < 0 || index >= data.length) {
+                                return const SizedBox.shrink();
+                              }
+                              return Text(
+                                TimeUtils.formatDayMonth(data[index]['date']),
+                                style: const TextStyle(fontSize: 10),
+                              );
+                            },
+                          ),
                         ),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
                       ),
-                      topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: [
+                            for (int i = 0; i < data.length; i++)
+                              FlSpot(i.toDouble(), data[i]["sleepDurationHours"])
+                          ],
+                          color: Colors.green,
+                          barWidth: 3,
+                          isCurved: true,
+                          dotData: const FlDotData(show: true),
+                        ),
+                        LineChartBarData(
+                          spots: [
+                            for (int i = 0; i < data.length; i++)
+                              FlSpot(i.toDouble(), data[i]["targetSleepHours"])
+                          ],
+                          color: Colors.redAccent,
+                          barWidth: 3,
+                          isCurved: true,
+                          dotData: const FlDotData(show: true),
+                        ),
+                      ],
                     ),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: [
-                          for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["sleepDurationHours"])
-                        ],
-                        color: Colors.green,
-                        barWidth: 3,
-                        isCurved: true,
-                        dotData: const FlDotData(show: true),
-                      ),
-                      LineChartBarData(
-                        spots: [
-                          for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["targetSleepHours"])
-                        ],
-                        color: Colors.redAccent,
-                        barWidth: 3,
-                        isCurved: true,
-                        dotData: const FlDotData(show: true),
-                      ),
-                    ],
                   ),
                 ),
               ),

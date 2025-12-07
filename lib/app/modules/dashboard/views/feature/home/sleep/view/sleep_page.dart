@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_card.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_field.dart';
@@ -22,10 +23,12 @@ class SleepPage extends GetView<SleepController> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               color: Colors.black,
-              child: const Text(
-                "Welcome to your self-monitoring page!",
-                style: TextStyle(color: Colors.white, fontSize: 14),
-                textAlign: TextAlign.center,
+              child: AnimatedIn(
+                child: const Text(
+                  "Welcome to your self-monitoring page!",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
             _buildBodyweightMonitoring(),
@@ -84,7 +87,7 @@ class SleepPage extends GetView<SleepController> {
             const SizedBox(height: 20.0),
             Obx(() {
               if (controller.chartData.isEmpty) {
-                return const Text("No data yet.");
+                return AnimatedIn(child: const Text("No data yet."));
               }
               return SleepChart(data: controller.chartData);
             }),
@@ -101,7 +104,7 @@ class SleepPage extends GetView<SleepController> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(flex: 2, child: Text(label)),
+        Expanded(flex: 2, child: AnimatedIn(child: Text(label))),
         const SizedBox(width: 10),
         Expanded(flex: 2, child: input),
       ],
@@ -113,11 +116,13 @@ class SleepPage extends GetView<SleepController> {
     child: ElevatedButton.icon(
       onPressed: onPressed,
       icon: const Icon(Icons.calculate, color: AppColors.orangeLight, size: 24),
-      label: const Text(
-        "Calculate",
-        style: TextStyle(
-          color: AppColors.orangeLight,
-          fontWeight: FontWeight.bold,
+      label: AnimatedIn(
+        child: const Text(
+          "Calculate",
+          style: TextStyle(
+            color: AppColors.orangeLight,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       style: ElevatedButton.styleFrom(
@@ -140,11 +145,13 @@ class SleepPage extends GetView<SleepController> {
         ),
         child: Obx(
           () => Center(
-            child: Text(
-              controller.selectedDate.value.isEmpty
-                  ? "Date of Measurement"
-                  : controller.selectedDate.value,
-              style: const TextStyle(color: Colors.orange, fontSize: 16),
+            child: AnimatedIn(
+              child: Text(
+                controller.selectedDate.value.isEmpty
+                    ? "Date of Measurement"
+                    : controller.selectedDate.value,
+                style: const TextStyle(color: Colors.orange, fontSize: 16),
+              ),
             ),
           ),
         ),
@@ -174,12 +181,14 @@ class SleepPage extends GetView<SleepController> {
         ),
         child: Obx(() {
           final time = timeRx.value;
-          return Text(
-            time == null
-                ? "Select Time"
-                : "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}",
-            style: const TextStyle(color: Colors.orange, fontSize: 16),
-            textAlign: TextAlign.center,
+          return AnimatedIn(
+            child: Text(
+              time == null
+                  ? "Select Time"
+                  : "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}",
+              style: const TextStyle(color: Colors.orange, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
           );
         }),
       ),

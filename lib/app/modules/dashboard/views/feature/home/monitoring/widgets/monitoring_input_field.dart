@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import '../controllers/monitoring_controller.dart';
 
@@ -32,11 +33,13 @@ class MonitoringInputField extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
           child: Obx(() => Center(
-            child: Text(
-              monitoringController?.selectedDate.value.isEmpty ?? true
-                  ? hint
-                  : monitoringController!.selectedDate.value,
-              style: const TextStyle(color: Colors.orange, fontSize: 16),
+            child: AnimatedIn(
+              child: Text(
+                monitoringController?.selectedDate.value.isEmpty ?? true
+                    ? hint
+                    : monitoringController!.selectedDate.value,
+                style: const TextStyle(color: Colors.orange, fontSize: 16),
+              ),
             ),
           )),
         ),

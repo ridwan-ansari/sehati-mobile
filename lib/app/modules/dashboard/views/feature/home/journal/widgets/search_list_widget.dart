@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class SearchListWidget<T> extends StatefulWidget {
   final List<T> items;
@@ -74,19 +75,23 @@ class _SearchListWidgetState<T> extends State<SearchListWidget<T>> {
 
                       return ListTile(
                         onTap: () => widget.onItemSelected(item),
-                        title: Text(
-                          widget.itemLabel(item),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 13,
+                        title: AnimatedIn(
+                          child: Text(
+                            widget.itemLabel(item),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
-                        trailing: IconButton(
-                          onPressed: widget.onAddPressed != null
-                              ? () => widget.onAddPressed!(item)
-                              : null,
-
-                          icon: const Icon(Icons.add, size: 22),
+                        trailing: AnimatedIn(
+                          child: IconButton(
+                            onPressed: widget.onAddPressed != null
+                                ? () => widget.onAddPressed!(item)
+                                : null,
+                          
+                            icon: const Icon(Icons.add, size: 22),
+                          ),
                         ),
                       );
                     },

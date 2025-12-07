@@ -20,7 +20,6 @@ class ApiEndpoints {
   // =========================
   static const String USER_PROFILE = "$BASE_URL/api/users/profile";
   static const String USER_PICTURE = "$BASE_URL/api/users/profile/picture";
-  static String userById(int id) => "$BASE_URL/api/user/$id";
   static const String SEARCH_USERS = "$BASE_URL/api/users/";
 
   // =========================

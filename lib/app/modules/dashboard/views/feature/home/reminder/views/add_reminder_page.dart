@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/data/models/reminder_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/controllers/reminder_controller.dart';
@@ -68,14 +69,16 @@ class _AddReminderPageState extends State<AddReminderPage> {
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  controller: controller.titleController,
-                  decoration: const InputDecoration(
-                    labelText: "Reminder Title",
-                    border: OutlineInputBorder(),
+                AnimatedIn(
+                  child: TextFormField(
+                    controller: controller.titleController,
+                    decoration: const InputDecoration(
+                      labelText: "Reminder Title",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                        v!.isEmpty ? "Please enter reminder title" : null,
                   ),
-                  validator: (v) =>
-                      v!.isEmpty ? "Please enter reminder title" : null,
                 ),
                 const SizedBox(height: 16),
                 GestureDetector(
@@ -107,14 +110,16 @@ class _AddReminderPageState extends State<AddReminderPage> {
                       border: Border.all(color: AppColors.gold),
                     ),
                     child: Center(
-                      child: Text(
-                        selectedTime == null
-                            ? "Select Time"
-                            : selectedTime!.format(context),
-                        style: TextStyle(
-                          fontFamily: 'Digital7',
-                          fontSize: 67,
-                          color: Colors.black,
+                      child: AnimatedIn(
+                        child: Text(
+                          selectedTime == null
+                              ? "Select Time"
+                              : selectedTime!.format(context),
+                          style: TextStyle(
+                            fontFamily: 'Digital7',
+                            fontSize: 67,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
@@ -133,13 +138,15 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   children: days
                       .map(
                         (d) => Obx(
-                          () => ChoiceChip(
-                            label: Text(d),
-                            selected: selectedDays.contains(d),
-                            selectedColor: Colors.orange,
-                            onSelected: (v) {
-                              v ? selectedDays.add(d) : selectedDays.remove(d);
-                            },
+                          () => AnimatedIn(
+                            child: ChoiceChip(
+                              label: Text(d),
+                              selected: selectedDays.contains(d),
+                              selectedColor: Colors.orange,
+                              onSelected: (v) {
+                                v ? selectedDays.add(d) : selectedDays.remove(d);
+                              },
+                            ),
                           ),
                         ),
                       )
@@ -155,7 +162,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(.0),
+        padding: const EdgeInsets.all(12.0),
         child: ElevatedButton.icon(
           onPressed: () {
             if (_formKey.currentState!.validate() && selectedTime != null) {
@@ -183,7 +190,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
             }
           },
           icon: const Icon(Icons.save),
-          label: const Text("Save Reminder"),
+          label: AnimatedIn(child: const Text("Save Reminder")),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.orange,
             minimumSize: const Size(double.infinity, 48),

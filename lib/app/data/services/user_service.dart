@@ -6,6 +6,7 @@ import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/request/nutrition_req_model.dart';
 import 'package:sehati/app/data/models/response/nutrition_res_model.dart';
+import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class UserService {
@@ -141,6 +142,31 @@ class UserService {
     } on DioException catch (e) {
       print("❌ Pagination Error: ${e.response?.data}");
       return null;
+    }
+  }
+
+  Future<ProfileData?> getUserId({final String? userId}) async {
+    try {
+      final token = LocalStorageService.getAccessToken();
+      if (token == null || token.isEmpty) {
+        SnackbarUtils.show("Token not found. Please log in again.");
+        throw Exception("Token not found");
+      }
+
+      final response = await _dio.get(
+        "${ApiEndpoints.SEARCH_USERS}$userId",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      if (response.statusCode == 200) {
+        final data = ProfileResponse.fromJson(response.data);
+        return data.data;
+      } else {
+        print("⚠️ GET USER FAILED: ${response.statusMessage}");
+        throw Exception("Failed to fetch user data");
+      }
+    } on DioException catch (e) {
+      print("❌ GET USER ERROR: ${e.response?.data ?? e.message}");
+      throw Exception("Network error occurred");
     }
   }
 }

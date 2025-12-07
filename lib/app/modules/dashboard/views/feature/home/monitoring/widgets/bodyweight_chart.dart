@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/legend_item.dart';
 
@@ -11,12 +13,19 @@ class BodyweightChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: Text("No data available"));
+      return const Center(
+        child: AnimatedIn(
+          child: Text(
+            "No data available",
+            style: TextStyle(color: AppColors.black),
+          ),
+        ),
+      );
     }
 
     return InteractiveViewer(
       panEnabled: true,
-      scaleEnabled: true, 
+      scaleEnabled: true,
       child: SizedBox(
         width: data.length * 60.0 < MediaQuery.of(context).size.width
             ? MediaQuery.of(context).size.width
@@ -33,73 +42,77 @@ class BodyweightChart extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  LegendItem(color: Colors.cyan, label: "BB Actual"),
+                  AnimatedIn(child: LegendItem(color: Colors.cyan, label: "BB Actual")),
                   SizedBox(width: 20),
-                  LegendItem(color: Colors.redAccent, label: "BB Ideal"),
+                  AnimatedIn(child: LegendItem(color: Colors.redAccent, label: "BB Ideal")),
                 ],
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: LineChart(
-                  LineChartData(
-                    minY: 20,
-                    maxY: 200,
-                    gridData: FlGridData(show: true, drawVerticalLine: false),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 30,
-                          getTitlesWidget: (value, _) => Text(
-                            value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10),
+                child: AnimatedIn(
+                  child: LineChart(
+                    LineChartData(
+                      minY: 20,
+                      maxY: 200,
+                      gridData: FlGridData(show: true, drawVerticalLine: false),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            getTitlesWidget: (value, _) => Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(fontSize: 10),
+                            ),
                           ),
                         ),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          interval: 1,
-                          getTitlesWidget: (value, _) {
-                            int index = value.toInt();
-                            if (index < 0 || index >= data.length) {
-                              return const SizedBox.shrink();
-                            }
-                            return Text(
-                              TimeUtils.formatDayMonth(data[index]['date']),
-                              style: const TextStyle(fontSize: 10),
-                            );
-                          },
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 1,
+                            getTitlesWidget: (value, _) {
+                              int index = value.toInt();
+                              if (index < 0 || index >= data.length) {
+                                return const SizedBox.shrink();
+                              }
+                              return Text(
+                                TimeUtils.formatDayMonth(data[index]['date']),
+                                style: const TextStyle(fontSize: 10),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
                       ),
-                      topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: [
+                            for (int i = 0; i < data.length; i++)
+                              FlSpot(i.toDouble(), data[i]["actual"]),
+                          ],
+                          color: Colors.cyan,
+                          barWidth: 3,
+                          isCurved: true,
+                          dotData: const FlDotData(show: true),
+                        ),
+                        LineChartBarData(
+                          spots: [
+                            for (int i = 0; i < data.length; i++)
+                              FlSpot(i.toDouble(), data[i]["ideal"]),
+                          ],
+                          color: Colors.redAccent,
+                          barWidth: 3,
+                          isCurved: true,
+                          dotData: const FlDotData(show: true),
+                        ),
+                      ],
                     ),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: [
-                          for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["actual"])
-                        ],
-                        color: Colors.cyan,
-                        barWidth: 3,
-                        isCurved: true,
-                        dotData: const FlDotData(show: true),
-                      ),
-                      LineChartBarData(
-                        spots: [
-                          for (int i = 0; i < data.length; i++)
-                            FlSpot(i.toDouble(), data[i]["ideal"])
-                        ],
-                        color: Colors.redAccent,
-                        barWidth: 3,
-                        isCurved: true,
-                        dotData: const FlDotData(show: true),
-                      ),
-                    ],
                   ),
                 ),
               ),

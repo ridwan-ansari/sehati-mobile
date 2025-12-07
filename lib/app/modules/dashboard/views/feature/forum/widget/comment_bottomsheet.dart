@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -87,19 +88,21 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                         itemBuilder: (_, i) {
                           final c = widget.comments[i];
                           final date = TimeUtils.timeAgo(DateTime.parse(c.createdAt));
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage("$BASE_URL${c.picture}"),
-                            ),
-                            title: Text(c.nickname),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(c.comment),
-                                Text(date,
-                                    style: const TextStyle(fontSize: 12)),
-                              ],
+                          return AnimatedIn(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage("$BASE_URL${c.picture}"),
+                              ),
+                              title: Text(c.nickname),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(c.comment),
+                                  Text(date,
+                                      style: const TextStyle(fontSize: 12)),
+                                ],
+                              ),
                             ),
                           );
                         },

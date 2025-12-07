@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/data/enum/activity_level.dart';
 import 'package:sehati/app/data/enum/food.dart';
@@ -32,20 +33,19 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
               decoration: BoxDecoration(
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(4),
-        ),
-              child: const Text(
-                "Welcome to Your Food Diary Journal!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              ),
+              child: AnimatedIn(
+                child: const Text(
+                  "Welcome to Your Food Diary Journal!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // === DATE FIELD ===
             RowInputField(
               label: "Date",
               controller: controller.dateController,
@@ -131,7 +131,6 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                     },
                   ),
 
-                  /// TOTAL
                   Obx(
                     () => _buildMealRow(
                       "Total Intake",
@@ -143,32 +142,10 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                 ],
               ),
             ),
-
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: ElevatedButton(
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.amber,
-            //       foregroundColor: Colors.white,
-            //       minimumSize: const Size(double.infinity, 50),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(30),
-            //       ),
-            //     ),
-            //     onPressed: () {
-            //       controller.submitDiary();
-            //     },
-            //     child: const Text(
-            //       "Submit Food Diary",
-            //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: 16),
             HeaderTitleWidget(title: "Analysis"),
             const SizedBox(height: 8),
 
-            // === ANALYSIS SECTION ===
             _buildSection(
               actions: const Icon(Icons.menu, color: Colors.black),
               child: Padding(
@@ -207,11 +184,11 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                               horizontal: 12,
                               vertical: 6,
                             ),
-                
+
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
-                
+
                               border: Border.all(color: Colors.orange.shade300),
                             ),
                             child: TextFormField(
@@ -264,7 +241,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(color: Colors.orange.shade300),
                             ),
-                
+
                             child: DropdownButton<ActivityLevel>(
                               value: controller.selectedActivity.value,
                               underline: SizedBox(),
@@ -279,7 +256,8 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                                 if (value != null) {
                                   controller.selectedActivity.value = value;
                                   controller.submitDiary();
-                                  controller.actualEnergy.value = controller.getTotalCalories();
+                                  controller.actualEnergy.value = controller
+                                      .getTotalCalories();
                                 }
                               },
                             ),
@@ -292,7 +270,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: 460,
-                
+
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -301,7 +279,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                         ),
                         child: Obx(() {
                           if (controller.chartData.isEmpty) {
-                            return Text("data kosong");
+                            return AnimatedIn(child: Text("There are currently no food diaries available."));
                           }
                           return FoodDiaryChart(data: controller.chartData);
                         }),
@@ -496,11 +474,13 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
           // === KIRI: LABEL ===
           Expanded(
             flex: 2,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 16, color: Colors.black87),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            child: AnimatedIn(
+              child: Text(
+                label,
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
 
@@ -517,27 +497,31 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                 border: Border.all(color: Colors.orange.shade300),
               ),
               child: isEdit
-                  ? TextFormField(
-                      controller: controller,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                  ? AnimatedIn(
+                    child: TextFormField(
+                        controller: controller,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
                       ),
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
+                  )
+                  : AnimatedIn(
+                    child: Text(
+                        value,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
-                    )
-                  : Text(
-                      value,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
+                  ),
             ),
           ),
         ],

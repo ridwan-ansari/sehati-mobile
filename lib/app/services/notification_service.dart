@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -26,10 +27,9 @@ class NotificationService {
           // notifikasi sudah dibatalkan, tetapi Anda bisa menambahkan
           // logika tambahan di sini (misalnya menghentikan suara/vibrasi jika masih berjalan)
           print("Tombol STOP ditekan di foreground!");
-        } else if(response.actionId == 'open_alarm'){
+        } else if (response.actionId == 'open_alarm') {
           print('open di klik');
-        }
-        else {
+        } else {
           // Tombol notifikasi utama (bukan tombol aksi) yang ditekan
           // Lakukan navigasi ke layar alarm, misalnya:
           // Navigator.of(context).pushNamed('/alarm-detail');
@@ -53,7 +53,7 @@ class NotificationService {
       title,
       body,
       tz.TZDateTime.from(dateTime, tz.local),
-       NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'alarm_channel',
           'Alarm Notifications',
@@ -61,7 +61,7 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,
-          sound: RawResourceAndroidNotificationSound('alarm_sound',),
+          sound: RawResourceAndroidNotificationSound('alarm_sound'),
           enableVibration: true,
           fullScreenIntent: true,
           channelBypassDnd: true,
@@ -75,7 +75,7 @@ class NotificationService {
               'Stop',
               cancelNotification: true,
             ),
-             AndroidNotificationAction(
+            AndroidNotificationAction(
               OPEN_ALARM_KEY,
               'Open',
               cancelNotification: false,
@@ -86,6 +86,23 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: repeatDaily ? DateTimeComponents.time : null,
     );
+  }
+
+  static Future<void> onActionReceived(ReceivedAction action) async {
+    // Jika user menekan tombol "Balas"
+    if (action.buttonKeyPressed == 'reply') {
+      final replyText = action.buttonKeyInput;
+
+      print("🎯 User reply from notification: $replyText");
+
+      if (replyText.trim().isNotEmpty) {
+        // TODO: Kirim ke WebSocket atau API
+        print("🚀 Sending reply to server: $replyText");
+
+        // contoh:
+        // ChatSocketService.instance.sendMessage(replyText);
+      }
+    }
   }
 }
 

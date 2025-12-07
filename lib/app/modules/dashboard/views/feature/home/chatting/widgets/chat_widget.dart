@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/models/response/chat_message_model.dart';
@@ -67,30 +68,36 @@ class ChatWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: isSender ? Colors.black : Colors.white,
-                        fontSize: 14,
+                    AnimatedIn(
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          color: isSender ? Colors.black : Colors.white,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          formattedTime,
-                          style: TextStyle(
-                            color: isSender ? Colors.black54 : Colors.white70,
-                            fontSize: 11,
+                        AnimatedIn(
+                          child: Text(
+                            formattedTime,
+                            style: TextStyle(
+                              color: isSender ? Colors.black54 : Colors.white70,
+                              fontSize: 11,
+                            ),
                           ),
                         ),
                         if (isSender) ...[
                           const SizedBox(width: 5),
-                          AppAssetUtils.svg(
-                            AppAssets.read2Chat,
-                            width: 24,
-                            height: 24,
-                            color: Colors.grey,
+                          AnimatedIn(
+                            child: AppAssetUtils.svg(
+                              AppAssets.read2Chat,
+                              width: 12,
+                              height: 14,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ],

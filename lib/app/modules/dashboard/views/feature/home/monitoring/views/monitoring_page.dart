@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/bodyweight_chart.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_card.dart';
@@ -51,53 +52,65 @@ class MonitoringPage extends GetView<MonitoringController> {
             const SizedBox(height: 16),
             MonitoringInputCard(
               children: [
-                _buildRow("Date of measurement", _buildDateField()),
-                _buildRow(
-                  "body height (cm)",
-                  MonitoringInputField(
-                    controller: controller.resultCmController,
-                    hint: '0',
+                AnimatedIn(child: _buildRow("Date of measurement", _buildDateField())),
+                AnimatedIn(
+                  child: _buildRow(
+                    "body height (cm)",
+                    MonitoringInputField(
+                      controller: controller.resultCmController,
+                      hint: '0',
+                    ),
                   ),
                 ),
-                _buildRow(
-                  "body  weight (kg)",
-                  MonitoringInputField(
-                    controller: controller.resultController,
-                    hint: '0',
+                AnimatedIn(
+                  child: _buildRow(
+                    "body  weight (kg)",
+                    MonitoringInputField(
+                      controller: controller.resultController,
+                      hint: '0',
+                    ),
                   ),
                 ),
       
                 const SizedBox(height: 16.0),
-                _saveButton(onPressed: controller.submitNutrition),
+                AnimatedIn(child: _saveButton(onPressed: controller.submitNutrition)),
                 const SizedBox(height: 16.0),
-                _buildRow(
-                  "IMT (kg/m²)",
-                  MonitoringInputField(
-                    isEdit: true,
-                    controller: controller.imtController,
-                    hint: "Autofill",
+                AnimatedIn(
+                  child: _buildRow(
+                    "IMT (kg/m²)",
+                    MonitoringInputField(
+                      isEdit: true,
+                      controller: controller.imtController,
+                      hint: "Autofill",
+                    ),
                   ),
                 ),
-                _buildRow(
-                  "IMT/U Z-Score",
-                  MonitoringInputField(
-                    isEdit: true,
-                    controller: controller.zScoreController,
-                    hint: "Autofill",
+                AnimatedIn(
+                  child: _buildRow(
+                    "IMT/U Z-Score",
+                    MonitoringInputField(
+                      isEdit: true,
+                      controller: controller.zScoreController,
+                      hint: "Autofill",
+                    ),
                   ),
                 ),
-                _buildRow(
-                  "Ideal Bodyweight (kg)",
-                  MonitoringInputField(
-                    isEdit: true,
-                    controller: controller.idealController,
-                    hint: "Autofill",
+                AnimatedIn(
+                  child: _buildRow(
+                    "Ideal Bodyweight (kg)",
+                    MonitoringInputField(
+                      isEdit: true,
+                      controller: controller.idealController,
+                      hint: "Autofill",
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
-                  "Record your body weight at least once a week!",
-                  style: TextStyle(fontSize: 12.0, color: Colors.black54),
+                AnimatedIn(
+                  child: Text(
+                    "Record your body weight at least once a week!",
+                    style: TextStyle(fontSize: 12.0, color: Colors.black54),
+                  ),
                 ),
               ],
             ),

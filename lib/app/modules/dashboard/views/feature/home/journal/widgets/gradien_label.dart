@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class GradientLabel extends StatelessWidget {
   final String title;
@@ -17,12 +18,14 @@ class GradientLabel extends StatelessWidget {
           end: Alignment.centerRight,
         ),
       ),
-      child: Text(
-        title,
-        style:  TextStyle(
-          color: Colors.white,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
+      child: AnimatedIn(
+        child: Text(
+          title,
+          style:  TextStyle(
+            color: Colors.white,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

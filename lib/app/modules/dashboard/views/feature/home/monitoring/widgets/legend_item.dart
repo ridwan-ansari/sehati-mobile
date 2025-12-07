@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class LegendItem extends StatelessWidget {
   final Color color;
@@ -15,7 +16,7 @@ class LegendItem extends StatelessWidget {
       children: [
         Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87)),
+        AnimatedIn(child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87))),
       ],
     );
   }

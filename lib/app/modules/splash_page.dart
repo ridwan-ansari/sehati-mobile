@@ -7,6 +7,7 @@ import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/data/services/user_service.dart';
+import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 import '../routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -36,11 +37,12 @@ class _SplashPageState extends State<SplashPage> {
       if (token != null && token.isNotEmpty) {
         refreshToken();
         var nutritionData = await _userService.getUserNutrition();
-        if(nutritionData?.length == 0){
+        if (nutritionData?.length == 0) {
           Get.toNamed(AppRoutes.NUTRITION);
           return;
         }
         Get.offAllNamed(AppRoutes.DASHBOARD);
+        Get.lazyPut<ProfileController>(() => ProfileController());
       } else {
         Get.offAllNamed(AppRoutes.LOGIN);
       }

@@ -67,6 +67,7 @@ dependencies:
   web_socket_channel: ^3.0.3
   lottie: ^3.3.2
   audioplayers: ^6.5.1
+  awesome_notifications: ^0.10.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
@@ -27,30 +28,36 @@ class FoodHabitPage extends GetView<FoodHabitController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12.0),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text(
-                "Welcome to Your Food Habit Journal!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            AnimatedIn(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                textAlign: TextAlign.center,
+                child: AnimatedIn(
+                  child: const Text(
+                    "Welcome to Your Food Habit Journal!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            HeaderTitleWidget(title: "Record Your Food Habit!"),
+            AnimatedIn(child: HeaderTitleWidget(title: "Record Your Food Habit!")),
             const SizedBox(height: 8),
-            RowInputField(
-              isEditable: false,
-              label: "Date",
-              controller: controller.vegetableController,
-              hintText: TimeUtils.formatShortDate(DateTime.now()),
+            AnimatedIn(
+              child: RowInputField(
+                isEditable: false,
+                label: "Date",
+                controller: controller.vegetableController,
+                hintText: TimeUtils.formatShortDate(DateTime.now()),
+              ),
             ),
             Obx(() {
               if (controller.isLoading.value) {
@@ -68,37 +75,39 @@ class FoodHabitPage extends GetView<FoodHabitController> {
                   final category = entry.key;
                   final questions = entry.value;
 
-                  return _buildSection(
-                    title: category,
-                    child: Obx(() {
-                      final isExpanded =
-                          controller.expandedCategories[category] ?? false;
-                      final shownQuestions = isExpanded
-                          ? questions
-                          : questions.take(1).toList();
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...shownQuestions
-                              .map((q) => _buildQuestionsList(q))
-                              .toList(),
-                          if (questions.length > 1)
-                            TextButton(
-                              onPressed: () =>
-                                  controller.toggleCategory(category),
-                              child: Text(
-                                isExpanded ? "Show Less..." : "Click More...",
-                                style: const TextStyle(
-                                  color: Colors.black38,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                  return AnimatedIn(
+                    child: _buildSection(
+                      title: category,
+                      child: Obx(() {
+                        final isExpanded =
+                            controller.expandedCategories[category] ?? false;
+                        final shownQuestions = isExpanded
+                            ? questions
+                            : questions.take(1).toList();
+                    
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...shownQuestions
+                                .map((q) => _buildQuestionsList(q))
+                                .toList(),
+                            if (questions.length > 1)
+                              TextButton(
+                                onPressed: () =>
+                                    controller.toggleCategory(category),
+                                child: Text(
+                                  isExpanded ? "Show Less..." : "Click More...",
+                                  style: const TextStyle(
+                                    color: Colors.black38,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
-                      );
-                    }),
+                          ],
+                        );
+                      }),
+                    ),
                   );
                 }).toList(),
               );

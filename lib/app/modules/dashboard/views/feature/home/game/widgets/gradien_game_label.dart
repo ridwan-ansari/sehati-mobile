@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 
 class GradienGameLabel extends StatelessWidget {
@@ -10,7 +11,7 @@ class GradienGameLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
         gradient:  LinearGradient(
           colors: [AppColors.orangeLight, Color.fromARGB(0, 221, 215, 213)],
@@ -18,12 +19,14 @@ class GradienGameLabel extends StatelessWidget {
           end: Alignment.centerRight,
         ),
       ),
-      child: Text(
-        title,
-        style:  TextStyle(
-          color: Colors.white,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
+      child: AnimatedIn(
+        child: Text(
+          title,
+          style:  TextStyle(
+            color: Colors.white,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

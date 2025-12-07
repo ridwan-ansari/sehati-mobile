@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/boolean_question_widget.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/multiple_choice_question_widget.dart';
 import '../controllers/exercise_controller.dart';
@@ -36,26 +37,13 @@ class ExerciseView extends GetView<ExerciseController> {
 
         return WillPopScope(
           onWillPop: () async {
-            bool? exit = await showDialog(
+            bool? exit = await DialogUtils.showConfirmDialog(
               context: context,
-              builder: (context) => AlertDialog(
-                title: const Text("Konfirmasi"),
-                content: const Text(
-                  "Jika Anda keluar, semua jawaban yang telah diisi akan hilang. Apakah Anda yakin ingin keluar?",
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text("Batal"),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text("Keluar"),
-                  ),
-                ],
-              ),
+              title: "Confirm",
+              message:
+                  "By exiting, all filled answers will be lost. Are you sure you want to exit?",
             );
-            return exit ?? false;
+            return exit;
           },
           child: SafeArea(
             child: Column(

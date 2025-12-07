@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use, unnecessary_string_interpolations
 
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
@@ -43,14 +44,16 @@ class RoomChatCardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Avatar
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.grey.shade200,
-              backgroundImage:
-                  imageUrl != null ? NetworkImage(imageUrl) : null,
-              child: imageUrl == null
-                  ? const Icon(Icons.person, color: Colors.grey, size: 30)
-                  : null,
+            AnimatedIn(
+              child: CircleAvatar(
+                radius: 28,
+                backgroundColor: Colors.grey.shade200,
+                backgroundImage:
+                    imageUrl != null ? NetworkImage(imageUrl) : null,
+                child: imageUrl == null
+                    ? const Icon(Icons.person, color: Colors.grey, size: 30)
+                    : null,
+              ),
             ),
 
             const SizedBox(width: 16),
@@ -60,27 +63,31 @@ class RoomChatCardWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    room.receiverName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                  AnimatedIn(
+                    child: Text(
+                      room.receiverName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
 
                   const SizedBox(height: 4),
 
-                  Text(
-                    "${room.lastMessage}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+                  AnimatedIn(
+                    child: Text(
+                      "${room.lastMessage}",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -92,12 +99,14 @@ class RoomChatCardWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  TimeUtils.formatTime(DateTime.parse(room.lastMessageTime??"")),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                AnimatedIn(
+                  child: Text(
+                    TimeUtils.formatTime(DateTime.parse(room.lastMessageTime??"")),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ),
                 const SizedBox(height: 4),
-                AppAssetUtils.svg(AppAssets.read2Chat, width: 12, height: 16),
+                AnimatedIn(child: AppAssetUtils.svg(AppAssets.read2Chat, width: 12, height: 14)),
               ],
             )
           ],

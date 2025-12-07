@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
@@ -36,13 +37,15 @@ class ReminderPage extends GetView<ReminderController> {
                       color: Colors.brown.shade800,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      "My Reminders — Points: ${controller.totalPoints.value}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                    child: AnimatedIn(
+                      child: Text(
+                        "My Reminders",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -59,32 +62,41 @@ class ReminderPage extends GetView<ReminderController> {
                                 elevation: 2,
                                 margin: const EdgeInsets.symmetric(vertical: 6),
                                 child: ListTile(
-                                  leading: const Icon(
-                                    Icons.alarm,
-                                    color: Colors.orange,
+                                  leading: AnimatedIn(
+                                    child: const Icon(
+                                      Icons.alarm,
+                                      color: Colors.orange,
+                                    ),
                                   ),
-                                  title: Text(reminder.title),
+                                  title: AnimatedIn(child: Text(reminder.title)),
                                   subtitle: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        reminder.time,
-                                        style: const TextStyle(
-                                          fontFamily: 'Digital7',
-                                          fontSize: 16,
-                                          color: Colors.black,
+                                      AnimatedIn(
+                                        child: Text(
+                                          reminder.time,
+                                          style: const TextStyle(
+                                            fontFamily: 'Digital7',
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(width: 6),
                                       Expanded(
-                                        child: Text(
-                                          reminder.days.length == 7
-                                              ? "Setiap hari"
-                                              : reminder.days.join(", "),
-                                          style: const TextStyle(
-                                            color: Colors.black54,
+                                        child: AnimatedIn(
+                                          child: AnimatedIn(
+                                            child: Text(
+                                              reminder.days.length == 7
+                                                  ? "Every day"
+                                                  : reminder.days.join(", "),
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
                                           ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
                                         ),
                                       ),
                                     ],

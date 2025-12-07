@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 
 class GradienLabelRight extends StatelessWidget {
@@ -19,12 +20,14 @@ class GradienLabelRight extends StatelessWidget {
           end: Alignment.centerRight,
         ),
       ),
-      child: Text(
-        title,
-        style:  TextStyle(
-          color: Colors.white,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
+      child: AnimatedIn(
+        child: Text(
+          title,
+          style:  TextStyle(
+            color: Colors.white,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

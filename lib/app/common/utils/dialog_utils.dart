@@ -24,14 +24,15 @@ class DialogUtils {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(noText),
+              child: Text(noText, style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
               onPressed: () {
                 confirmed = true;
                 Navigator.pop(context);
               },
-              child: Text(yesText),
+              child: Text(yesText, style: TextStyle(color: Colors.white)),
             ),
           ],
         );

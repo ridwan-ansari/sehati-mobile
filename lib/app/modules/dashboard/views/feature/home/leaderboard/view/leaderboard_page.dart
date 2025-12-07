@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -70,130 +71,134 @@ class LeaderboardView extends GetView<LeaderboardController> {
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: const Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            "Rank",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                    child: AnimatedIn(
+                      child: const Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              "Rank",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            "Name",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "Name",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            "Total Point",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "Total Point",
+                              textAlign: TextAlign.right,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            "Saldo",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "Saldo",
+                              textAlign: TextAlign.right,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
-                    child: ListView.separated(
-                      itemCount: list.length,
-                      separatorBuilder: (_, __) =>
-                          const Divider(color: Colors.black26),
-                      itemBuilder: (context, index) {
-                        final item = list[index];
-                        final isMe = item.nickname == controller.username.value;
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: isMe
-                                ? Colors.white.withOpacity(0.5)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text(
-                                  ordinalNumber(index + 1),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: isMe
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  item.nickname,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: isMe
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  Formatter.compactNumber(
-                                    item.achievementPoints,
-                                  ),
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: isMe
-                                        ? FontWeight.bold
-                                        : FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    AppAssetUtils.svg(
-                                      AppAssets.coinIcon,
-                                      width: 16,
-                                      color: AppColors.orangeLight,
+                    child: AnimatedIn(
+                      child: ListView.separated(
+                        itemCount: list.length,
+                        separatorBuilder: (_, __) =>
+                            const Divider(color: Colors.black26),
+                        itemBuilder: (context, index) {
+                          final item = list[index];
+                          final isMe = item.nickname == controller.username.value;
+                      
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: isMe
+                                  ? Colors.white.withOpacity(0.5)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    ordinalNumber(index + 1),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isMe
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
-                                    const SizedBox(width: 4.0),
-                                    Text(
-                                      Formatter.compactNumber(
-                                        item.creditPoints,
-                                      ),
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: isMe
-                                            ? FontWeight.bold
-                                            : FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    item.nickname,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isMe
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    Formatter.compactNumber(
+                                      item.achievementPoints,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isMe
+                                          ? FontWeight.bold
+                                          : FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      AppAssetUtils.svg(
+                                        AppAssets.coinIcon,
+                                        width: 16,
+                                        color: AppColors.orangeLight,
+                                      ),
+                                      const SizedBox(width: 4.0),
+                                      Text(
+                                        Formatter.compactNumber(
+                                          item.creditPoints,
+                                        ),
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: isMe
+                                              ? FontWeight.bold
+                                              : FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
@@ -39,11 +40,13 @@ class PostCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    "$BASE_URL${post.user.picture}",
+                AnimatedIn(
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      "$BASE_URL${post.user.picture}",
+                    ),
+                    radius: 21,
                   ),
-                  radius: 21,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -59,11 +62,13 @@ class PostCard extends StatelessWidget {
                             fontSize: 14,
                           ),
                         ),
-                        Text(
-                          TimeUtils.timeAgo(DateTime.parse(post.createdAt)),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
+                        AnimatedIn(
+                          child: Text(
+                            TimeUtils.timeAgo(DateTime.parse(post.createdAt)),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -74,13 +79,15 @@ class PostCard extends StatelessWidget {
             ),
           ),
           if (post.imageUrl.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                "$BASE_URL${post.imageUrl}",
-                height: 300,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            AnimatedIn(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  "$BASE_URL${post.imageUrl}",
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           Padding(
@@ -92,41 +99,40 @@ class PostCard extends StatelessWidget {
                     (e) => e.id == post.id,
                     orElse: () => post,
                   );
-
-                  return IconButton(
-                    icon: Icon(
-                      current.isLiked ? Icons.favorite : Icons.favorite_border,
-                      color: current.isLiked ? Colors.red : Colors.black,
+          
+                  return AnimatedIn(
+                    child: IconButton(
+                      icon: Icon(
+                        current.isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: current.isLiked ? Colors.red : Colors.black,
+                      ),
+                      onPressed: () {
+                        controller.likePost(post.id);
+                      },
                     ),
-                    onPressed: () {
-                      controller.likePost(post.id);
-                    },
                   );
                 }),
-
-                IconButton(
-                  icon: const Icon(Icons.mode_comment_outlined),
-                  onPressed: () async {
-                    final controller = Get.find<ForumController>();
-
-                    await controller.fetchComments(post.id);
-
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => CommentBottomSheet(
-                        comments: controller.comments,
-                        onAddComment: (c) => controller.addComment(post.id, c),
-                        onRefresh: () => controller.fetchComments(post.id),
-                      ),
-                    );
-                  },
-                ),
-
-                IconButton(
-                  icon: const Icon(Icons.share_outlined),
-                  onPressed: () {},
+          
+                AnimatedIn(
+                  child: IconButton(
+                    icon: const Icon(Icons.mode_comment_outlined),
+                    onPressed: () async {
+                      final controller = Get.find<ForumController>();
+                              
+                      await controller.fetchComments(post.id);
+                              
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => CommentBottomSheet(
+                          comments: controller.comments,
+                          onAddComment: (c) => controller.addComment(post.id, c),
+                          onRefresh: () => controller.fetchComments(post.id),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -140,19 +146,23 @@ class PostCard extends StatelessWidget {
 
             return Row(
               children: [
-                Text(
-                  "${current.likeCount} like",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                AnimatedIn(
+                  child: Text(
+                    "${current.likeCount} like",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8.0),
-                Text(
-                  "${current.commentCount} Comment",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                AnimatedIn(
+                  child: Text(
+                    "${current.commentCount} Comment",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class HeaderTitleWidget extends StatelessWidget {
   final String title;
@@ -23,12 +24,14 @@ class HeaderTitleWidget extends StatelessWidget {
       child: Row(
         children: [
            Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
+            child: AnimatedIn(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),

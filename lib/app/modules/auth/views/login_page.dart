@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/app_button.dart';
@@ -24,21 +25,25 @@ class LoginPage extends GetView<AuthController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 60),
-                    const Text(
-                      "Welcome",
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    AnimatedIn(
+                      child: const Text(
+                        "Welcome",
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
+                    AnimatedIn(
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -52,73 +57,79 @@ class LoginPage extends GetView<AuthController> {
                         ),
                       ),
                     ),
-                    TextFormField(
-                      controller: controller.emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: AppAssetUtils.svg(
-                            AppAssets.messageIcon,
-                            width: 16,
-                            height: 16,
-                            color: Colors.green,
-                          ),
-                        ),
-                        labelText: "Email",
-                        border: const OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      validator: Validator.email,
-                    ),
-                    const SizedBox(height: 16),
-                    Obx(() {
-                      return TextFormField(
-                        controller: controller.passwordController,
-                        obscureText: controller
-                            .isPasswordHidden
-                            .value, // reactive hide/show
+                    AnimatedIn(
+                      child: TextFormField(
+                        controller: controller.emailController,
                         decoration: InputDecoration(
                           prefixIcon: Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: AppAssetUtils.svg(
-                              AppAssets.lockIcon,
-                              width: 24,
-                              height: 24,
+                              AppAssets.messageIcon,
+                              width: 16,
+                              height: 16,
                               color: Colors.green,
                             ),
                           ),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              controller.isPasswordHidden.toggle();
-                            },
-                            icon: Icon(
-                              controller.isPasswordHidden.value
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          labelText: "Password",
+                          labelText: "Email",
                           border: const OutlineInputBorder(),
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        validator: Validator.password,
+                        validator: Validator.email,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Obx(() {
+                      return AnimatedIn(
+                        child: TextFormField(
+                          controller: controller.passwordController,
+                          obscureText: controller
+                              .isPasswordHidden
+                              .value, // reactive hide/show
+                          decoration: InputDecoration(
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: AppAssetUtils.svg(
+                                AppAssets.lockIcon,
+                                width: 24,
+                                height: 24,
+                                color: Colors.green,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                controller.isPasswordHidden.toggle();
+                              },
+                              icon: Icon(
+                                controller.isPasswordHidden.value
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            labelText: "Password",
+                            border: const OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                          validator: Validator.password,
+                        ),
                       );
                     }),
 
                     const SizedBox(height: 32),
                     Obx(
-                      () => AppButton(
-                        text: "Masuk",
-                        isLoading: controller.isLoading.value,
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : () async => await controller.login(
-                                controller.emailController.text.trim(),
-                                controller.passwordController.text.trim(),
-                              ),
+                      () => AnimatedIn(
+                        child: AppButton(
+                          text: "Masuk",
+                          isLoading: controller.isLoading.value,
+                          onPressed: controller.isLoading.value
+                              ? null
+                              : () async => await controller.login(
+                                  controller.emailController.text.trim(),
+                                  controller.passwordController.text.trim(),
+                                ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

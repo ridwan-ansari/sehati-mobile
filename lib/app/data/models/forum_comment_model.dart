@@ -12,11 +12,13 @@ class ForumComment {
   });
 
   factory ForumComment.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] ?? {};
+
     return ForumComment(
-      comment: json['comment'],
-      createdAt: json['created_at'],
-      nickname: json['user']['nickname'],
-      picture: json['user']['picture'],
+      comment: json['comment'] ?? "",
+      createdAt: json['created_at'] ?? "",
+      nickname: user['nickname'] ?? "Unknown User",
+      picture: user['picture'] ?? "",
     );
   }
 }

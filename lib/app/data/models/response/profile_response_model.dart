@@ -18,10 +18,10 @@ class ProfileResponse {
   }
 
   Map<String, dynamic> toJson() => {
-        "status_code": statusCode,
-        "message": message,
-        "data": data.toJson(),
-      };
+    "status_code": statusCode,
+    "message": message,
+    "data": data.toJson(),
+  };
 }
 
 class ProfileData {
@@ -32,6 +32,9 @@ class ProfileData {
   final String phoneNumber;
   final String gender;
   final String dateOfBirth;
+  final int? achievementPoints;
+  final int? creditPoints;
+  final int? rank;
 
   ProfileData({
     required this.fullname,
@@ -41,27 +44,36 @@ class ProfileData {
     required this.phoneNumber,
     required this.gender,
     required this.dateOfBirth,
+    this.achievementPoints,
+    this.creditPoints,  
+    this.rank,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
     return ProfileData(
       fullname: json["fullname"] ?? "",
-      picture: json["picture"] ?? "",
+      picture: (json["picture"] ?? "").toString(),
       nickname: json["nickname"] ?? "",
       email: json["email"] ?? "",
       phoneNumber: json["phone_number"] ?? "",
       gender: json["gender"] ?? "",
       dateOfBirth: json["date_of_birth"] ?? "",
+      achievementPoints: json["achievement_points"],
+      creditPoints: json["credit_points"],
+      rank: json["rank"],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "fullname": fullname,
-        "picture": picture,
-        "nickname": nickname,
-        "email": email,
-        "phone_number": phoneNumber,
-        "gender": gender,
-        "date_of_birth": dateOfBirth,
-      };
+    "fullname": fullname,
+    "picture": picture,
+    "nickname": nickname,
+    "email": email,
+    "phone_number": phoneNumber,
+    "gender": gender,
+    "date_of_birth": dateOfBirth,
+    "achievement_points": achievementPoints,
+    "credit_points": creditPoints,
+    "rank": rank,
+  };
 }

@@ -265,7 +265,7 @@ class AppPages {
       name: AppRoutes.LEADERBOARD,
       page: () => const LeaderboardView(),
       binding: LeaderboardBinding(),
-      transition: Transition.rightToLeft,
+      transition: Transition.cupertino,
       transitionDuration: Duration(milliseconds: 300),
     ),
     GetPage(

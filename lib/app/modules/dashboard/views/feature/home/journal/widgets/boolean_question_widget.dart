@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/data/models/response/exercise_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/controllers/exercise_controller.dart';
@@ -55,51 +56,57 @@ class BooleanQuestionWidget extends StatelessWidget {
                     'Question ${index + 1} / $totalSoal',
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
-                  Row(
-                    children: [
-                      const Icon(Icons.monetization_on, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        '+${question.rewardPoints}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber,
+                  AnimatedIn(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.monetization_on, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(
+                          '+${question.rewardPoints}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                question.question,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+              AnimatedIn(
+                child: Text(
+                  question.question,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               ...question.options.entries.map((entry) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: question.selectedOption == entry.key
-                          ? AppColors.orangeLight
-                          : const Color(0xFF3D2C1C),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                return AnimatedIn(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: question.selectedOption == entry.key
+                            ? AppColors.orangeLight
+                            : const Color(0xFF3D2C1C),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      question.selectedOption = entry.key;
-                      question.answerText = entry.value;
-                      controller.exerciseList.refresh();
-                    },
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(entry.value),
+                      onPressed: () {
+                        question.selectedOption = entry.key;
+                        question.answerText = entry.value;
+                        controller.exerciseList.refresh();
+                      },
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(entry.value),
+                      ),
                     ),
                   ),
                 );

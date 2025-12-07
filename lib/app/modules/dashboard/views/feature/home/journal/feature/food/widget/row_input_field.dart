@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label.dart';
 
 class RowInputField extends StatelessWidget {
@@ -41,35 +42,37 @@ class RowInputField extends StatelessWidget {
             Expanded(child: GradientLabel(title: label)),
             const SizedBox(width: 10),
             IntrinsicWidth(
-              child: TextFormField(
-                controller: controller,
-                readOnly: !isEditable,
-                enabled: isEditable,
-                keyboardType: keyboardType,
-                onTap: onTap,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  hintText: hintText ?? "",
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
+              child: AnimatedIn(
+                child: TextFormField(
+                  controller: controller,
+                  readOnly: !isEditable,
+                  enabled: isEditable,
+                  keyboardType: keyboardType,
+                  onTap: onTap,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: hintText ?? "",
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    helperStyle: TextStyle(color: Colors.black),
+                    filled: true,
+                    fillColor: isEditable ? fillColor : Colors.white,
+                    border: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(color: Colors.white),
+                    )
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    //   borderSide: const BorderSide(color: Colors.white),
+                    // ),
+                    // focusedBorder: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    //   borderSide: const BorderSide(color: Colors.white),
+                    // ),
                   ),
-                  helperStyle: TextStyle(color: Colors.black),
-                  filled: true,
-                  fillColor: isEditable ? fillColor : Colors.white,
-                  border: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: const BorderSide(color: Colors.white),
-                  )
-                  // border: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  //   borderSide: const BorderSide(color: Colors.white),
-                  // ),
-                  // focusedBorder: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  //   borderSide: const BorderSide(color: Colors.white),
-                  // ),
                 ),
               ),
             ),

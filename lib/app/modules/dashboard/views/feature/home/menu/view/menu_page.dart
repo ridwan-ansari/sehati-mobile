@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -29,55 +30,75 @@ class MenuPage extends GetView<MenuCotroller> {
                 crossAxisSpacing: 10,
                 childAspectRatio: 0.75,
                 children: [
-                  _buildFeatureItem(
-                    AppAssets.monitoringIcon,
-                    "Self\nmonitoring",
-                    onTap: () => Get.toNamed('/monitoring'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.monitoringIcon,
+                      "Self\nmonitoring",
+                      onTap: () => Get.toNamed('/monitoring'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.appointmentIcon,
-                    "Appointment",
-                    onTap: () => Get.toNamed('/appointment'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.appointmentIcon,
+                      "Appointment",
+                      onTap: () => Get.toNamed('/appointment'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.tvIcon,
-                    "Video\nEdutainment",
-                    onTap: () => Get.toNamed('/edutainment'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.tvIcon,
+                      "Video\nEdutainment",
+                      onTap: () => Get.toNamed('/edutainment'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.gameIcon,
-                    "Game",
-                    onTap: () => Get.toNamed('/game'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.gameIcon,
+                      "Game",
+                      onTap: () => Get.toNamed('/game'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.dayliIcon,
-                    "Daily\nJournal",
-                    onTap: () => Get.toNamed('/journal'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.dayliIcon,
+                      "Daily\nJournal",
+                      onTap: () => Get.toNamed('/journal'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.chatIcon,
-                    "Chatting",
-                    onTap: () => Get.toNamed('/chatting'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.chatIcon,
+                      "Chatting",
+                      onTap: () => Get.toNamed('/chatting'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.healthyMenuIcon,
-                    "Healthy\nMenu",
-                    onTap: () => Get.toNamed('/healthy_menu'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.healthyMenuIcon,
+                      "Healthy\nMenu",
+                      onTap: () => Get.toNamed('/healthy_menu'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.riminderIcon,
-                    "Reminder",
-                    onTap: () => Get.toNamed('/reminder'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.riminderIcon,
+                      "Reminder",
+                      onTap: () => Get.toNamed('/reminder'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.sleepIcon,
-                    "Sleep",
-                    onTap: () => Get.toNamed('/sleep'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.sleepIcon,
+                      "Sleep",
+                      onTap: () => Get.toNamed('/sleep'),
+                    ),
                   ),
-                  _buildFeatureItem(
-                    AppAssets.giftBoxIcon,
-                    "Merchandise",
-                    onTap: () => Get.toNamed('/merchandise'),
+                  AnimatedIn(
+                    child: _buildFeatureItem(
+                      AppAssets.giftBoxIcon,
+                      "Merchandise",
+                      onTap: () => Get.toNamed('/merchandise'),
+                    ),
                   ),
                 ],
               ),

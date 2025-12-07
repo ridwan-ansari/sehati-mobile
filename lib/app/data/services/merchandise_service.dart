@@ -23,6 +23,7 @@ class MerchandiseService {
     int offset = 0,
     String name = "",
   }) async {
+    print("🚀 Fetching merchandise: name='$name', limit=$limit, offset=$offset");
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
@@ -34,14 +35,17 @@ class MerchandiseService {
         "${ApiEndpoints.MERCHANDISE}/?name=$name&limit=$limit&offset=$offset",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-
+      print("RESPONSE : ${response.statusCode}");
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => MerchandiseModel.fromJson(e)).toList();
       } else {
+        print("ERROR : ${response.data}");
         throw Exception(response.data['message']);
       }
     } on DioException catch (e) {
+      print("ERROR statusCode getMerchandise : ${e.response?.statusCode}");
+      print("ERROR error getMerchandise: ${e.message}");
       final msg = e.response?.data['message'] ?? "Failed to load merchandise";
       SnackbarUtils.show(isError: true, msg);
       rethrow;

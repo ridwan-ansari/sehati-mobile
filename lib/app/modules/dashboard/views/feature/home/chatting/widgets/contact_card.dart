@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class ContactCardWidget extends StatelessWidget {
   final String profileUrl;
@@ -35,22 +36,26 @@ class ContactCardWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(radius: 30, backgroundImage: NetworkImage(profileUrl)),
+            AnimatedIn(child: CircleAvatar(radius: 30, backgroundImage: NetworkImage(profileUrl))),
             const SizedBox(width: 16.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                AnimatedIn(
+                  child: Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4.0),
-                Text(
-                  status,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                AnimatedIn(
+                  child: Text(
+                    status,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ),
               ],
             ),

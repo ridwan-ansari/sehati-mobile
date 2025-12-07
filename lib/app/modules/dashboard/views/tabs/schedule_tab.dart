@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
@@ -30,16 +31,18 @@ class ScheduleTab extends GetView<ScheduleController> {
               ? Center(
                   child: CircularProgressIndicator(color: AppColors.gold),
                 )
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(top: 16),
-                  itemCount: controller.schedules.length,
-                  itemBuilder: (context, index) {
-                    final schedule = controller.schedules[index];
-                    print("[$index] TIME : ${schedule.scheduleTime}");
-                    return ScheduleCardWidget(shedule: schedule);
-                  },
-                ),
+              : AnimatedIn(
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(top: 16),
+                    itemCount: controller.schedules.length,
+                    itemBuilder: (context, index) {
+                      final schedule = controller.schedules[index];
+                      print("[$index] TIME : ${schedule.scheduleTime}");
+                      return ScheduleCardWidget(shedule: schedule);
+                    },
+                  ),
+              ),
         );
       }),
     );

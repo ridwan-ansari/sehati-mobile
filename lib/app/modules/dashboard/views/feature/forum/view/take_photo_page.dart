@@ -54,20 +54,21 @@ class TakePhotoPage extends GetView<CameraControllerX> {
             width: 100,
             height: 100,
             padding: EdgeInsets.zero,
-            color: Colors.black,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.photo, color: Colors.white, size: 65),
-                  onPressed: () async {
-                    await controller.pickFromGallery();
-                    if (controller.selectedImage.value != null) {
-                      Get.to(() => const PreparePostContent());
-                    }
-                  },
-                ),
-              ],
+            child: Obx(
+              ()=> controller.showFab.value == true? Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.photo, color: Colors.white, size: 65),
+                    onPressed: () async {
+                      await controller.pickFromGallery();
+                      if (controller.selectedImage.value != null) {
+                        Get.to(() => const PreparePostContent());
+                      }
+                    },
+                  ),
+                ],
+              ):SizedBox.shrink(),
             ),
           ),
           const SizedBox(width: 24.0),

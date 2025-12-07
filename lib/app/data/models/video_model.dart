@@ -22,19 +22,22 @@ class VideoModel {
     required this.isActive,
     required this.createdAt,
   });
-
   factory VideoModel.fromJson(Map<String, dynamic> json) {
     return VideoModel(
-      id: json['id'],
-      title: json['title'],
-      youtubeUrl: json['youtube_url'],
-      rewardPoints: json['reward_points'],
-      durationSeconds: json['duration_seconds'],
-      description: json['description'],
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      youtubeUrl: json['youtube_url'] ?? '',
+      rewardPoints: json['reward_points'] == null
+          ? 0
+          : int.tryParse(json['reward_points'].toString()) ?? 0,
+      durationSeconds: json['duration_seconds'] == null
+          ? null
+          : int.tryParse(json['duration_seconds'].toString()),
+      description: json['description'] ?? '',
       thumbnail: json['thumbnail'],
       category: json['category'],
-      isActive: json['is_active'],
-      createdAt: json['created_at'],
+      isActive: json['is_active'] ?? false,
+      createdAt: json['created_at'] ?? '',
     );
   }
 }

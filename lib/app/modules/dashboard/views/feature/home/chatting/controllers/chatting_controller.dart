@@ -1,20 +1,25 @@
 // ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/chat_message_model.dart';
 import 'package:sehati/app/data/models/response/chat_message_model.dart';
 import 'package:sehati/app/data/models/response/chat_room_model.dart';
+import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/models/response/user_chat_model.dart';
 import 'package:sehati/app/data/repositories/chat_repository.dart';
 import 'package:sehati/app/data/services/chat_service.dart';
+import 'package:sehati/app/data/services/user_service.dart';
 import 'package:sehati/app/data/services/ws/chat_socket_service.dart';
+import 'package:sehati/app/services/awesome_notifications_service.dart';
 
 class ChattingController extends GetxController {
   final ChatService _chatService = ChatService();
-  final socketService = ChatSocketService();
+  final UserService _userService = UserService();
+  final ChatSocketService socketService = ChatSocketService();
+
   late ChatRepository repo;
   RxBool isLoading = false.obs;
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
@@ -24,6 +29,8 @@ class ChattingController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final ScrollController userScrollController = ScrollController();
   final ScrollController chatScrollController = ScrollController();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Timer? _debounce;
 
@@ -64,7 +71,6 @@ class ChattingController extends GetxController {
   void onClose() {
     userScrollController.removeListener(_onScroll);
     userScrollController.dispose();
-    socketService.disconnect();
     super.onClose();
   }
 
@@ -83,7 +89,7 @@ class ChattingController extends GetxController {
     if (!chatHasMore || chatIsLoading.value) return;
     print("Loading more messages...");
     chatIsLoading.value = true;
-    chatPage++; 
+    chatPage++;
 
     final messages = await _chatService.getMessages(
       roomKey: currentRoomKey!,
@@ -128,18 +134,14 @@ class ChattingController extends GetxController {
       Map<String, dynamic> data = jsonDecode(raw);
       final incomingRoomKey = data['room_key'];
 
-      // Jika belum ada roomKey di controller → set dari socket
       if (currentRoomKey == null || currentRoomKey!.isEmpty) {
         currentRoomKey = incomingRoomKey;
         print("📌 Room key initialized from socket: $currentRoomKey");
       }
 
-      // Hanya update bila room-nya sama
       if (incomingRoomKey == currentRoomKey) {
         print("📩 New message for active room: $currentRoomKey");
         await loadMessages(roomKey: currentRoomKey!, refresh: true);
-
-        // Update daftar room agar posisi last message ikut berubah
         await getRooms();
       }
     });
@@ -297,5 +299,37 @@ class ChattingController extends GetxController {
 
   void clearReply() {
     replyChat.value = null;
+  }
+
+  Future<void> showWsNotification({
+    required String title,
+    required String body,
+    required String imageUrl,
+    required String receiverId,
+    required String roomKey,
+    required String receiverName,
+    required String receiverPicture,
+    required String roomId,
+  }) async {
+    AwesomeNotificationService.showWsNotification(
+      title: title,
+      body: body,
+      imageUrl: imageUrl,
+      receiverId: receiverId,
+      roomKey: roomKey,
+      receiverName: receiverName,
+      receiverPicture: receiverPicture,
+      roomId: roomId,
+    );
+  }
+
+  Future<ProfileData?> getUserById(String userId) async {
+    try {
+      final profile = await _userService.getUserId(userId: userId);
+      return profile;
+    } catch (e) {
+      print("Error fetching user profile: $e");
+      return null;
+    }
   }
 }

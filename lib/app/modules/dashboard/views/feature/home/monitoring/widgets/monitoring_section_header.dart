@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 
 class MonitoringSectionHeader extends StatelessWidget {
   final String title;
@@ -18,9 +19,11 @@ class MonitoringSectionHeader extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+      child: AnimatedIn(
+        child: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+        ),
       ),
     );
   }

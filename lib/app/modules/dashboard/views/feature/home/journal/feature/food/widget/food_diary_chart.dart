@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 
 class FoodDiaryChart extends StatelessWidget {
@@ -10,7 +11,7 @@ class FoodDiaryChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: Text("No data available"));
+      return const Center(child: AnimatedIn(child: Text("There are currently no food diaries available.")));
     }
 
     final chartWidth = data.length * 80.0;
@@ -41,73 +42,75 @@ class FoodDiaryChart extends StatelessWidget {
 
             // ---------------- CHART ----------------
             Expanded(
-              child: BarChart(
-                BarChartData(
-                  maxY: _getMaxValue(),
-                  alignment: BarChartAlignment.spaceAround,
-                  barTouchData: BarTouchData(enabled: false),
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    horizontalInterval: 200,
-                    getDrawingHorizontalLine: (value) =>
-                        FlLine(color: Colors.black12, strokeWidth: 1),
-                  ),
-                  borderData: FlBorderData(show: false),
-
-                  // ---------------- TITLES ----------------
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        interval: 200,
-                        getTitlesWidget: (value, _) => Text(
-                          value.toInt().toString(),
-                          style: const TextStyle(fontSize: 10),
+              child: AnimatedIn(
+                child: BarChart(
+                  BarChartData(
+                    maxY: _getMaxValue(),
+                    alignment: BarChartAlignment.spaceAround,
+                    barTouchData: BarTouchData(enabled: false),
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: 200,
+                      getDrawingHorizontalLine: (value) =>
+                          FlLine(color: Colors.black12, strokeWidth: 1),
+                    ),
+                    borderData: FlBorderData(show: false),
+                
+                    // ---------------- TITLES ----------------
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 40,
+                          interval: 200,
+                          getTitlesWidget: (value, _) => Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ),
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, _) {
+                            int index = value.toInt();
+                            if (index < 0 || index >= data.length) {
+                              return const SizedBox.shrink();
+                            }
+                
+                            return Transform.rotate(
+                              angle: -0.2,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 12.0),
+                                  Text(
+                                    TimeUtils.formatShortDate(
+                                      DateTime.parse(data[index].date),
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          reservedSize: 40,
                         ),
                       ),
                     ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, _) {
-                          int index = value.toInt();
-                          if (index < 0 || index >= data.length) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return Transform.rotate(
-                            angle: -0.2,
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 12.0),
-                                Text(
-                                  TimeUtils.formatShortDate(
-                                    DateTime.parse(data[index].date),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        reservedSize: 40,
-                      ),
-                    ),
+                
+                    barGroups: _buildGroups(),
                   ),
-
-                  barGroups: _buildGroups(),
                 ),
               ),
             ),
@@ -199,7 +202,7 @@ class _LegendItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        AnimatedIn(child: Text(label, style: const TextStyle(fontSize: 12))),
       ],
     );
   }

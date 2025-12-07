@@ -44,7 +44,6 @@ class EdutainmentService {
           'Authorization': 'Bearer $token',
         }),
       );
-      print("response get vide : ${response.statusCode}");
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => VideoModel.fromJson(e)).toList();

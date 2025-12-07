@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -32,36 +33,46 @@ class ProfileTab extends GetView<ProfileController> {
               child: Column(
                 children: [
                   const SizedBox(height: 56.0),
-                  CircleAvatar(
-                    radius: 56,
-                    backgroundColor: Colors.grey.withOpacity(0.5),
-                    backgroundImage:
-                        (profile != null && profile.picture.isNotEmpty)
-                        ? NetworkImage('$BASE_URL${profile.picture}')
-                        : null,
-                    child: (profile == null || profile.picture.isEmpty)
-                        ? const Icon(Icons.person, size: 56)
-                        : null,
+                  AnimatedIn(
+                    child: CircleAvatar(
+                      radius: 58,
+                      backgroundColor: AppColors.orangeLight,
+                      child: CircleAvatar(
+                        radius: 56,
+                        backgroundColor: Colors.grey.withOpacity(0.5),
+                        backgroundImage:
+                            (profile != null && profile.picture.isNotEmpty)
+                            ? NetworkImage('$BASE_URL${profile.picture}')
+                            : null,
+                        child: (profile == null || profile.picture.isEmpty)
+                            ? const Icon(Icons.person, size: 56)
+                            : null,
+                      ),
+                    ),
                   ),
             
                   const SizedBox(height: 10),
-                  Text(
-                    profile?.fullname ?? "",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  AnimatedIn(
+                    child: Text(
+                      profile?.fullname ?? "",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  Text(
-                    profile?.email ?? "",
-                    style: const TextStyle(fontSize: 14),
+                  AnimatedIn(
+                    child: Text(
+                      profile?.email ?? "",
+                      style: const TextStyle(fontSize: 14),
+                    ),
                   ),
                   const SizedBox(height: 12.0),
                   _buildInfoCard(profile),
                   const SizedBox(height: 12.0),
                   _buildSettingsCard(context),
                   const SizedBox(height: 12.0),
-                  _buildLogoutButton(),
+                  AnimatedIn(child: _buildLogoutButton()),
                 ],
               ),
             ),
@@ -142,9 +153,11 @@ class ProfileTab extends GetView<ProfileController> {
           children: [
             Text(text, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 4.0),
-            Text(
-              value.isEmpty ? '-' : value,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            AnimatedIn(
+              child: Text(
+                value.isEmpty ? '-' : value,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
             ),
           ],
         ),
@@ -167,15 +180,17 @@ class ProfileTab extends GetView<ProfileController> {
               ),
             ),
           ),
-          _buildListTile(
-            bgColor: Colors.white,
-            icon: Icons.person_pin,
-            color: Colors.black,
-            text: 'Change photo',
-            textColor: Colors.black,
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => ChangePhotoDialog(controller: controller),
+          AnimatedIn(
+            child: _buildListTile(
+              bgColor: Colors.white,
+              icon: Icons.person_pin,
+              color: Colors.black,
+              text: 'Change photo',
+              textColor: Colors.black,
+              onTap: () => showDialog(
+                context: context,
+                builder: (_) => ChangePhotoDialog(controller: controller),
+              ),
             ),
           ),
           // const Divider(),

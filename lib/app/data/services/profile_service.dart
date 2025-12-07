@@ -60,34 +60,6 @@ class ProfileService {
   }
 
   // ==============================
-  // 🧍 GET USER BY ID
-  // ==============================
-  Future<Map<String, dynamic>?> getUserById(int userId) async {
-    try {
-      final token = LocalStorageService.getAccessToken();
-
-      final response = await _dio.get(
-        ApiEndpoints.userById(userId),
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-
-      if (response.statusCode == 200) {
-        print("✅ GET USER SUCCESS: ${response.data}");
-        return response.data;
-      } else {
-        print("⚠️ GET USER FAILED: ${response.statusMessage}");
-        SnackbarUtils.show("Gagal memuat data pengguna");
-        return null;
-      }
-    } on DioException catch (e) {
-      EasyLoading.dismiss();
-      print("❌ GET USER ERROR: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("Terjadi kesalahan saat memuat data pengguna");
-      return null;
-    }
-  }
-
-  // ==============================
   // 📸 UPLOAD PROFILE PICTURE
   // ==============================
   Future<Map<String, dynamic>?> uploadProfilePicture(String filePath) async {

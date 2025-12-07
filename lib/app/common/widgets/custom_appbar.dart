@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -75,34 +76,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     color: const Color(0xFFFFC107),
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: TextField(
-                    controller: controller,
-                    onChanged: onSearchChanged,
-                    onTap: onSearchTap,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      height: 1.2,
-                    ),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      hintText: "Search here ...",
-                      hintStyle: const TextStyle(
-                        color: Colors.black87,
+                  child: AnimatedIn(
+                    child: TextField(
+                      controller: controller,
+                      onChanged: onSearchChanged,
+                      onTap: onSearchTap,
+                      style: const TextStyle(
+                        color: Colors.black,
                         fontSize: 14,
+                        height: 1.2,
                       ),
-                      border: InputBorder.none,
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.only(right: 24),
-                        child: AppAssetUtils.svg(
-                          AppAssets.searchIcon,
-                          width: 18,
-                          height: 18,
-                          color: Colors.black,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        hintText: "Search here ...",
+                        hintStyle: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 14,
+                        ),
+                        border: InputBorder.none,
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 24),
+                          child: AppAssetUtils.svg(
+                            AppAssets.searchIcon,
+                            width: 18,
+                            height: 18,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),

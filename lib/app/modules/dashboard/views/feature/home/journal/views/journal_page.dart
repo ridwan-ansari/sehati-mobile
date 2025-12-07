@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -85,7 +86,7 @@ class JournalPage extends GetView<JournalController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppAssetUtils.image(item['image']??'' , width: 125),
+          AnimatedIn(child: AppAssetUtils.image(item['image']??'' , width: 125)),
           const SizedBox(width: 12),
 
           // Informasi
@@ -96,34 +97,38 @@ class JournalPage extends GetView<JournalController> {
                 GradienLabelRight(title: item["title"] ?? "", fontSize: 14),
                 const SizedBox(height: 8),
 
-                ElevatedButton(
-                  onPressed: () {
-                    Get.toNamed(item['route'] ?? '');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(color: Colors.black, width: 2),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
+                AnimatedIn(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed(item['route'] ?? '');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(color: Colors.black, width: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                    child: const Text(
+                      "START JOURNALLING",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
-                  ),
-                  child: const Text(
-                    "START JOURNALLING",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  "Reward: ${item["reward"]}",
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                AnimatedIn(
+                  child: Text(
+                    "Reward: ${item["reward"]}",
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
