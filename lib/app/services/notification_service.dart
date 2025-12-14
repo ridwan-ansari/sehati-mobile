@@ -44,10 +44,9 @@ class NotificationService {
     required String title,
     required String body,
     required DateTime dateTime,
-    bool repeatDaily = false,
   }) async {
-    const String STOP_ALARM_KEY = 'stop_alarm';
-    const String OPEN_ALARM_KEY = 'open_alarm';
+    // const String STOP_ALARM_KEY = 'stop_alarm';
+    // const String OPEN_ALARM_KEY = 'open_alarm';
     await _plugin.zonedSchedule(
       id,
       title,
@@ -69,23 +68,37 @@ class NotificationService {
           category: AndroidNotificationCategory.alarm,
           vibrationPattern: Int64List.fromList([0, 1000, 500, 2000]),
           audioAttributesUsage: AudioAttributesUsage.alarm,
+          icon: '@mipmap/ic_launcher',
           actions: <AndroidNotificationAction>[
-            AndroidNotificationAction(
-              STOP_ALARM_KEY,
-              'Stop',
-              cancelNotification: true,
-            ),
-            AndroidNotificationAction(
-              OPEN_ALARM_KEY,
-              'Open',
-              cancelNotification: false,
-            ),
+            // AndroidNotificationAction(
+            //   STOP_ALARM_KEY,
+            //   'Stop',
+            //   cancelNotification: true,
+            // ),
+            // AndroidNotificationAction(
+            //   OPEN_ALARM_KEY,
+            //   'Open',
+            //   cancelNotification: false,
+            // ),
           ],
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: repeatDaily ? DateTimeComponents.time : null,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     );
+  }
+
+  static Future<void> cancelReminder({
+    required int baseId,
+    required int totalDays,
+  }) async {
+    for (int i = 0; i < totalDays; i++) {
+      await _plugin.cancel(baseId + i);
+    }
+  }
+
+  static Future<void> cancelAll() async {
+    await _plugin.cancelAll();
   }
 
   static Future<void> onActionReceived(ReceivedAction action) async {

@@ -47,28 +47,35 @@ class SleepPage extends GetView<SleepController> {
         child: Column(
           children: [
             MonitoringSectionHeader(
-              title: "Welcome to your sleep habir journal",
+              title: "Welcome to your sleep habit journal",
             ),
             const SizedBox(height: 16),
             MonitoringInputCard(
               children: [
-                _buildRow("Date of measurement", _buildDateField()),
-                _buildRow("Sleep time", _buildTimeField(controller.sleepTime)),
                 _buildRow(
-                  "Wake up time",
-                  _buildTimeField(controller.wakeUpTime),
+                  label: "Date of measurement",
+                  input: _buildDateField(),
+                  subtitle: "Record your sleep time from yesterday",
                 ),
                 _buildRow(
-                  "Sleep Duration",
-                  MonitoringInputField(
+                  label: "Sleep time",
+                  input: _buildTimeField(controller.sleepTime),
+                ),
+                _buildRow(
+                  label: "Wake up time",
+                  input: _buildTimeField(controller.wakeUpTime),
+                ),
+                _buildRow(
+                  label: "Sleep Duration",
+                  input: MonitoringInputField(
                     isEdit: true,
                     controller: controller.durationSleepController,
                     hint: "Autofill",
                   ),
                 ),
                 _buildRow(
-                  "Target Sleep Duration/day",
-                  MonitoringInputField(
+                  label: "Target Sleep Duration/day",
+                  input: MonitoringInputField(
                     controller: controller.targetSleepController,
                     hint: 'Hours',
                     // keyboardType: TextInputType.number,
@@ -79,7 +86,7 @@ class SleepPage extends GetView<SleepController> {
 
                 const SizedBox(height: 8.0),
                 Text(
-                  "Lets having more exercise to achieve your target!",
+                  "Maintain your ideal sleep duration at 8 hours per day",
                   style: TextStyle(fontSize: 12.0, color: Colors.black54),
                 ),
               ],
@@ -99,12 +106,39 @@ class SleepPage extends GetView<SleepController> {
     );
   }
 
-  Widget _buildRow(String label, Widget input) => Padding(
+  Widget _buildRow({
+    required String label,
+    required Widget input,
+    String? subtitle,
+  }) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 6),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(flex: 2, child: AnimatedIn(child: Text(label))),
+        Expanded(
+          flex: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AnimatedIn(
+                child: Text(
+                  label,
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                ),
+              ),
+              AnimatedIn(
+                child: Text(
+                  subtitle ?? "",
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(width: 10),
         Expanded(flex: 2, child: input),
       ],

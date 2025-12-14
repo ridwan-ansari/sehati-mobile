@@ -20,7 +20,7 @@ class LocalStorageService {
     return box.values.toList();
   }
 
-  static Future<void> deleteReminder(int id) async {
+  static Future<void> deleteReminder(String id) async {
     await box.delete(id);
   }
 

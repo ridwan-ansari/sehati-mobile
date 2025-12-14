@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/widgets/room_chat_card.dart';
 import '../controllers/chatting_controller.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
-
 class ChattingPage extends GetView<ChattingController> {
   const ChattingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        logoSvg: AppAssets.chatIcon,
-        onSearchChanged: (value) {},
-        onProfileTap: () {},
+      appBar: SimpleTextAppBar(
+        title: "Chat",
+        onBack: () {
+          // custom back logic
+          Get.offAllNamed('/dashboard');
+        },
       ),
       body: Obx(() {
         if (controller.isLoading.value) {

@@ -21,7 +21,6 @@ class ApiEndpoints {
   static const String USER_PROFILE = "$BASE_URL/api/users/profile";
   static const String USER_PICTURE = "$BASE_URL/api/users/profile/picture";
   static const String SEARCH_USERS = "$BASE_URL/api/users/";
-  static const String REMENDER = "$BASE_URL/api/reminders/";
 
   // =========================
   // 💬 CHAT
@@ -55,7 +54,7 @@ class ApiEndpoints {
   static const String FOOD_DIARY_ANALYSIS = "$BASE_URL/api/habit/food/diary/analysis";
 
   static const String VIDEO = "$BASE_URL/api/video/";
-  static const String VIDEO_CLAIM_REWARD = "$BASE_URL/api/video/claim-reward";
+  static const String VIDEO_CLAIM_REWARD = "$BASE_URL/api/video/claim-point";
   static const String PROFESSIONAL_LIST = "$BASE_URL/api/appointment/professionals";
   static const String APPOINTMENT = "$BASE_URL/api/appointment/";
 
@@ -74,6 +73,7 @@ class ApiEndpoints {
   static const String FOOD = "$BASE_URL/api/habit/food";
   static const String FORUM_CONTENT = "$BASE_URL/api/forum";
   static const String GAME = "$BASE_URL/api/games/";
+  static const String REMENDER = "$BASE_URL/api/reminders/";
 
   // =========================
   // 🌐 ROOT

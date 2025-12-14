@@ -8,6 +8,7 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/professional_res_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentDetailPage extends GetView<AppointmentController> {
@@ -61,6 +62,47 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
         children: [
           _doctorProfile(doctor),
           const SizedBox(height: 24),
+          if (doctor.phoneNumber!.isNotEmpty)
+            InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () async {
+                await launchUrl(
+                  Uri.parse("https://wa.me/62${doctor.phoneNumber}"),
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Container(
+                height: 56,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                  horizontal: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppAssetUtils.svg(
+                      AppAssets.whatsAppIcon,
+                      width: 28,
+                      height: 28,
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      "WhatsApp",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 16),
           Obx(() => _datePicker(context)),
           const SizedBox(height: 16),
           Obx(() => _timePicker(context)),

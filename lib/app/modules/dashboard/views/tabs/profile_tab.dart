@@ -10,6 +10,7 @@ import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sehati/app/modules/profile/widgets/change_photo_dialog.dart';
+import 'package:sehati/app/services/notification_service.dart';
 
 class ProfileTab extends GetView<ProfileController> {
   const ProfileTab({super.key});
@@ -27,7 +28,7 @@ class ProfileTab extends GetView<ProfileController> {
 
           return RefreshIndicator(
             color: AppColors.orangeLight,
-            onRefresh: ()=>controller.loadProfile(),
+            onRefresh: () => controller.loadProfile(),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -50,7 +51,7 @@ class ProfileTab extends GetView<ProfileController> {
                       ),
                     ),
                   ),
-            
+
                   const SizedBox(height: 10),
                   AnimatedIn(
                     child: Text(
@@ -90,8 +91,9 @@ class ProfileTab extends GetView<ProfileController> {
         color: Colors.white,
         text: 'Logout',
         textColor: Colors.white,
-        onTap: () {
-          LocalStorageService.clearTokens();
+        onTap: () async {
+          await NotificationService.cancelAll();
+          await LocalStorageService.clearTokens();
           Get.offAllNamed('/splash');
           Get.offAllNamed('/login');
         },

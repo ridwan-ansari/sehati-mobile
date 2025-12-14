@@ -22,66 +22,83 @@ class DashboardPage extends GetView<DashboardController> {
       const ScheduleTab(),
       const ProfileTab(),
     ];
-    
-return Obx(
-  () => PopScope(
-    canPop: false,
-    onPopInvoked: (pop){
-      if(pop)return;
-      controller.onWillPop(context);
-    },
-    child: Scaffold(
-      body: pages[controller.selectedIndex.value],
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: const Color(0xFF3B2B27),
-          borderRadius: BorderRadius.circular(20), 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 10,
+
+    return Obx(
+      () => PopScope(
+        canPop: false,
+        onPopInvoked: (pop) {
+          if (pop) return;
+          controller.onWillPop(context);
+        },
+        child: Scaffold(
+          body: pages[controller.selectedIndex.value],
+          bottomNavigationBar: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF3B2B27),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 10,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: controller.selectedIndex.value,
-            onTap: controller.changeTab,
-            showUnselectedLabels: true,
-            selectedItemColor: AppColors.gold,
-            unselectedItemColor: Colors.white,
-            selectedLabelStyle:
-                const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
-            backgroundColor: Colors.transparent, 
-            items: [
-              BottomNavigationBarItem(
-                icon: AppAssetUtils.svg(AppAssets.homeIcon, width: 24, height: 24),
-                label: "Home",
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                currentIndex: controller.selectedIndex.value,
+                onTap: controller.changeTab,
+                showUnselectedLabels: true,
+                selectedItemColor: AppColors.gold,
+                unselectedItemColor: Colors.white,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                ),
+                backgroundColor: Colors.transparent,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: AppAssetUtils.svg(
+                      AppAssets.homeIcon,
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: "Home",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: AppAssetUtils.svg(
+                      AppAssets.forumIcon,
+                      width: 32,
+                      height: 32,
+                      color: AppColors.gold,
+                    ),
+                    label: "Forum",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: AppAssetUtils.svg(
+                      AppAssets.scheduleIcon,
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: "Schedule",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: AppAssetUtils.svg(
+                      AppAssets.profileIcon,
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: "Profile",
+                  ),
+                ],
               ),
-              BottomNavigationBarItem(
-                icon: AppAssetUtils.svg(AppAssets.forumIcon, width: 32, height: 32 , color: AppColors.gold),
-                label: "Forum",
-              ),
-              BottomNavigationBarItem(
-                icon: AppAssetUtils.svg(AppAssets.scheduleIcon, width: 24, height: 24),
-                label: "Schedule",
-              ),
-              BottomNavigationBarItem(
-                icon: AppAssetUtils.svg(AppAssets.profileIcon, width: 24, height: 24),
-                label: "Profile",
-              ),
-            ],
+            ),
           ),
         ),
       ),
-    ),
-  ),
-);
-
+    );
   }
-  
 }

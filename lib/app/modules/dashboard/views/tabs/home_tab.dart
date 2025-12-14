@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_const_constructors, avoid_print, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,6 +25,7 @@ class _HomeTabState extends State<HomeTab> {
   Widget build(BuildContext context) {
     final LeaderboardController leader = Get.find();
     final GameController gameController = Get.find();
+
     return SafeArea(
       child: RefreshIndicator(
         color: AppColors.orangeLight,
@@ -284,7 +285,12 @@ class _HomeTabState extends State<HomeTab> {
                         final game = gameController.games[index];
                         return Padding(
                           padding: const EdgeInsets.only(right: 16),
-                          child: _buildGameCard(game),
+                          child: _buildGameCard(
+                            game: game,
+                            onTap: game.isClaim
+                                ? () => gameController.onGameTap(game.id)
+                                : () => gameController.claimGame(game.id),
+                          ),
                         );
                       },
                     ),
@@ -381,64 +387,70 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildGameCard(GameModel game) {
-    return Container(
-      width: 152,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFF3B2B27), width: 1),
-      ),
-      child: Column(
-        children: [
-          if (game.imageUrl.isNotEmpty) ...[
-            const SizedBox(height: 10),
+  Widget _buildGameCard({
+    required GameModel game,
+    required void Function()? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 152,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFF3B2B27), width: 1),
+        ),
+        child: Column(
+          children: [
+            if (game.imageUrl.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              AnimatedIn(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    "$BASE_URL${game.imageUrl}",
+                    height: 100,
+                    width: 120,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 6),
             AnimatedIn(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  "$BASE_URL${game.imageUrl}",
-                  height: 100,
-                  width: 120,
-                  fit: BoxFit.cover,
+              child: Text(
+                game.name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            AnimatedIn(
+              child: Container(
+                margin: const EdgeInsets.only(top: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.orangeLight,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Point -${game.pricePoints} pts",
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
+                  ),
                 ),
               ),
             ),
           ],
-          const SizedBox(height: 6),
-          AnimatedIn(
-            child: Text(
-              game.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          AnimatedIn(
-            child: Container(
-              margin: const EdgeInsets.only(top: 4),
-              decoration: BoxDecoration(
-                color: AppColors.orangeLight,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Point +${game.pricePoints} pts",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

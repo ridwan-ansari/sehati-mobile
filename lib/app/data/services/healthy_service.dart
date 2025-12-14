@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:dio/dio.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -16,7 +17,11 @@ class HealthyService {
     ),
   );
 
-  Future<List<RecipeModel>?> getRecipes() async {
+  Future<List<RecipeModel>?> getRecipes({
+    int limit = 10,
+    int offset = 0,
+    String? name,
+  }) async {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
@@ -26,15 +31,20 @@ class HealthyService {
 
       final response = await _dio.get(
         ApiEndpoints.RECIPE,
+        queryParameters: {'name': name, 'limit': limit, 'offset': offset},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      print("recipe : ${response.statusCode}");
-      print("recipe : ${response.data}");
-
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'];
-        return data.map((e) => RecipeModel.fromJson(e)).toList();
+        final data = response.data['data'];
+
+        if (data is List) {
+          return data
+              .map((e) => RecipeModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+
+        throw Exception('Invalid recipe data format');
       } else {
         throw Exception(response.data['message'] ?? 'Gagal memuat resep');
       }
@@ -42,6 +52,39 @@ class HealthyService {
       final msg = e.response?.data['message'] ?? 'Gagal memuat resep';
       SnackbarUtils.show(isError: true, msg);
       rethrow;
+    }
+  }
+
+  Future<void> claimPoint({required String recipeId}) async {
+    try {
+      final token = LocalStorageService.getAccessToken();
+      if (token == null || token.isEmpty) {
+        SnackbarUtils.show("Token not found. Please log in again.");
+        return;
+      }
+      final response = await _dio.post(
+        "${ApiEndpoints.RECIPE}claim-point",
+        data: {"recipe_id": recipeId},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      print("CLAIM ${response.statusCode}");
+      if (response.statusCode == 201) {
+        print("Berhasil Claim claim Point");
+      } else {
+        print("[E]-claimPoint: ${response.statusMessage}");
+        print("[E]-claimPoint: ${response.statusCode}");
+        return;
+      }
+    } on DioException catch (e) {
+      print("❌ [E]-claimPoint: ${e.response?.data ?? e.message}");
+      print("[E]-claimPoint: ${e.response?.statusCode}");
+      return;
     }
   }
 }

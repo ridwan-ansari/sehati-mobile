@@ -6,7 +6,7 @@ class ForumBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ForumController>(() => ForumController());
-    
-    Get.lazyPut<CameraControllerX>(() => CameraControllerX());
+
+    Get.put(CameraControllerX());
   }
 }

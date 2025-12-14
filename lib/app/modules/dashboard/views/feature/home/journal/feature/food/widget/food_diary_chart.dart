@@ -11,7 +11,11 @@ class FoodDiaryChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: AnimatedIn(child: Text("There are currently no food diaries available.")));
+      return const Center(
+        child: AnimatedIn(
+          child: Text("There are currently no food diaries available."),
+        ),
+      );
     }
 
     final chartWidth = data.length * 80.0;
@@ -28,13 +32,11 @@ class FoodDiaryChart extends StatelessWidget {
           children: [
             // ---------------- LEGEND ----------------
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                _LegendItem(color: Colors.green, label: "Requirement"),
-                SizedBox(width: 20),
-                _LegendItem(color: Colors.red, label: "Target"),
-                SizedBox(width: 20),
-                _LegendItem(color: Colors.blue, label: "Actual"),
+                _LegendItem(color: Colors.green, label: "Requirement(Kcal)"),
+                _LegendItem(color: Colors.red, label: "Target(Kcal)"),
+                _LegendItem(color: Colors.blue, label: "Actual(Kcal)"),
               ],
             ),
 
@@ -56,7 +58,7 @@ class FoodDiaryChart extends StatelessWidget {
                           FlLine(color: Colors.black12, strokeWidth: 1),
                     ),
                     borderData: FlBorderData(show: false),
-                
+
                     // ---------------- TITLES ----------------
                     titlesData: FlTitlesData(
                       leftTitles: AxisTitles(
@@ -76,7 +78,7 @@ class FoodDiaryChart extends StatelessWidget {
                       topTitles: const AxisTitles(
                         sideTitles: SideTitles(showTitles: false),
                       ),
-                
+
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -85,7 +87,7 @@ class FoodDiaryChart extends StatelessWidget {
                             if (index < 0 || index >= data.length) {
                               return const SizedBox.shrink();
                             }
-                
+
                             return Transform.rotate(
                               angle: -0.2,
                               child: Column(
@@ -108,7 +110,7 @@ class FoodDiaryChart extends StatelessWidget {
                         ),
                       ),
                     ),
-                
+
                     barGroups: _buildGroups(),
                   ),
                 ),
@@ -202,7 +204,7 @@ class _LegendItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        AnimatedIn(child: Text(label, style: const TextStyle(fontSize: 12))),
+        AnimatedIn(child: Text(label, style: const TextStyle(fontSize: 10))),
       ],
     );
   }

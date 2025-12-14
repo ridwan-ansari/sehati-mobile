@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
 
 class ContactCardWidget extends StatelessWidget {
   final String profileUrl;
@@ -36,7 +37,19 @@ class ContactCardWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            AnimatedIn(child: CircleAvatar(radius: 30, backgroundImage: NetworkImage(profileUrl))),
+            AnimatedIn(
+                    child: CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.grey.withOpacity(0.5),
+                      backgroundImage:
+                          (profileUrl.isNotEmpty)
+                          ? NetworkImage(profileUrl)
+                          : null,
+                      child: (profileUrl.isEmpty)
+                          ? Icon(Icons.person, size: 56 , color: AppColors.white,)
+                          : null,
+                    ),
+                  ),
             const SizedBox(width: 16.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

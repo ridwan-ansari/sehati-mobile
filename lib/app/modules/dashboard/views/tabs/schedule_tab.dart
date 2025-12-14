@@ -15,10 +15,7 @@ class ScheduleTab extends GetView<ScheduleController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        logoSvg: AppAssets.doctorIcon,
-        onProfileTap: () => print("Profile tapped"),
-      ),
+      appBar: CustomAppBar(logoSvg: AppAssets.doctorIcon),
 
       body: Obx(() {
         return RefreshIndicator(
@@ -28,11 +25,9 @@ class ScheduleTab extends GetView<ScheduleController> {
           },
 
           child: controller.isLoading.value && controller.schedules.isEmpty
-              ? Center(
-                  child: CircularProgressIndicator(color: AppColors.gold),
-                )
+              ? Center(child: CircularProgressIndicator(color: AppColors.gold))
               : AnimatedIn(
-                child: ListView.builder(
+                  child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.only(top: 16),
                     itemCount: controller.schedules.length,
@@ -42,7 +37,7 @@ class ScheduleTab extends GetView<ScheduleController> {
                       return ScheduleCardWidget(shedule: schedule);
                     },
                   ),
-              ),
+                ),
         );
       }),
     );

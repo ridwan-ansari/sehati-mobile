@@ -154,4 +154,19 @@ class MerchandiseController extends GetxController {
     }
     loadingId.value = "";
   }
+
+  bool canClaimMerchandise(MerchandiseModel item) {
+    if (item.isClaimed == null || item.isClaimed == false) {
+      return true;
+    }
+
+    if (item.isClaimed == true) {
+      if (item.claimStatus == 'rejected') {
+        return true;
+      }
+      return false;
+    }
+
+    return false;
+  }
 }

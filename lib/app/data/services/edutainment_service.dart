@@ -40,9 +40,7 @@ class EdutainmentService {
           'offset': offset,
           if (search != null && search.isNotEmpty) 'title': search,
         },
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-        }),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
         final List data = response.data['data'];
@@ -58,36 +56,38 @@ class EdutainmentService {
   }
 
   Future<bool> claimReward(String videoId) async {
-  try {
-    final token = LocalStorageService.getAccessToken();
-    if (token == null || token.isEmpty) {
-      SnackbarUtils.show("Token not found. Please login.");
+    try {
+      final token = LocalStorageService.getAccessToken();
+      if (token == null || token.isEmpty) {
+        SnackbarUtils.show("Token not found. Please login.");
+        return false;
+      }
+
+      final response = await _dio.post(
+        ApiEndpoints.VIDEO_CLAIM_REWARD,
+        data: {"video_id": videoId},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      print("CLAIM YOUTUBE STATUS : ${response.statusCode}");
+      print("CLAIM YOUTUBE STATUS : ${response.data}");
+      if (response.statusCode == 201) {
+        return true;
+      }
+
+      return false;
+    } on DioException catch (e) {
+      print("[E]CLAIM YOUTUBE STATUS : ${e.response?.statusCode}");
+      print("[E]CLAIM YOUTUBE STATUS : ${e.response?.data}");
+      final msg = e.response?.data['message'] ?? e.message;
+      SnackbarUtils.show(isError: true, msg);
       return false;
     }
-
-    final response = await _dio.post(
-      ApiEndpoints.VIDEO_CLAIM_REWARD,
-      data: {
-        "video_id": videoId,
-      },
-      options: Options(
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    }
-
-    return false;
-  } on DioException catch (e) {
-    final msg = e.response?.data['message'] ?? e.message;
-    SnackbarUtils.show(isError: true, msg);
-    return false;
   }
-}
-
 }

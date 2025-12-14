@@ -5,9 +5,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sehati/app/data/services/notification_service.dart';
 import 'package:sehati/app/data/services/ws/chat_socket_service.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/game/controllers/game_controller.dart';
-import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sehati/app/services/awesome_notifications_service.dart';
 import 'package:sehati/main_config.dart';
 import 'app/routes/app_pages.dart';
@@ -21,9 +18,6 @@ void main() async {
   Get.put(ChatSocketService(), permanent: true);
   await GetStorage.init();
   Get.put(ThemeController());
-  Get.put(ProfileController());
-  Get.put(ChattingController(), permanent: true);
-  Get.put(GameController(), permanent: true);
   await LocalStorageService.init();
   await AwesomeNotifications().initialize(
     null,

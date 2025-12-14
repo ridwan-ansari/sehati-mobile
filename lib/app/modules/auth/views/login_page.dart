@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -12,6 +14,8 @@ class LoginPage extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.resetLoginFields();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -83,9 +87,7 @@ class LoginPage extends GetView<AuthController> {
                       return AnimatedIn(
                         child: TextFormField(
                           controller: controller.passwordController,
-                          obscureText: controller
-                              .isPasswordHidden
-                              .value, // reactive hide/show
+                          obscureText: controller.isPasswordHidden.value,
                           decoration: InputDecoration(
                             prefixIcon: Padding(
                               padding: const EdgeInsets.all(12.0),
@@ -98,7 +100,8 @@ class LoginPage extends GetView<AuthController> {
                             ),
                             suffixIcon: IconButton(
                               onPressed: () {
-                                controller.isPasswordHidden.toggle();
+                                print("password hide");
+                                controller.togglePasswordVisibility();
                               },
                               icon: Icon(
                                 controller.isPasswordHidden.value
@@ -152,7 +155,7 @@ class LoginPage extends GetView<AuthController> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Get.toNamed('/signup');
+                            Get.toNamed('/input_profile');
                           },
                           child: const Text(
                             "Sign Up",

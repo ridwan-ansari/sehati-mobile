@@ -20,7 +20,6 @@ class GamePage extends GetView<GameController> {
       appBar: CustomAppBar(
         logoSvg: AppAssets.gameIcon,
         onSearchChanged: (value) {},
-        onProfileTap: () {},
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -131,11 +130,11 @@ class GamePage extends GetView<GameController> {
                       child: ElevatedButton(
                         onPressed: game.isClaim
                             ? () => controller.onGameTap(game.id)
-                            : null,
+                            : () => controller.claimGame(game.id),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: game.isClaim
-                              ? AppColors.orangeLight
-                              : Colors.grey.shade400,
+                              ? Colors.green
+                              : AppColors.orangeLight,
                           padding: const EdgeInsets.symmetric(vertical: 6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -143,8 +142,8 @@ class GamePage extends GetView<GameController> {
                           elevation: 0,
                         ),
                         child: AnimatedIn(
-                          child: const Text(
-                            "Play",
+                          child: Text(
+                            game.isClaim ? "Play" : "Claim",
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.white,
@@ -207,7 +206,7 @@ class GamePage extends GetView<GameController> {
                         ),
                         child: AnimatedIn(
                           child: Text(
-                            "Unlock: ${game.pricePoints} pts",
+                            "Unlock: -${game.pricePoints} pts",
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 12,

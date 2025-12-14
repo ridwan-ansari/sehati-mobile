@@ -7,6 +7,9 @@ class MerchandiseModel {
   final String imageUrl;
   final int stock;
 
+  final bool? isClaimed;
+  final String? claimStatus;
+
   MerchandiseModel({
     required this.id,
     required this.name,
@@ -15,6 +18,8 @@ class MerchandiseModel {
     required this.active,
     required this.imageUrl,
     required this.stock,
+    this.isClaimed,
+    this.claimStatus,
   });
 
   factory MerchandiseModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +31,8 @@ class MerchandiseModel {
       active: json['active'],
       imageUrl: json['image_url'],
       stock: json['stock'],
+      isClaimed: json['is_claimed'],
+      claimStatus: json['claim'] != null ? json['claim']['status'] : null,
     );
   }
 }

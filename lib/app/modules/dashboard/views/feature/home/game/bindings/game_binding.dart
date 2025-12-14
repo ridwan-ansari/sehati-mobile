@@ -4,6 +4,6 @@ import '../controllers/game_controller.dart';
 class GameBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<GameController>(() => GameController());
+    Get.put(GameController(),permanent: false);
   }
 }

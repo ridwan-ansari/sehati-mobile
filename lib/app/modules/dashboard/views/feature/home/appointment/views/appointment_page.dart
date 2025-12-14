@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -6,6 +8,7 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentPage extends GetView<AppointmentController> {
@@ -17,7 +20,6 @@ class AppointmentPage extends GetView<AppointmentController> {
       appBar: CustomAppBar(
         logoSvg: AppAssets.doctorIcon,
         onSearchChanged: (value) {},
-        onProfileTap: () {},
       ),
       body: Obx(() {
         if (controller.profeeesionalList.isEmpty) {
@@ -38,7 +40,7 @@ class AppointmentPage extends GetView<AppointmentController> {
                 _buildSectionHeader(specialization),
                 const SizedBox(height: 12),
                 SizedBox(
-                  height: 210,
+                  height: 262,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: professionals.length,
@@ -46,19 +48,13 @@ class AppointmentPage extends GetView<AppointmentController> {
                       final doctor = professionals[index];
                       return Padding(
                         padding: const EdgeInsets.only(right: 12),
-                        child: GestureDetector(
-                          onTap: () {
-                            print(doctor.id);
-                            Get.toNamed(
-                              '/appointment_detail',
-                              arguments: doctor,
-                            );
-                          },
-                          child: _buildDoctorCard(
-                            "$BASE_URL/${doctor.picture}",
-                            doctor.fullname ?? "",
-                            doctor.specialization ?? "",
-                          ),
+                        child: _buildDoctorCard(
+                          context,
+                          "$BASE_URL/${doctor.picture}",
+                          doctor.fullname ?? "",
+                          doctor.specialization ?? "",
+                          doctor.phoneNumber,
+                          doctor,
                         ),
                       );
                     },
@@ -115,56 +111,121 @@ class AppointmentPage extends GetView<AppointmentController> {
     );
   }
 
-  /// --- CARD DOKTER ---
-  Widget _buildDoctorCard(String image, String name, String role) {
-    return Container(
+  Widget _buildDoctorCard(
+    BuildContext context,
+    String image,
+    String name,
+    String role,
+    String? phone,
+    dynamic doctor,
+  ) {
+    final hasPhone = phone != null && phone.isNotEmpty;
+
+    return SizedBox(
       width: 190,
-      decoration: BoxDecoration(
+      child: Material(
+        borderRadius: BorderRadius.circular(14),
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.2),
         color: AppColors.yellowLight,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          AnimatedIn(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                image,
-                width: 120,
-                height: 120,
-                fit: BoxFit.cover,
-              ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+            Get.toNamed('/appointment_detail', arguments: doctor);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                /// FOTO DOKTER
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    image,
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 120,
+                      height: 120,
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.person, size: 40),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                /// NAMA
+                Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                /// SPESIALIS
+                Text(
+                  role,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+
+                const Spacer(),
+
+                /// TOMBOL WHATSAPP
+                if (hasPhone)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () async {
+                      await launchUrl(
+                        Uri.parse("https://wa.me/62$phone"),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppAssetUtils.svg(
+                            AppAssets.whatsAppIcon,
+                            width: 20,
+                            height: 20,
+                          ),
+                          const SizedBox(width: 6),
+                          const Text(
+                            "WhatsApp",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          AnimatedIn(
-            child: Text(
-              name,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          AnimatedIn(
-            child: Text(
-              role,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

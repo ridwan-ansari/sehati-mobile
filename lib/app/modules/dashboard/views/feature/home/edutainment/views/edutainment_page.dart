@@ -11,13 +11,13 @@ class EdutainmentPage extends GetView<EdutainmentController> {
   const EdutainmentPage({super.key});
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         logoSvg: AppAssets.tvIcon,
         onSearchChanged: controller.onSearchChanged,
         controller: controller.searchController,
-        onProfileTap: () {},
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -147,28 +147,28 @@ class EdutainmentPage extends GetView<EdutainmentController> {
                 ),
 
                 // Reward badge
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade600,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      "+${video.rewardPoints} pts",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   right: 12,
+                //   top: 12,
+                //   child: Container(
+                //     padding: const EdgeInsets.symmetric(
+                //       horizontal: 10,
+                //       vertical: 6,
+                //     ),
+                //     decoration: BoxDecoration(
+                //       color: Colors.orange.shade600,
+                //       borderRadius: BorderRadius.circular(12),
+                //     ),
+                //     child: Text(
+                //       "+${video.rewardPoints} pts",
+                //       style: const TextStyle(
+                //         color: Colors.white,
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 13,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
 

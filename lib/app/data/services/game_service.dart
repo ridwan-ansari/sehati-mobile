@@ -35,6 +35,8 @@ class GameService {
         queryParameters: {"name": name, "limit": limit, "offset": offset},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
+      print("Response Data: ${response.data}");
+      print("Response Data: ${response.statusCode}");
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => GameModel.fromJson(e)).toList();
@@ -43,6 +45,8 @@ class GameService {
         return null;
       }
     } on DioException catch (e) {
+      print("❌ get games error: ${e.response?.data ?? e.message}");
+      print("❌ get games error: ${e.response?.statusCode}");
       final msg = e.response?.data['message'] ?? "Network error";
       SnackbarUtils.show(isError: true, msg);
       return null;
@@ -62,7 +66,7 @@ class GameService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
-        SnackbarUtils.show("Game claimed successfully");
+        SnackbarUtils.show(isError: false,response.data["message"]);
       } else {
         SnackbarUtils.show(response.data['message'] ?? "Failed to claim game");
       }
@@ -80,7 +84,6 @@ class GameService {
         SnackbarUtils.show("Token not found. Please log in again.");
         return;
       }
-      await gameClaim(gameId: gameId);
 
       final playUrl = "${ApiEndpoints.GAME}$gameId/play";
       Get.to(

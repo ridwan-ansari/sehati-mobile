@@ -35,7 +35,7 @@ class InputProfilePage extends GetView<AuthController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
                         Text(
-                          "Profile",
+                          "Sign Up",
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -44,27 +44,27 @@ class InputProfilePage extends GetView<AuthController> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          "Complete your profile",
+                          "Complete your Sign Up",
                           style: TextStyle(color: Colors.black54, fontSize: 14),
                         ),
                         SizedBox(height: 24),
                       ],
                     ),
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: AppAssetUtils.svg(
-                          AppAssets.profileIcon,
-                          width: 80,
-                          height: 80,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                    // Center(
+                    //   child: Container(
+                    //     padding: const EdgeInsets.all(12),
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: Colors.black54),
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //     child: AppAssetUtils.svg(
+                    //       AppAssets.profileIcon,
+                    //       width: 80,
+                    //       height: 80,
+                    //       color: Colors.black,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
 
@@ -75,7 +75,13 @@ class InputProfilePage extends GetView<AuthController> {
                   label: "Name",
                   icon: AppAssets.peopleIcon,
                   controller: controller.nameController,
-                  readOnly: true,
+                  readOnly: false,
+                  validator: (value){
+                    if(value == null || value.trim().isEmpty){
+                      return "name cannot be empty";
+                    }
+                    return null;
+                  }
                 ),
                 const SizedBox(height: 16),
 
@@ -113,7 +119,13 @@ class InputProfilePage extends GetView<AuthController> {
                   label: "Email",
                   icon: AppAssets.messageIcon,
                   controller: controller.emailController,
-                  readOnly: true,
+                  readOnly: false,
+                  validator: (value){
+                    if(value == null || value.trim().isEmpty){
+                      return "email cannot be empty";
+                    }
+                    return null;
+                  }
                 ),
                 const SizedBox(height: 16),
 
@@ -125,7 +137,8 @@ class InputProfilePage extends GetView<AuthController> {
                     textController: controller.passwordController,
                     obscureText: controller.isPasswordHidden.value,
                     controller: controller,
-                    readOnly: true,
+                    readOnly: false,
+                    
                   ),
                 ),
                 const SizedBox(height: 16),

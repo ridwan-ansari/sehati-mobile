@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/data/services/habit_service.dart';
 
@@ -25,14 +26,16 @@ class FoodHabitController extends GetxController {
 
   void toggleCategory(String category) {
     expandedCategories[category] = !(expandedCategories[category] ?? false);
+    expandedCategories.refresh();
   }
 
   Future<void> fetchQuestions() async {
     try {
       isLoading.value = true;
       final data = await _service.getFoodQuestions();
+
       questions.assignAll(data ?? []);
-      await groupQuestions();
+      groupQuestions();
     } catch (e) {
       print('Error fetching questions: $e');
     } finally {
@@ -40,7 +43,7 @@ class FoodHabitController extends GetxController {
     }
   }
 
-  Future<void> groupQuestions() async {
+  void groupQuestions() {
     groupedQuestions.clear();
 
     for (var q in questions) {
@@ -50,28 +53,45 @@ class FoodHabitController extends GetxController {
         groupedQuestions[cat] = [];
       }
       groupedQuestions[cat]!.add(q);
-      q.answerText = 'false';
-      q.selectedOption = 'false';
+
+      /// RESET NILAI
+      q.selectedOption = null;
+      q.answerText = null;
+      q.frequency = null;
     }
+    groupedQuestions.refresh();
     questions.refresh();
   }
 
-  void selectOption(HabitQuestionModel question, String key, String value , int? frequency) {
-    question.selectedOption = key;
-    question.answerText = value;
+  void selectOption(
+    HabitQuestionModel question,
+    String option,
+    int frequency,
+  ) {
+    question.selectedOption = option;
     question.frequency = frequency;
+
     questions.refresh();
   }
 
   Future<void> submitAllAnswers() async {
+    final incomplete = questions.where((q) => q.selectedOption == null).toList();
+
+    if (incomplete.isNotEmpty) {
+      SnackbarUtils.show("Oops! Make sure all questions have been answered.");
+      return;
+    }
+
     List<Map<String, dynamic>> answers = [];
+
     for (var question in questions) {
       answers.add({
         "question_id": question.id,
-        "answer": question.selectedOption?.toLowerCase(),
+        "answer": question.selectedOption,
         "frequency": question.frequency,
       });
     }
+
     final success = await _service.submiteHabitAnswer(answers: answers);
 
     if (success) {

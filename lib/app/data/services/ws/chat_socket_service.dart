@@ -75,7 +75,18 @@ class ChatSocketService {
         final status = data['status']; // <-- STRING
         final fromId = data['from'];
 
-        if (status == null) {
+        final routeRoom = controller.currentRoomKey.value.toLowerCase();
+        final responRoom = data['room_key'].toString().toLowerCase();
+        print("-------------------------------------------------");
+        print("route :: $routeRoom");
+        print("res ::$responRoom");
+        print("-------------------------------------------------");
+        if (routeRoom == responRoom) {
+          print("TIDAK DAPAT NOTIF");
+        } else {
+          print("DAPAT NOTIF");
+        }
+        if (status == null && (routeRoom != responRoom)) {
           controller.getUserById(fromId).then((profile) {
             final name = profile?.nickname ?? "";
             print('service ws name: ${profile?.toJson()}');

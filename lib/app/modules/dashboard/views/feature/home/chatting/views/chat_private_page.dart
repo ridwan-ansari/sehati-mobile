@@ -21,66 +21,74 @@ class ChatPrivatePage extends GetView<ChattingController> {
     final String receiverName = args["receiver_name"];
     final String? receiverPicture = args["receiver_picture"];
 
+    controller.currentRoomKey.value = roomKey;
     // Load initial messages & socket
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.loadMessages(roomKey: roomKey);
       controller.initSocket();
     });
 
-    return Scaffold(
-      appBar: CustomChatAppbar(
-        profileUrl: receiverPicture ?? "",
-        name: receiverName,
-        status: "online",
-      ),
-      body: Stack(
-        children: [
-          backgroundChat(),
-          Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.3)),
-          ),
-          Column(
-            children: [
-              Expanded(
-                child: Obx(() {
-                  return RefreshIndicator(
-                    color: AppColors.orangeLight,
-                    onRefresh: () async {
-                      await controller.refreshOldMessages();
-                    },
-                    child: ListView.builder(
-                      controller: controller.chatScrollController,
-                      reverse: true,
-                      padding: EdgeInsets.zero,
-                      itemCount: controller.chats.length,
-                      itemBuilder: (context, index) {
-                        final chat = controller.chats[index];
-                        return ChatWidget.customChatBubble(
-                          text: chat.message,
-                          time: DateTime.parse(chat.createdAt),
-                          isSender: chat.type == "sender",
-                          onTap: () {},
-                          onLongPress: () {},
-                        );
+    return WillPopScope(
+      onWillPop: () async {
+        controller.currentRoomKey.value = "";
+        return true;
+      },
+
+      child: Scaffold(
+        appBar: CustomChatAppbar(
+          profileUrl: receiverPicture ?? "",
+          name: receiverName,
+          status: "online",
+        ),
+        body: Stack(
+          children: [
+            backgroundChat(),
+            Positioned.fill(
+              child: Container(color: Colors.black.withOpacity(0.3)),
+            ),
+            Column(
+              children: [
+                Expanded(
+                  child: Obx(() {
+                    return RefreshIndicator(
+                      color: AppColors.orangeLight,
+                      onRefresh: () async {
+                        await controller.refreshOldMessages();
                       },
-                    ),
-                  );
-                }),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: InputTextFieldWithReply(
-                  controller: controller.textController,
-                  onSendTap: () {
-                    controller.addChat(receiverId);
-                    controller.textController.clear();
-                  },
+                      child: ListView.builder(
+                        controller: controller.chatScrollController,
+                        reverse: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: controller.chats.length,
+                        itemBuilder: (context, index) {
+                          final chat = controller.chats[index];
+                          return ChatWidget.customChatBubble(
+                            text: chat.message,
+                            time: DateTime.parse(chat.createdAt),
+                            isSender: chat.type == "sender",
+                            onTap: () {},
+                            onLongPress: () {},
+                          );
+                        },
+                      ),
+                    );
+                  }),
                 ),
-              ),
-              const SizedBox(height: 12.0),
-            ],
-          ),
-        ],
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: InputTextFieldWithReply(
+                    controller: controller.textController,
+                    onSendTap: () {
+                      controller.addChat(receiverId);
+                      controller.textController.clear();
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

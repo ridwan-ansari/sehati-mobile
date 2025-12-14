@@ -24,6 +24,11 @@
         android:enableOnBackInvokedCallback="true"
         >
 
+        <meta-data
+            android:name="com.dexterous.flutterlocalnotifications.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+
+
          <!-- Client ID untuk integrasi Google Sign In -->
         <meta-data
             android:name="com.google.android.gms.client_id"

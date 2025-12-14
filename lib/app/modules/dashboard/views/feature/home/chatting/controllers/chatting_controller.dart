@@ -41,7 +41,7 @@ class ChattingController extends GetxController {
   final int chatLimit = 10;
   bool chatHasMore = true;
   RxBool chatIsLoading = false.obs;
-  String? currentRoomKey;
+  RxString currentRoomKey = "".obs;
 
   bool _hasMore = true;
   bool _isFetching = false;
@@ -62,7 +62,7 @@ class ChattingController extends GetxController {
           chatHasMore &&
           !chatIsLoading.value) {
         chatPage++;
-        loadMessages(roomKey: currentRoomKey ?? "", refresh: false);
+        loadMessages(roomKey: currentRoomKey.value, refresh: false);
       }
     });
   }
@@ -71,6 +71,7 @@ class ChattingController extends GetxController {
   void onClose() {
     userScrollController.removeListener(_onScroll);
     userScrollController.dispose();
+    currentRoomKey.value = "";
     super.onClose();
   }
 
@@ -92,7 +93,7 @@ class ChattingController extends GetxController {
     chatPage++;
 
     final messages = await _chatService.getMessages(
-      roomKey: currentRoomKey!,
+      roomKey: currentRoomKey.value,
       offset: chatPage * chatLimit,
       limit: chatLimit,
     );
@@ -134,14 +135,14 @@ class ChattingController extends GetxController {
       Map<String, dynamic> data = jsonDecode(raw);
       final incomingRoomKey = data['room_key'];
 
-      if (currentRoomKey == null || currentRoomKey!.isEmpty) {
-        currentRoomKey = incomingRoomKey;
-        print("📌 Room key initialized from socket: $currentRoomKey");
+      if (currentRoomKey.isEmpty) {
+        currentRoomKey.value = incomingRoomKey;
+        print("📌 Room key initialized from socket: ${currentRoomKey.value}");
       }
 
-      if (incomingRoomKey == currentRoomKey) {
-        print("📩 New message for active room: $currentRoomKey");
-        await loadMessages(roomKey: currentRoomKey!, refresh: true);
+      if (incomingRoomKey == currentRoomKey.value) {
+        print("📩 New message for active room: ${currentRoomKey.value}");
+        await loadMessages(roomKey: currentRoomKey.value, refresh: true);
         await getRooms();
       }
     });
@@ -170,7 +171,6 @@ class ChattingController extends GetxController {
     print("Loading messages for roomKey: $roomKey");
     if (chatIsLoading.value) return;
     chatIsLoading.value = true;
-    currentRoomKey = roomKey;
 
     try {
       if (refresh) {

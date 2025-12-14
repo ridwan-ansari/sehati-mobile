@@ -1,44 +1,28 @@
 // ignore_for_file: avoid_print
-
-import 'package:sehati/app/common/utils/snackbar_utils.dart';
-import 'package:sehati/app/data/models/reminder_model.dart';
-import 'package:sehati/app/data/services/notification_service.dart';
+import 'package:sehati/app/data/models/response/reminder_model.dart';
+import 'package:sehati/app/data/services/reminders_service.dart';
 import 'package:sehati/app/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ReminderController extends GetxController {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final RemindersService _service = RemindersService();
 
   final titleController = TextEditingController();
   final timeController = TextEditingController();
   final selectedDays = <String>[].obs;
-  var reminders = <ReminderModel>[].obs;
+  var reminders = <Reminder>[].obs;
   var totalPoints = 0.obs;
-  final _uuid = Uuid();
 
   @override
   void onInit() {
     super.onInit();
-    // Ambil reminder yang tersimpan
     requestNotificationPermission();
-    final savedReminders = LocalStorageService.getAllReminders();
-    reminders.value = savedReminders
-        .map(
-          (r) => ReminderModel(
-            id: r.id,
-            days: r.days,
-            time: r.time,
-            title: r.title,
-            isActive: r.isActive,
-            notificationId: r.notificationId,
-          ),
-        )
-        .toList();
+    getReminderServer();
     print("📦 Loaded ${reminders.length} reminders from local storage");
   }
 
@@ -79,67 +63,31 @@ class ReminderController extends GetxController {
     return DateTime.now().microsecondsSinceEpoch % 2147483647;
   }
 
-  Future<void> addReminder(
-    String title,
-    TimeOfDay time,
-    List<String> days,
-  ) async {
+  Future<void> addReminder(Reminder reminder) async {
     try {
-      final id = _uuid.v4();
-      final formattedTime =
-          "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
-      final notifId = generateNotificationId();
+      final baseId = uuidToInt(reminder.id.toString());
 
-      final reminder = ReminderModel(
-        id: id,
-        title: title,
-        time: formattedTime,
-        days: days,
-        isActive: true,
-        notificationId: notifId,
-      );
-      await LocalStorageService.addReminder(reminder);
-      reminders.add(reminder);
+      final parts = reminder.time.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
 
-      final now = DateTime.now();
-      DateTime scheduledDate = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        time.hour,
-        time.minute,
-      );
+      for (int i = 0; i < reminder.days.length; i++) {
+        final weekday = dayStringToWeekday(reminder.days[i]);
+        final scheduledDate = nextDateForWeekday(weekday, hour, minute);
 
-      if (scheduledDate.isBefore(now)) {
-        scheduledDate = scheduledDate.add(const Duration(days: 1));
+        await NotificationService.scheduleAlarm(
+          id: baseId + i,
+          title: reminder.title,
+          body: 'Reminder aktif ${reminder.days[i]} ${reminder.time}',
+          dateTime: scheduledDate,
+        );
       }
 
-      await NotificationService.scheduleAlarm(
-        id: reminder.notificationId,
-        title: reminder.title,
-        body: 'Reminder aktif untuk ${reminder.time}',
-        dateTime: scheduledDate,
-        repeatDaily: true,
-      );
-
       totalPoints.value += 20;
-      SnackbarUtils.show(isError: false, "Reminder Added");
-
-      print("✅ Reminder berhasil ditambahkan: $title");
+      print("✅ Reminder berhasil ditambahkan (${reminder.days.join(', ')})");
     } catch (e) {
       print("❌ Gagal menambahkan reminder: $e");
-
-      SnackbarUtils.show("Reminder Failed");
-    }
-  }
-
-  /// --- TOGGLE ACTIVE STATE ---
-  void toggleActive(int index, bool value) async {
-    reminders[index].isActive = value;
-    reminders.refresh();
-
-    if (value) {
-      totalPoints.value += 20;
+      // SnackbarUtils.show("Reminder Failed");
     }
   }
 
@@ -173,47 +121,159 @@ class ReminderController extends GetxController {
     print("✅ Test alarm berhasil dikirim");
   }
 
-  Future<void> updateReminder(ReminderModel data) async {
+  Future<void> updateReminder(Reminder reminder) async {
     try {
-      final index = reminders.indexWhere((r) => r.id == data.id);
-      if (index == -1) return;
+      final baseId = uuidToInt(reminder.id.toString());
 
-      final updatedReminder = data;
-      final now = DateTime.now();
-
-      final time = TimeOfDay(
-        hour: int.parse(updatedReminder.time.split(":")[0]),
-        minute: int.parse(updatedReminder.time.split(":")[1]),
+      // 1️⃣ Cancel semua alarm lama
+      await NotificationService.cancelReminder(
+        baseId: baseId,
+        totalDays: reminder.days.length,
       );
 
-      DateTime scheduledDate = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        time.hour,
-        time.minute,
-      );
+      // 2️⃣ Parse waktu
+      final parts = reminder.time.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
 
-      // Kalau sudah lewat → geser ke besok
-      if (scheduledDate.isBefore(now)) {
-        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      // 3️⃣ Schedule ulang per hari
+      for (int i = 0; i < reminder.days.length; i++) {
+        final weekday = dayStringToWeekday(reminder.days[i]);
+
+        final scheduledDate = nextDateForWeekday(weekday, hour, minute);
+
+        await NotificationService.scheduleAlarm(
+          id: baseId + i,
+          title: reminder.title,
+          body: 'Reminder aktif ${reminder.days[i]} ${reminder.time}',
+          dateTime: scheduledDate,
+        );
       }
 
-      await LocalStorageService.addReminder(updatedReminder);
-      await NotificationService.scheduleAlarm(
-        id: updatedReminder.hashCode,
-        title: updatedReminder.title,
-        body: 'Reminder aktif untuk ${updatedReminder.time}',
-        dateTime: scheduledDate,
-        repeatDaily: true,
-      );
-
-      reminders[index] = updatedReminder;
-      reminders.refresh();
-      SnackbarUtils.show(isError: false, "Reminder Updated");
+      // SnackbarUtils.show(isError: false, "Reminder Updated");
+      print("✅ Reminder updated (${reminder.days.join(', ')})");
     } catch (e) {
       print("❌ Gagal update reminder: $e");
-      SnackbarUtils.show(isError: false, "Reminder Failed");
+      // SnackbarUtils.show(isError: true, "Reminder Failed");
+    }
+  }
+
+  //...............
+
+  Future<void> deleteReminder(Reminder reminder) async {
+    try {
+      final baseId = uuidToInt(reminder.id.toString());
+
+      await NotificationService.cancelReminder(
+        baseId: baseId,
+        totalDays: reminder.days.length,
+      );
+
+      // SnackbarUtils.show(isError: false, "Reminder Canceled");
+      print("🛑 Reminder berhasil dibatalkan");
+    } catch (e) {
+      print("❌ Gagal membatalkan reminder: $e");
+      // SnackbarUtils.show("Cancel Failed");
+    }
+  }
+
+  int uuidToInt(String uuid) {
+    final clean = uuid.replaceAll('-', '');
+    final last8 = clean.substring(clean.length - 8);
+    final value = int.parse(last8, radix: 16);
+
+    final safe = value & 0x7FFFFFFF; // <= 2147483647
+    print("🔢 Notification baseId: $safe (raw=$value)");
+
+    return safe;
+  }
+
+  int dayStringToWeekday(String day) {
+    switch (day.toLowerCase()) {
+      case 'monday':
+        return DateTime.monday;
+      case 'tuesday':
+        return DateTime.tuesday;
+      case 'wednesday':
+        return DateTime.wednesday;
+      case 'thursday':
+        return DateTime.thursday;
+      case 'friday':
+        return DateTime.friday;
+      case 'saturday':
+        return DateTime.saturday;
+      case 'sunday':
+        return DateTime.sunday;
+      default:
+        throw Exception('Invalid day: $day');
+    }
+  }
+
+  DateTime nextDateForWeekday(int weekday, int hour, int minute) {
+    final now = DateTime.now();
+
+    DateTime scheduled = DateTime(now.year, now.month, now.day, hour, minute);
+
+    int diff = (weekday - scheduled.weekday) % 7;
+    if (diff == 0 && scheduled.isBefore(now)) {
+      diff = 7;
+    }
+
+    return scheduled.add(Duration(days: diff));
+  }
+
+  //------------------------------------SERVER-------------------------------------
+
+  Future<void> postReminderServer(Reminder reminder) async {
+    final response = await _service.createReminder(reminder);
+    if (response?.statusCode == 201) {
+      print('[PUSH]->[Reminder][Succes]');
+      print("id : ${response!.dataItem?.id}");
+      final rmdr = reminder.copyWith(id: response.dataItem?.id);
+      await addReminder(rmdr);
+      await getReminderServer();
+    } else {
+      print('[PUSH]->[Reminder][Gagal]');
+    }
+  }
+
+  Future<void> getReminderServer() async {
+    reminders.clear();
+    final response = await _service.getReminders();
+    if (response!.isNotEmpty) {
+      print("[GET][REMINDER][LIST]");
+      reminders.addAll(response);
+      dataAsynch();
+    }
+  }
+
+  Future<void> updateReminderServer(Reminder reminder) async {
+    final response = await _service.updateReminder(reminder);
+    if (response?.statusCode == 200) {
+      print("[UPDATE][REMINDER][SUCCES]");
+      await updateReminder(reminder);
+      await getReminderServer();
+    }
+  }
+
+  Future<void> deleteReminderServer(Reminder reminder) async {
+    final response = await _service.deleteReminder(reminder.id.toString());
+    if (response == true) {
+      print("[DELETE][REMINDER][SUCESS]");
+      await deleteReminder(reminder);
+      await getReminderServer();
+    }
+  }
+
+  //synch
+  Future<void> dataAsynch() async {
+    if (reminders.isNotEmpty) {
+      await NotificationService.cancelAll();
+      for (final reminder in reminders) {
+        if (reminder.active == true) {
+          await addReminder(reminder);
+        }
+      }
     }
   }
 }

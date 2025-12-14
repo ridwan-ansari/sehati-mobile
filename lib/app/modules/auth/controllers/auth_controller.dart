@@ -59,17 +59,28 @@ class AuthController extends GetxController {
     // weightController.addListener(calculate);
     // heightController.addListener(calculate);
     // ever(selectedDate, (_) => calculate());
-    final args = Get.arguments ?? {};
-    final prefillEmail = args['email'] ?? '';
-    final prefillPassword = args['password'] ?? '';
+  }
 
-    emailController.text = prefillEmail;
-    passwordController.text = prefillPassword;
+  void togglePasswordVisibility() {
+    isPasswordHidden.value = !isPasswordHidden.value;
+    print(isConfirmForgotPass.value);
+  }
+
+  void resetLoginFields() {
+    emailController.clear();
+    passwordController.clear();
+    nameController.clear();
+    nicknameController.clear();
+    phoneController.clear();
+    selectedGender.value = '';
+    selectedDate.value = '';
+    isPasswordHidden.value = true;
+    isLoading.value = false;
   }
 
   // === REGISTER ===
   Future<void> register() async {
-    if (!formKeySignup.currentState!.validate()) return;
+    // if (!formKeySignup.currentState!.validate()) return;
 
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
@@ -199,13 +210,7 @@ class AuthController extends GetxController {
     try {
       final response = await _authService.verifyOtp(email: email, code: otp);
       if (response == true) {
-        Get.offAllNamed(
-          '/login',
-          arguments: {
-            'email': emailController.text.trim(),
-            'password': passwordController.text.trim(),
-          },
-        );
+        Get.offAllNamed(AppRoutes.SPLASH);
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;

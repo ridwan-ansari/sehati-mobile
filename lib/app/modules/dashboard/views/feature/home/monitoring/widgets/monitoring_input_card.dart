@@ -16,7 +16,8 @@ class MonitoringInputCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.gold, width: 1.5),
       ),
-      child: Column(children: children),
+      child: Column(
+        children: children),
     );
   }
 }

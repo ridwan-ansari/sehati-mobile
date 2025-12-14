@@ -154,7 +154,8 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                   children: [
                     Obx(() {
                       return _buildAnalysisRow(
-                        label: "Target Energy Intake (RDA)/Day",
+                        label: "Total energy expenditure/day",
+                        subtitle: "Total kebutuhan energi dalam sehari",
                         isEdit: false,
                         value: (controller.nutritionCalculator.value?.eer ?? 0)
                             .toString(),
@@ -167,12 +168,30 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Desired Energy Requirement",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AnimatedIn(
+                                  child: Text(
+                                    "Target energy intake/day",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                AnimatedIn(
+                                  child: Text(
+                                    "Target energi yang masuk dalam sehari",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -218,7 +237,8 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                     Obx(
                       () => _buildAnalysisRow(
                         isEdit: false,
-                        label: "Actual Energy Intake",
+                        label: "Actual energy intake",
+                        subtitle: "Aktual energi yang masuk dalam sehari",
                         value: "${controller.actualEnergy()} Kcal",
                       ),
                     ),
@@ -226,40 +246,78 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Type of Activity ",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AnimatedIn(
+                                  child: Text(
+                                    "Type of activity ",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                AnimatedIn(
+                                  child: Text(
+                                    "Tingkat aktifitas dalam sehari",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Container(
-                            height: 45,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: Colors.orange.shade300),
-                            ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              height: 45,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.orange.shade300,
+                                ),
+                              ),
 
-                            child: DropdownButton<ActivityLevel>(
-                              value: controller.selectedActivity.value,
-                              underline: SizedBox(),
-                              hint: const Text("Select Activity"),
-                              items: ActivityLevel.values.map((level) {
-                                return DropdownMenuItem(
-                                  value: level,
-                                  child: Text(level.label),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  controller.selectedActivity.value = value;
-                                  controller.submitDiary();
-                                  controller.actualEnergy.value = controller
-                                      .getTotalCalories();
-                                }
-                              },
+                              child: DropdownButton<ActivityLevel>(
+                                value: controller.selectedActivity.value,
+                                underline: SizedBox(),
+                                hint: const Text(
+                                  "Select Activity",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                                items: ActivityLevel.values.map((level) {
+                                  return DropdownMenuItem(
+                                    value: level,
+                                    child: Text(
+                                      level.label,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    controller.selectedActivity.value = value;
+                                    controller.submitDiary();
+                                    controller.actualEnergy.value = controller
+                                        .getTotalCalories();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -279,7 +337,11 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                         ),
                         child: Obx(() {
                           if (controller.chartData.isEmpty) {
-                            return AnimatedIn(child: Text("There are currently no food diaries available."));
+                            return AnimatedIn(
+                              child: Text(
+                                "There are currently no food diaries available.",
+                              ),
+                            );
                           }
                           return FoodDiaryChart(data: controller.chartData);
                         }),
@@ -465,22 +527,43 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
     required String label,
     required String value,
     required bool isEdit,
+    required String subtitle,
     TextEditingController? controller,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          // === KIRI: LABEL ===
           Expanded(
             flex: 2,
-            child: AnimatedIn(
-              child: Text(
-                label,
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnimatedIn(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                AnimatedIn(
+                  child: Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black87,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -498,7 +581,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
               ),
               child: isEdit
                   ? AnimatedIn(
-                    child: TextFormField(
+                      child: TextFormField(
                         controller: controller,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -511,9 +594,9 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                  )
+                    )
                   : AnimatedIn(
-                    child: Text(
+                      child: Text(
                         value,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -521,7 +604,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                           fontSize: 13,
                         ),
                       ),
-                  ),
+                    ),
             ),
           ),
         ],

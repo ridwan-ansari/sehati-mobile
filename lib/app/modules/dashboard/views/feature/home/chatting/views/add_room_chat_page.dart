@@ -21,7 +21,6 @@ class AddRoomChatPage extends GetView<ChattingController> {
         onSearchChanged: (value) {
           controller.onSearchChanged(value);
         },
-        onProfileTap: () {},
       ),
 
       body: Padding(
@@ -41,7 +40,7 @@ class AddRoomChatPage extends GetView<ChattingController> {
                     return ContactCardWidget(
                       profileUrl: imageUrl,
                       name: user.fullname,
-                      status: "online",
+                      status: user.nickname,
                       onTap: () => Get.toNamed(
                         '/chat_private',
                         arguments: {

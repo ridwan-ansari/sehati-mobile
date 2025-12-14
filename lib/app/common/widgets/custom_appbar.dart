@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 
@@ -29,7 +30,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    ProfileController profileController = Get.find();
+    final profileController = Get.put(ProfileController(), permanent: true);
+
     return Container(
       height: 125,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -68,6 +70,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
 
               // === SEARCH BOX ===
+              
               Expanded(
                 child: Container(
                   height: 46, // sedikit lebih kecil biar proporsional
@@ -114,18 +117,39 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
 
               // === PROFILE AVATAR ===
-              GestureDetector(
-                onTap: onProfileTap,
-                child: CircleAvatar(
-                  radius: 22,
-                  backgroundImage:
-                      (profileController.dataProfile.value!.picture.isNotEmpty)
-                      ? NetworkImage(
-                          "$BASE_URL${profileController.dataProfile.value!.picture}",
-                        )
-                      : AssetImage(AppAssets.profileIcon),
-                ),
-              ),
+              Obx((() {
+                final profile = profileController.dataProfile.value;
+                return GestureDetector(
+                  onTap:
+                      onProfileTap ??
+                      () {
+                        DialogUtils.showCustomDialog(
+                          context: context,
+                          content: Container(
+                            height: 192.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  "$BASE_URL${profile?.picture}",
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                  child: CircleAvatar(
+                    radius: 22,
+                    backgroundImage:
+                        (profile != null && profile.picture.isNotEmpty)
+                        ? NetworkImage("$BASE_URL${profile.picture}")
+                        : AssetImage(AppAssets.profileIcon) as ImageProvider,
+                  ),
+                );
+              })),
             ],
           ),
         ],

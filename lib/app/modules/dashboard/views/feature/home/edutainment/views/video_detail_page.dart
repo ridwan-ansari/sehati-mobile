@@ -35,11 +35,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                   Positioned.fill(
                     child: YoutubePlayerWidget(
                       videoId: videoId,
-                      onVideoEnded: _claimReward,
+                      onVideoEnded: () {
+                        _claimReward();
+                      },
                     ),
                   ),
 
-                  // Floating back button
                   Positioned(
                     top: 10,
                     left: 10,
@@ -65,7 +66,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                       child: Text(
                         widget.video.title,
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           height: 1.3,
                         ),
@@ -73,32 +74,32 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     ),
 
                     const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade600,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: AnimatedIn(
-                        child: Text(
-                          "+${widget.video.rewardPoints} Reward Points",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: 14,
+                    //     vertical: 6,
+                    //   ),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.orange.shade600,
+                    //     borderRadius: BorderRadius.circular(20),
+                    //   ),
+                    //   child: AnimatedIn(
+                    //     child: Text(
+                    //       "+${widget.video.rewardPoints} Reward Points",
+                    //       style: const TextStyle(
+                    //         color: Colors.white,
+                    //         fontWeight: FontWeight.w600,
+                    //         fontSize: 14,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 20),
                     AnimatedIn(
                       child: Text(
                         widget.video.description,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           color: Colors.grey.shade800,
                           height: 1.5,
                         ),
@@ -164,29 +165,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
   Future<void> _claimReward() async {
     if (rewardClaimed) return;
-
     final success = await EdutainmentService().claimReward(widget.video.id);
-
     if (success) {
       setState(() => rewardClaimed = true);
-
-      Get.snackbar(
-        "Reward Added",
-        "You earned +${widget.video.rewardPoints} points 🎉",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(12),
-      );
-    } else {
-      Get.snackbar(
-        "Failed",
-        "Reward could not be claimed.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(12),
-      );
     }
   }
 }

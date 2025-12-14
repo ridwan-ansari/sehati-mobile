@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/data/models/reminder_model.dart';
+import 'package:sehati/app/data/models/response/reminder_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/reminder/controllers/reminder_controller.dart';
 
 class AddReminderPage extends StatefulWidget {
-  final ReminderModel? reminder;
+  final Reminder? reminder;
   const AddReminderPage({super.key, this.reminder});
 
   @override
@@ -19,26 +19,27 @@ class _AddReminderPageState extends State<AddReminderPage> {
   final controller = Get.find<ReminderController>();
   final _formKey = GlobalKey<FormState>();
   bool isEditing = false;
+  bool isActive = false;
 
   TimeOfDay? selectedTime;
   final days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
   ];
 
   final selectedDays = <String>[].obs;
-  ReminderModel? editingReminder;
+  Reminder? editingReminder;
 
   @override
   void initState() {
     super.initState();
 
-    final reminder = Get.arguments as ReminderModel?;
+    final reminder = Get.arguments as Reminder?;
     if (reminder != null) {
       isEditing = true;
       editingReminder = reminder;
@@ -128,7 +129,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                 const SizedBox(height: 16),
                 Align(
                   alignment: AlignmentGeometry.bottomLeft,
-                  child: Text("Choose a Day", style: TextStyle(fontSize: 14)),
+                  child: AnimatedIn(child: Text("Choose a Day", style: TextStyle(fontSize: 14))),
                 ),
                 const SizedBox(height: 8.0),
 
@@ -144,7 +145,9 @@ class _AddReminderPageState extends State<AddReminderPage> {
                               selected: selectedDays.contains(d),
                               selectedColor: Colors.orange,
                               onSelected: (v) {
-                                v ? selectedDays.add(d) : selectedDays.remove(d);
+                                v
+                                    ? selectedDays.add(d)
+                                    : selectedDays.remove(d);
                               },
                             ),
                           ),
@@ -169,28 +172,46 @@ class _AddReminderPageState extends State<AddReminderPage> {
               if (isEditing && editingReminder != null) {
                 final time =
                     "${selectedTime?.hour.toString().padLeft(2, '0')}:${selectedTime?.minute.toString().padLeft(2, '0')}";
-                controller.updateReminder(
-                  ReminderModel(
-                    id: editingReminder!.id,
-                    title: controller.titleController.text,
-                    time: time,
-                    days: selectedDays.toList(),
-                    notificationId: editingReminder!.notificationId
-                  ),
+
+                // controller.updateReminder(
+                final reminder = Reminder(
+                  id: editingReminder!.id,
+                  title: controller.titleController.text,
+                  time: time,
+                  days: selectedDays.toList(),
+                  message: controller.titleController.text,
+                  active: true,
                 );
+                controller.updateReminderServer(reminder);
+                // );
               } else {
-                controller.addReminder(
-                  controller.titleController.text,
-                  selectedTime!,
-                  selectedDays.toList(),
+                final formattedTime =
+                    "${selectedTime?.hour.toString().padLeft(2, '0')}:${selectedTime?.minute.toString().padLeft(2, '0')}";
+                final reminder = Reminder(
+                  time: formattedTime,
+                  days: selectedDays.toList(),
+                  title: controller.titleController.text,
+                  active: true,
+                  message: controller.titleController.text,
                 );
+
+                controller.postReminderServer(reminder);
+                // controller.addReminder(
+                //   controller.titleController.text,
+                //   selectedTime!,
+                //   selectedDays.toList(),
+                // );
               }
-        
-              Get.toNamed('/reminder');
+
+              Get.back();
             }
           },
           icon: const Icon(Icons.save),
-          label: AnimatedIn(child: const Text("Save Reminder")),
+          label: AnimatedIn(
+            child: Text(
+              isEditing == true ? "Update Reminder" : "Save Reminder",
+            ),
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.orange,
             minimumSize: const Size(double.infinity, 48),

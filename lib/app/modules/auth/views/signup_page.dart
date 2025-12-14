@@ -27,7 +27,10 @@ class RegisterPage extends GetView<AuthController> {
                   AnimatedIn(
                     child: const Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -53,7 +56,7 @@ class RegisterPage extends GetView<AuthController> {
                         style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
                       GestureDetector(
-                        onTap: () => Get.toNamed('/login'), // balik ke login
+                        onTap: () => Get.toNamed('/login'),
                         child: const Text(
                           "Sign in",
                           style: TextStyle(
@@ -71,7 +74,9 @@ class RegisterPage extends GetView<AuthController> {
 
               // SVG Illustration
               Center(
-                child: AnimatedIn(child: AppAssetUtils.svg(AppAssets.logoSehati, width: 250)),
+                child: AnimatedIn(
+                  child: AppAssetUtils.svg(AppAssets.logoSehati, width: 250),
+                ),
               ),
 
               const SizedBox(height: 40),
@@ -173,11 +178,15 @@ class RegisterPage extends GetView<AuthController> {
                             labelStyle: const TextStyle(color: Colors.orange),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Colors.black54),
+                              borderSide: const BorderSide(
+                                color: Colors.black54,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Colors.orange),
+                              borderSide: const BorderSide(
+                                color: Colors.orange,
+                              ),
                             ),
                           ),
                           validator: Validator.password,

@@ -78,6 +78,7 @@ class AwesomeNotificationService {
           },
         )?.then((_) {
           Get.toNamed("/dashboard");
+          Get.toNamed("/chatting");
         });
       } catch (e) {
         print("❌ Error handling notification reply: $e");

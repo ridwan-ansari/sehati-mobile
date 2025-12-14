@@ -20,7 +20,8 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
     return Scaffold(
       appBar: CustomAppBar(
         logoSvg: AppAssets.healthyMenuIcon,
-        onProfileTap: () => print("Profile tapped"),
+        controller: controller.searchController,
+        onSearchChanged: controller.onSearchChanged,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +46,7 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
             child: Container(
               color: AppColors.yellowLight,
               child: SingleChildScrollView(
-                controller: ScrollController(),
+                controller: controller.scrollController,
                 child: Column(
                   children: [
                     Obx(
@@ -58,6 +59,14 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
                           return _recipeCard(item);
                         },
                       ),
+                    ),
+                    Obx(
+                      () => controller.isLoading.value
+                          ? const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            )
+                          : const SizedBox(),
                     ),
                   ],
                 ),
@@ -98,7 +107,9 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnimatedIn(child: GradienLabelRight(title: recipe.title, fontSize: 14)),
+                AnimatedIn(
+                  child: GradienLabelRight(title: recipe.title, fontSize: 14),
+                ),
                 const SizedBox(height: 8),
 
                 AnimatedIn(
@@ -120,7 +131,10 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
                     ),
                     child: const Text(
                       "More Details",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),

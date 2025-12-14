@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
@@ -76,6 +77,34 @@ class MerchandisePage extends GetView<MerchandiseController> {
 
                   final item = controller.items[index];
                   final fullImage = "$BASE_URL${item.imageUrl}";
+                  final canClaim = controller.canClaimMerchandise(item);
+                  String getClaimStatusText() {
+                    if (item.isClaimed != true) return 'Belum diklaim';
+
+                    switch (item.claimStatus) {
+                      case 'approved':
+                        return 'Approved';
+                      case 'pending':
+                        return 'Pending';
+                      case 'rejected':
+                        return 'Rejected';
+                      default:
+                        return '';
+                    }
+                  }
+
+                  Color getClaimStatusColor() {
+                    switch (item.claimStatus) {
+                      case 'approved':
+                        return Colors.green;
+                      case 'pending':
+                        return Colors.orange;
+                      case 'rejected':
+                        return Colors.white;
+                      default:
+                        return Colors.white;
+                    }
+                  }
 
                   return GestureDetector(
                     onTap: () {
@@ -92,26 +121,32 @@ class MerchandisePage extends GetView<MerchandiseController> {
                                 height: 100,
                                 fit: BoxFit.contain,
                               ),
-                              Text(
-                                item.name,
-                                style: TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 14.0,
+                              AnimatedIn(
+                                child: Text(
+                                  item.name,
+                                  style: TextStyle(
+                                    color: AppColors.black,
+                                    fontSize: 14.0,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
                               ),
                               Obx(
                                 () => ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.orangeLight,
+                                    backgroundColor: canClaim
+                                        ? AppColors.orangeLight
+                                        : Colors.grey.shade400,
                                     foregroundColor: Colors.white,
                                   ),
-                                  onPressed: () => controller.claimMerchandise(
-                                    context: context,
-                                    merchId: item.id,
-                                  ),
+                                  onPressed: canClaim
+                                      ? () => controller.claimMerchandise(
+                                          context: context,
+                                          merchId: item.id,
+                                        )
+                                      : null,
                                   child: controller.loadingId.value == item.id
                                       ? const SizedBox(
                                           height: 18,
@@ -121,7 +156,16 @@ class MerchandisePage extends GetView<MerchandiseController> {
                                             color: Colors.white,
                                           ),
                                         )
-                                      : const Text("Claim"),
+                                      : AnimatedIn(
+                                          child: Text(
+                                            canClaim
+                                                ? "Claim"
+                                                : getClaimStatusText(),
+                                            style: TextStyle(
+                                              color: getClaimStatusColor(),
+                                            ),
+                                          ),
+                                        ),
                                 ),
                               ),
                             ],
@@ -144,14 +188,16 @@ class MerchandisePage extends GetView<MerchandiseController> {
                       child: Column(
                         children: [
                           Expanded(
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12),
-                              ),
-                              child: Image.network(
-                                fullImage,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
+                            child: AnimatedIn(
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12),
+                                ),
+                                child: Image.network(
+                                  fullImage,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
@@ -160,29 +206,35 @@ class MerchandisePage extends GetView<MerchandiseController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  item.name,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                AnimatedIn(
+                                  child: Text(
+                                    item.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  "Points: ${item.pricePoints}",
-                                  style: TextStyle(
-                                    color: Colors.orange.shade700,
-                                    fontSize: 13,
+                                AnimatedIn(
+                                  child: Text(
+                                    "Points: ${item.pricePoints}",
+                                    style: TextStyle(
+                                      color: Colors.orange.shade700,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  "Stock: ${item.stock}",
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
+                                AnimatedIn(
+                                  child: Text(
+                                    "Stock: ${item.stock}",
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ],

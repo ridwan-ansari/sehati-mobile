@@ -64,6 +64,7 @@ class AppAssets {
   static const String socialSearch = 'assets/icons/social_search.svg';
   static const String stepIcon = 'assets/icons/step_icon.svg';
   static const String tvIcon = 'assets/icons/tv_icon.svg';
+  static const String whatsAppIcon = 'assets/icons/whatsApp_icon.svg';
 
   //---------------------- ilustration ------------------------
   static const String ilustrationLogin = 'assets/ilustration/ilustration_login.svg';

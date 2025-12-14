@@ -59,6 +59,7 @@ class AppPages {
     GetPage(
       name: AppRoutes.SPLASH,
       page: () => const SplashPage(),
+      binding: ProfileBinding(),
       transition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 500),
     ),
@@ -101,7 +102,15 @@ class AppPages {
     GetPage(
       name: AppRoutes.DASHBOARD,
       page: () => const DashboardPage(),
-      binding: DashboardBinding(),
+      bindings: [
+        DashboardBinding(),
+        LeaderboardBinding(),
+        ChattingBinding(),
+        GameBinding(),
+        ProfileBinding(),
+        ForumBinding(),
+        ScheduleBinding(),
+      ],
       transition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 300),
     ),

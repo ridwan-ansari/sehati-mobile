@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/response/game_model.dart';
 import 'package:sehati/app/data/services/game_service.dart';
@@ -5,16 +7,23 @@ import 'package:sehati/app/data/services/game_service.dart';
 class GameController extends GetxController {
   final GameService _service = GameService();
 
-  var games = <GameModel>[].obs;
+  RxList<GameModel> games = <GameModel>[].obs;
+
   var isLoading = false.obs;
 
   @override
   void onInit() {
+    print("🚀 GameController onInit DIPANGGIL");
     super.onInit();
     fetchGames();
   }
 
-  void fetchGames({String name = "", int limit = 20, int offset = 0}) async {
+  Future<void> fetchGames({
+    String name = "",
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    print("get game ..");
     try {
       isLoading.value = true;
       final result = await _service.getGames(
@@ -34,5 +43,10 @@ class GameController extends GetxController {
     // Implementasi logika saat game ditekan
     print("Game tapped: $gameId");
     _service.playGame(gameId: gameId);
+  }
+
+  void claimGame(String gameId) async {
+    await _service.gameClaim(gameId: gameId);
+    await fetchGames();
   }
 }

@@ -39,7 +39,8 @@ class CameraControllerX extends GetxController {
     if (status) {
       selectedImage.value = null;
       isNext.value = false;
-      Get.toNamed('/dashboard');
+      Get.offAllNamed('/dashboard');
+
       EasyLoading.dismiss();
       return;
     }
