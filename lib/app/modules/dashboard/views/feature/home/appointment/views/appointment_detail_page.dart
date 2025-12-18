@@ -110,8 +110,8 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
           _meetingOptions(),
           const SizedBox(height: 20),
           _confirmButton(),
-          Spacer(),
-          _googleCalendarInfo(),
+          // Spacer(),
+          // _googleCalendarInfo(),
         ],
       ),
     );
@@ -140,7 +140,6 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // FULLNAME
             Text(
               doctor.fullname ?? "",
               style: const TextStyle(
@@ -149,10 +148,7 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
                 color: Colors.black87,
               ),
             ),
-
             const SizedBox(height: 4),
-
-            // SPECIALIZATION
             Text(
               doctor.specialization ?? "",
               style: const TextStyle(
@@ -161,10 +157,7 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-
             const SizedBox(height: 6),
-
-            // BIO
             if (doctor.bio != null && doctor.bio!.isNotEmpty)
               Text(
                 doctor.bio!,

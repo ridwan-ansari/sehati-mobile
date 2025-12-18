@@ -60,7 +60,7 @@ class ChatService {
       final token = await LocalStorageService.getAccessToken();
 
       final response = await _dio.get(
-        "${ApiEndpoints.CHAT_PRIVARE}/$roomKey",
+        "${ApiEndpoints.CHAT_PRIVATE}/$roomKey",
         queryParameters: {"limit": limit, "offset": offset},
         options: Options(
           headers: {
@@ -93,7 +93,7 @@ class ChatService {
       final token = await LocalStorageService.getAccessToken();
 
       final response = await _dio.post(
-        ApiEndpoints.CHAT_PRIVARE,
+        ApiEndpoints.CHAT_PRIVATE,
         data: {"receiver_id": receiverId, "message": message},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );

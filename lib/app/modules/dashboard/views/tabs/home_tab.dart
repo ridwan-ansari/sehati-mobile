@@ -135,9 +135,14 @@ class _HomeTabState extends State<HomeTab> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            "Hi Dear, Did you missed to record your daily journal?",
-                            style: TextStyle(color: Colors.white, fontSize: 13),
+                          child: Obx(
+                            () => Text(
+                              leader.dashboardNotif.value,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                              ),
+                            ),
                           ),
                         ),
                       ],

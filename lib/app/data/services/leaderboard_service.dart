@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dio/dio.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -27,9 +29,7 @@ class LeaderboardService {
 
       final response = await _dio.get(
         ApiEndpoints.LEADERBOARD,
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-        }),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
         final List data = response.data['data'];
@@ -41,6 +41,32 @@ class LeaderboardService {
       final msg = e.response?.data['message'] ?? 'Gagal memuat leaderboard';
       SnackbarUtils.show(isError: true, msg);
       rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getDashboardNotif() async {
+    try {
+      final token = LocalStorageService.getAccessToken();
+
+      if (token == null || token.isEmpty) {
+        SnackbarUtils.show("Token not found. Please log in again.");
+        return null;
+      }
+
+      final response = await _dio.get(
+        ApiEndpoints.DASHBOARD_NOTIFICATION,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      } else {
+        SnackbarUtils.show("Gagal memuat notifikasi dashboard");
+        return null;
+      }
+    } catch (e) {
+      print("❌ getDashboardNotif error: $e");
+      return null;
     }
   }
 }

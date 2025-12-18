@@ -13,9 +13,11 @@ class LeaderboardController extends GetxController {
   RxBool showLottie = true.obs;
   RxBool init = false.obs;
   RxString username = "".obs;
+  RxString dashboardNotif = "".obs;
   RxList<LeaderboardModel> leaderboardList = <LeaderboardModel>[].obs;
 
   Future<void> fetchLeaderboard() async {
+   await getDashboardNotif();
     try {
       isLoading.value = true;
       final result = await _service.getLeaderboard();
@@ -25,6 +27,15 @@ class LeaderboardController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> getDashboardNotif() async {
+    try {
+      final result = await _service.getDashboardNotif();
+      if (result?['data'] != null || result?['data'] != "") {
+        dashboardNotif.value = result?['data'];
+      }
+    } finally {}
   }
 
   Future<void> fetchUsername() async {

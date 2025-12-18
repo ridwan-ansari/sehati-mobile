@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
 
 /// Base URL utama API
 const String BASE_URL = "https://sehatiapps.web.id";
@@ -27,7 +27,7 @@ class ApiEndpoints {
   // 💬 CHAT
   // =========================
   static const String CHAT_ROOMS = "$BASE_URL/api/chat/rooms";
-  static String CHAT_PRIVARE = "$BASE_URL/api/chat/messages";
+  static String CHAT_PRIVATE = "$BASE_URL/api/chat/messages";
   static const String LEADERBOARD = '$BASE_URL/api/point/leaderboard';
   static const String RECIPE = '$BASE_URL/api/recipe/';
 
@@ -58,6 +58,7 @@ class ApiEndpoints {
   static const String VIDEO_CLAIM_REWARD = "$BASE_URL/api/video/claim-reward";
   static const String PROFESSIONAL_LIST = "$BASE_URL/api/appointment/professionals";
   static const String APPOINTMENT = "$BASE_URL/api/appointment/";
+  static const String DASHBOARD_NOTIFICATION = "$BASE_URL/api/users/notification/reminder";
 
 
   // =========================

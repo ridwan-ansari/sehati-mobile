@@ -15,6 +15,7 @@ import 'package:sehati/app/data/services/food_service.dart';
 import 'package:sehati/app/data/models/response/food_model.dart';
 import 'package:sehati/app/data/services/profile_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/widget/food_diary_chart.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/input_qty_kcal.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/search_list_widget.dart';
 
 class FoodDiaryController extends GetxController {
@@ -130,8 +131,20 @@ class FoodDiaryController extends GetxController {
           itemLabel: (e) => "${e.name} (${e.calories} Kcal)",
           onItemSelected: (item) {},
           onAddPressed: (item) {
-            addFoodToInput(title, item);
             Navigator.pop(context, item);
+            showFoodGramDialog(
+              context: context,
+              foodName: item.name,
+              kcalPer100g: item.calories,
+              onSubmit: (gram, totalKcal) {
+                final totalKcal = hitungKalori(kaloriPer100g :item.calories , beratGram: gram);
+                final itm = item.copyWith(calories: totalKcal , weightGrams: gram); 
+                addFoodToInput(title, itm);
+                print("Food: ${item.name}");
+                print("Gram: $gram g");
+                print("Total Kcal: $totalKcal kcal");
+              },
+            );
           },
         );
       }),
@@ -176,7 +189,8 @@ class FoodDiaryController extends GetxController {
         dataBody.add({
           "food_id": item.id,
           "meal_type": mealType,
-          "quantity": item.calories,
+          "quantity": 1,
+          "weight_grams": item.weightGrams,
         });
       }
     });
@@ -252,5 +266,10 @@ class FoodDiaryController extends GetxController {
     dateController.dispose();
     controllerSearch.dispose();
     super.onClose();
+  }
+
+  //calculate
+  int hitungKalori({required int kaloriPer100g, required int beratGram}) {
+    return ((kaloriPer100g / 100) * beratGram).round();
   }
 }
