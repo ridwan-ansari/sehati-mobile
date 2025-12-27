@@ -167,7 +167,7 @@ class FoodHabitPage extends GetView<FoodHabitController> {
           const SizedBox(width: 10),
 
           Flexible(
-            flex: currentValue == true ? 2 : 1,
+            flex:  1,
             child: Row(
               children: [
                 YesNoSwitch(
@@ -181,18 +181,18 @@ class FoodHabitPage extends GetView<FoodHabitController> {
                   },
                 ),
 
-                if (currentValue == true) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: FrequencyInputWidget(
-                      initialValue: question.frequency ?? 1,
-                      onChanged: (val) {
-                        question.frequency = val;
-                        controller.questions.refresh();
-                      },
-                    ),
-                  ),
-                ]
+                // if (currentValue == true) ...[
+                //   const SizedBox(width: 8),
+                //   Expanded(
+                //     child: FrequencyInputWidget(
+                //       initialValue: question.frequency ?? 1,
+                //       onChanged: (val) {
+                //         question.frequency = val;
+                //         controller.questions.refresh();
+                //       },
+                //     ),
+                //   ),
+                // ]
               ],
             ),
           ),
