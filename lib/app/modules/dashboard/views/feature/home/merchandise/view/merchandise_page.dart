@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -15,7 +16,8 @@ class MerchandisePage extends GetView<MerchandiseController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.gold,
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
         title: const Text("Merchandise"),
       ),
       body: Column(
@@ -116,7 +118,7 @@ class MerchandisePage extends GetView<MerchandiseController> {
                           child: Column(
                             children: [
                               Lottie.asset(
-                                AppAssets.merchendiseLottie,
+                                AppAssets.merchandiseLottie,
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.contain,
@@ -193,10 +195,15 @@ class MerchandisePage extends GetView<MerchandiseController> {
                                 borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(12),
                                 ),
-                                child: Image.network(
-                                  fullImage,
+                                child: CachedNetworkImage(
+                                  imageUrl: fullImage,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
+                                  placeholder: (_, __) => Container(
+                                    color: Colors.grey[200],
+                                  ),
+                                  errorWidget: (_, __, ___) =>
+                                      const Icon(Icons.broken_image_outlined),
                                 ),
                               ),
                             ),

@@ -15,7 +15,8 @@ class ExerciseView extends GetView<ExerciseController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.gold,
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
         title: Text("Exercise Diary Journal"),
       ),
       backgroundColor: const Color(0xFFF5F5F5),

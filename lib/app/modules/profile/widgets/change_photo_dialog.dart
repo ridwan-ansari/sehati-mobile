@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
@@ -57,8 +58,8 @@ class _ChangePhotoDialogState extends State<ChangePhotoDialog> {
             backgroundImage: selectedImage != null
                 ? FileImage(selectedImage!)
                 : (currentPhoto != null && currentPhoto.isNotEmpty)
-                ? NetworkImage(BASE_URL + currentPhoto)
-                : null,
+                    ? CachedNetworkImageProvider(BASE_URL + currentPhoto)
+                    : null,
             child:
                 (selectedImage == null &&
                     (currentPhoto == null || currentPhoto.isEmpty))

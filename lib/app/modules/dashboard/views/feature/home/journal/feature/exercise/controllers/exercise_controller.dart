@@ -12,12 +12,39 @@ class ExerciseController extends GetxController {
     try {
       isLoading.value = true;
       final data = await _service.getExerciseQuestions();
-      exerciseList.assignAll(data ?? []);
+      if (data != null) {
+        _sortExerciseQuestions(data);
+        exerciseList.assignAll(data);
+      }
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _sortExerciseQuestions(List<ExerciseQuestionModel> questions) {
+    final orderMap = {
+      'type': 0,
+      'total expenditure': 1,
+      'target intake': 2,
+      'actual intake': 3,
+    };
+
+    questions.sort((a, b) {
+      final aKey = a.question.toLowerCase();
+      final bKey = b.question.toLowerCase();
+
+      int aOrder = 999;
+      int bOrder = 999;
+
+      orderMap.forEach((key, order) {
+        if (aKey.contains(key)) aOrder = order;
+        if (bKey.contains(key)) bOrder = order;
+      });
+
+      return aOrder.compareTo(bOrder);
+    });
   }
 
   Future<void> submitAllAnswers() async {

@@ -1,20 +1,15 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/reminder_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class RemindersService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ),
+  final Dio _dio = DioFactory.create(
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
   );
 
   // GET reminders

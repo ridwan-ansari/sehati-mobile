@@ -1,5 +1,4 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -33,17 +32,17 @@ class ProfileTab extends GetView<ProfileController> {
               padding: const EdgeInsets.all(12),
               child: Column(
                 children: [
-                  const SizedBox(height: 56.0),
+                  const SizedBox(height: 56),
                   AnimatedIn(
                     child: CircleAvatar(
                       radius: 58,
                       backgroundColor: AppColors.orangeLight,
                       child: CircleAvatar(
                         radius: 56,
-                        backgroundColor: Colors.grey.withOpacity(0.5),
+                        backgroundColor: Colors.grey.withValues(alpha: 0.5),
                         backgroundImage:
                             (profile != null && profile.picture.isNotEmpty)
-                            ? NetworkImage('$BASE_URL${profile.picture}')
+                            ? CachedNetworkImageProvider('$BASE_URL${profile.picture}')
                             : null,
                         child: (profile == null || profile.picture.isEmpty)
                             ? const Icon(Icons.person, size: 56)
@@ -51,11 +50,10 @@ class ProfileTab extends GetView<ProfileController> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 10),
                   AnimatedIn(
                     child: Text(
-                      profile?.fullname ?? "",
+                      profile?.fullname ?? '',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -64,15 +62,15 @@ class ProfileTab extends GetView<ProfileController> {
                   ),
                   AnimatedIn(
                     child: Text(
-                      profile?.email ?? "",
+                      profile?.email ?? '',
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: 12),
                   _buildInfoCard(profile),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: 12),
                   _buildSettingsCard(context),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: 12),
                   AnimatedIn(child: _buildLogoutButton()),
                 ],
               ),
@@ -86,10 +84,10 @@ class ProfileTab extends GetView<ProfileController> {
   Widget _buildLogoutButton() {
     return Card(
       child: _buildListTile(
-        bgColor: Colors.blueGrey,
+        bgColor: AppColors.richBrown,
         icon: Icons.logout,
         color: Colors.white,
-        text: 'Logout',
+        text: 'Sign Out',
         textColor: Colors.white,
         onTap: () async {
           await NotificationService.cancelAll();
@@ -105,47 +103,31 @@ class ProfileTab extends GetView<ProfileController> {
     return Card(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Information",
+                'Information',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 16.0),
-            _textIconDetail(
-              "Nickname",
-              profile?.nickname ?? "",
-              AppAssets.profileIcon,
-            ),
-            const SizedBox(height: 8.0),
-            _textIconDetail(
-              "Phone Number",
-              profile?.phoneNumber ?? "",
-              AppAssets.phoneIcon,
-            ),
-            const SizedBox(height: 8.0),
-            _textIconDetail(
-              "Gender",
-              profile?.gender ?? "",
-              AppAssets.genderIcon,
-            ),
-            const SizedBox(height: 8.0),
-            _textIconDetail(
-              "Date of Birth",
-              profile?.dateOfBirth ?? "",
-              AppAssets.dateIcon,
-            ),
+            const SizedBox(height: 16),
+            _textIconDetail('Nickname', profile?.nickname ?? '', AppAssets.profileIcon),
+            const SizedBox(height: 8),
+            _textIconDetail('Phone Number', profile?.phoneNumber ?? '', AppAssets.phoneIcon),
+            const SizedBox(height: 8),
+            _textIconDetail('Gender', profile?.gender ?? '', AppAssets.genderIcon),
+            const SizedBox(height: 8),
+            _textIconDetail('Date of Birth', profile?.dateOfBirth ?? '', AppAssets.dateIcon),
           ],
         ),
       ),
     );
   }
 
-  Widget _textIconDetail(String text, String value, String iconPath) {
+  Widget _textIconDetail(String label, String value, String iconPath) {
     return Row(
       children: [
         AppAssetUtils.svg(iconPath, width: 24, height: 24, color: Colors.black),
@@ -153,8 +135,8 @@ class ProfileTab extends GetView<ProfileController> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(text, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 4.0),
+            Text(label, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 4),
             AnimatedIn(
               child: Text(
                 value.isEmpty ? '-' : value,
@@ -177,7 +159,7 @@ class ProfileTab extends GetView<ProfileController> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Settings",
+                'Settings',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -187,7 +169,7 @@ class ProfileTab extends GetView<ProfileController> {
               bgColor: Colors.white,
               icon: Icons.person_pin,
               color: Colors.black,
-              text: 'Change photo',
+              text: 'Change Photo',
               textColor: Colors.black,
               onTap: () => showDialog(
                 context: context,
@@ -195,15 +177,6 @@ class ProfileTab extends GetView<ProfileController> {
               ),
             ),
           ),
-          // const Divider(),
-          // _buildListTile(
-          //   bgColor: Colors.white,
-          //   icon: Icons.password,
-          //   color: Colors.black,
-          //   text: 'Ubah Kata Sandi',
-          //   textColor: Colors.black,
-          //   onTap: () => Get.toNamed('/forgot_password'),
-          // ),
         ],
       ),
     );
@@ -222,7 +195,7 @@ class ProfileTab extends GetView<ProfileController> {
       child: Material(
         color: bgColor,
         child: InkWell(
-          splashColor: Colors.orange.withOpacity(0.3),
+          splashColor: AppColors.orangeLight.withValues(alpha: 0.3),
           onTap: onTap,
           child: ListTile(
             leading: Icon(icon, color: color),

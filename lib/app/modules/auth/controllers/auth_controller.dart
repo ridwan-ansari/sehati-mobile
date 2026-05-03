@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/request/nutrition_req_model.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
@@ -55,15 +56,17 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    // weightController.addListener(calculate);
-    // heightController.addListener(calculate);
-    // ever(selectedDate, (_) => calculate());
   }
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
-    print(isConfirmForgotPass.value);
+  }
+
+  // Only clears text fields — no reactive variables to avoid Obx rebuild loop
+  void clearLoginFields() {
+    emailController.clear();
+    passwordController.clear();
+    isPasswordHidden.value = true;
   }
 
   void resetLoginFields() {
@@ -80,11 +83,9 @@ class AuthController extends GetxController {
 
   // === REGISTER ===
   Future<void> register() async {
-    // if (!formKeySignup.currentState!.validate()) return;
-
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: "Mendaftarkan akun...");
+    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyRegistering));
 
     try {
       final response = await _authService.registerUser(
@@ -100,6 +101,10 @@ class AuthController extends GetxController {
           (response.statusCode == 200 || response.statusCode == 201)) {
         EasyLoading.dismiss();
         isLoading.value = false;
+        SnackbarUtils.show(
+          AppStrings.get(AppStrings.authKeyRegisterSuccess),
+          isError: false,
+        );
         Get.offAllNamed(
           '/verify_otp',
           arguments: {'email': emailController.text.trim()},
@@ -107,15 +112,14 @@ class AuthController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
+        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
 
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
+      String message = AppStrings.get(AppStrings.authKeyError);
+      if (e.response?.data != null && e.response?.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.message != null) {
         message = e.message!;
@@ -124,13 +128,7 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      Get.snackbar(
-        "Error",
-        "Terjadi kesalahan: $e",
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
     }
   }
 
@@ -184,46 +182,34 @@ class AuthController extends GetxController {
     }
   }
 
-  // void calculate() {
-  //   // Update nilai dari text field
-  //   weight.value = double.tryParse(weightController.text) ?? 0;
-  //   height.value = double.tryParse(heightController.text) ?? 0;
-  //   dateOfBirth.value = selectedDate.value;
-
-  //   if (weight.value > 0 && height.value > 0) {
-  //     bmi.value = NutritionalService.calculateBMI(weight.value, height.value);
-  //     status.value = NutritionalService.getNutritionalStatus(bmi.value);
-  //     idealWeight.value = NutritionalService.calculateIdealWeight(height.value);
-  //   }
-
-  //   if (dateOfBirth.value.isNotEmpty) {
-  //     final dob = DateFormat('yyyy-MM-dd').parse(dateOfBirth.value);
-  //     age.value = NutritionalService.calculateAge(dob);
-  //   }
-  // }
-
-  // Verifikasi OTP
+  // === VERIFY OTP ===
   Future<bool> verifyOtp(String email, String otp) async {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: "Verify Otp ...");
+    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyVerifyingOtp));
     try {
       final response = await _authService.verifyOtp(email: email, code: otp);
       if (response == true) {
+        EasyLoading.dismiss();
+        isLoading.value = false;
+        SnackbarUtils.show(
+          AppStrings.get(AppStrings.authKeyOtpSuccess),
+          isError: false,
+        );
+        await Future.delayed(const Duration(milliseconds: 800));
         Get.offAllNamed(AppRoutes.SPLASH);
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
+        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyOtpError));
       }
-      return false;
+      return response;
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
 
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
+      String message = AppStrings.get(AppStrings.authKeyOtpError);
+      if (e.response?.data != null && e.response?.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.message != null) {
         message = e.message!;
@@ -233,10 +219,9 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      SnackbarUtils.show(msg.isNotEmpty ? msg : AppStrings.get(AppStrings.authKeyOtpError));
       return false;
-    } finally {
-      isLoading.value = false;
-      if (EasyLoading.isShow) EasyLoading.dismiss();
     }
   }
 
@@ -244,7 +229,7 @@ class AuthController extends GetxController {
   Future<void> login(String email, String password) async {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: 'Login...');
+    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyLoggingIn));
 
     try {
       final data = await _authService.login(email: email, password: password);
@@ -252,6 +237,10 @@ class AuthController extends GetxController {
       if (data != null) {
         EasyLoading.dismiss();
         isLoading.value = false;
+        SnackbarUtils.show(
+          AppStrings.get(AppStrings.authKeyLoginSuccess),
+          isError: false,
+        );
         var nutritionData = await _userService.getUserNutrition();
         if (nutritionData?.length == 0) {
           Get.toNamed(AppRoutes.NUTRITION);
@@ -261,15 +250,14 @@ class AuthController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
+        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
 
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
+      String message = AppStrings.get(AppStrings.authKeyError);
+      if (e.response?.data != null && e.response?.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.message != null) {
         message = e.message!;
@@ -278,6 +266,7 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
+      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
     }
   }
 
@@ -297,10 +286,8 @@ class AuthController extends GetxController {
       EasyLoading.dismiss();
       isLoading.value = false;
 
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
+      String message = AppStrings.get(AppStrings.authKeyError);
+      if (e.response?.data != null && e.response?.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.message != null) {
         message = e.message!;
@@ -312,9 +299,7 @@ class AuthController extends GetxController {
   }
 
   // Resend OTP
-  Future<void> resendOtp(String email) async {
-    // await sendOtp(email);
-  }
+  Future<void> resendOtp(String email) async {}
 
   String? confirmPasswordValidator(String? value) {
     if (value == null || value.isEmpty) return 'Harus diisi';
@@ -345,10 +330,8 @@ class AuthController extends GetxController {
       EasyLoading.dismiss();
       isLoading.value = false;
 
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
+      String message = AppStrings.get(AppStrings.authKeyError);
+      if (e.response?.data != null && e.response?.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.message != null) {
         message = e.message!;
@@ -389,7 +372,6 @@ class AuthController extends GetxController {
     } finally {
       isLoading.value = false;
       EasyLoading.dismiss();
-      isLoading.value = false;
     }
   }
 
@@ -398,38 +380,36 @@ class AuthController extends GetxController {
     final heightVal = double.tryParse(heightController.text) ?? 0;
 
     if (weightVal <= 0 || heightVal <= 0) {
-      SnackbarUtils.show("Please enter valid weight & height");
+      SnackbarUtils.show(AppStrings.get(AppStrings.nutritionKeyInvalidInput));
       return;
     }
 
-    final request = NutritionCreateRequest(
-      weightKg: weightVal,
-      heightCm: heightVal,
-    );
+    isLoading.value = true;
+    EasyLoading.show(status: AppStrings.get(AppStrings.nutritionKeyCalculate));
 
-    final result = await UserService().createNutrition(request);
+    try {
+      final request = NutritionCreateRequest(
+        weightKg: weightVal,
+        heightCm: heightVal,
+      );
 
-    if (result != null) {
-      // isi ulang field dari API
-      bmi.value = result.bmi;
-      status.value = result.status;
-      idealWeight.value = result.idealWeightKg;
-      isNutritionSaved.value = true;
+      final result = await UserService().createNutrition(request);
+
+      EasyLoading.dismiss();
+      isLoading.value = false;
+
+      if (result != null) {
+        bmi.value = result.bmi;
+        status.value = result.status;
+        idealWeight.value = result.idealWeightKg;
+        isNutritionSaved.value = true;
+      } else {
+        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoading.value = false;
+      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
     }
   }
-
-  // @override
-  // void onClose() {
-  //   emailController.dispose();
-  //   passwordController.dispose();
-  //   nameController.dispose();
-  //   nicknameController.dispose();
-  //   phoneController.dispose();
-  //   weightController.dispose();
-  //   heightController.dispose();
-  //   newPasswordController.dispose();
-  //   confirmPasswordController.dispose();
-  //   otpController.dispose();
-  //   super.onClose();
-  // }
 }

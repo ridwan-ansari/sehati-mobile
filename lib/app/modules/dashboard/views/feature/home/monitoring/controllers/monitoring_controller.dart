@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -31,6 +29,7 @@ class MonitoringController extends GetxController
 
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
+  var errorMessage = ''.obs;
 
   final scrollController = ScrollController();
   @override
@@ -87,20 +86,23 @@ class MonitoringController extends GetxController
     if (isLoadingMore.value || !hasMore.value) return;
 
     isLoadingMore.value = true;
+    try {
+      final result = await _userService.getUserNutritionPaginated(
+        limit: limit,
+        offset: offset,
+      );
 
-    final result = await _userService.getUserNutritionPaginated(
-      limit: limit,
-      offset: offset,
-    );
-
-    if (result != null && result.isNotEmpty) {
-      list.addAll(result);
-      offset += limit;
-    } else {
-      hasMore.value = false;
+      if (result != null && result.isNotEmpty) {
+        list.addAll(result);
+        offset += limit;
+      } else {
+        hasMore.value = false;
+      }
+    } catch (_) {
+      errorMessage.value = 'Failed to load data. Check your connection.';
+    } finally {
+      isLoadingMore.value = false;
     }
-
-    isLoadingMore.value = false;
   }
 
   Future<void> submitNutrition() async {
@@ -117,16 +119,17 @@ class MonitoringController extends GetxController
       heightCm: heightVal,
     );
 
-    final result = await _userService.createNutrition(request);
-
-
-    if (result != null) {
-      // =========== AUTO FILL ===========
-      imtController.text = result.bmi.toString();
-      zScoreController.text = result.status;
-      idealController.text = result.idealWeightKg.toString();
+    try {
+      final result = await _userService.createNutrition(request);
+      if (result != null) {
+        imtController.text = result.bmi.toString();
+        zScoreController.text = result.status;
+        idealController.text = result.idealWeightKg.toString();
+      }
+      _initData();
+    } catch (_) {
+      SnackbarUtils.show('Failed to save. Please try again.');
     }
-    _initData();
   }
 
   Future<void> selectDate() async {
@@ -148,7 +151,7 @@ class MonitoringController extends GetxController
               if (states.contains(WidgetState.selected)) {
                 return Colors.orange;
               }
-              return Colors.orange.withOpacity(0.2);
+              return Colors.orange.withValues(alpha: 0.2);
             }),
             todayForegroundColor: WidgetStateProperty.all(Colors.white),
             todayBorder: const BorderSide(color: Colors.orange, width: 2),

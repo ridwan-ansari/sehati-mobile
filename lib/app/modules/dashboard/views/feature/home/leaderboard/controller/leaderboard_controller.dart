@@ -7,23 +7,27 @@ import 'package:sehati/app/data/services/profile_service.dart';
 class LeaderboardController extends GetxController {
   final LeaderboardService _service = LeaderboardService();
   final ProfileService _profileService = ProfileService();
-  late AudioPlayer player = AudioPlayer();
+  final AudioPlayer _player = AudioPlayer();
 
-  RxBool isLoading = false.obs;
-  RxBool showLottie = true.obs;
-  RxBool init = false.obs;
-  RxString username = "".obs;
-  RxString dashboardNotif = "".obs;
-  RxList<LeaderboardModel> leaderboardList = <LeaderboardModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool showLottie = true.obs;
+  final RxBool _pageOpened = false.obs;
+  final RxString username = ''.obs;
+  final RxString dashboardNotif = ''.obs;
+  final RxString errorMessage = ''.obs;
+  final RxList<LeaderboardModel> leaderboardList = <LeaderboardModel>[].obs;
 
   Future<void> fetchLeaderboard() async {
-   await getDashboardNotif();
+    errorMessage.value = '';
+    await getDashboardNotif();
     try {
       isLoading.value = true;
       final result = await _service.getLeaderboard();
       if (result != null) {
         leaderboardList.assignAll(result);
       }
+    } catch (_) {
+      errorMessage.value = 'Failed to load leaderboard. Check your connection.';
     } finally {
       isLoading.value = false;
     }
@@ -32,10 +36,10 @@ class LeaderboardController extends GetxController {
   Future<void> getDashboardNotif() async {
     try {
       final result = await _service.getDashboardNotif();
-      if (result?['data'] != null || result?['data'] != "") {
+      if (result?['data'] != null && result?['data'] != '') {
         dashboardNotif.value = result?['data'];
       }
-    } finally {}
+    } catch (_) {}
   }
 
   Future<void> fetchUsername() async {
@@ -55,37 +59,39 @@ class LeaderboardController extends GetxController {
   }
 
   int get mySaldo {
-    final user = leaderboardList.firstWhere(
-      (e) => e.nickname == username.value,
-      orElse: () =>
-          LeaderboardModel(nickname: "", achievementPoints: 0, creditPoints: 0),
-    );
-    return user.creditPoints;
+    return leaderboardList
+        .firstWhere(
+          (e) => e.nickname == username.value,
+          orElse: () => LeaderboardModel(
+            nickname: '',
+            achievementPoints: 0,
+            creditPoints: 0,
+          ),
+        )
+        .creditPoints;
   }
 
   int get myAchievement {
-    final user = leaderboardList.firstWhere(
-      (e) => e.nickname == username.value,
-      orElse: () =>
-          LeaderboardModel(nickname: "", achievementPoints: 0, creditPoints: 0),
-    );
-    return user.achievementPoints;
+    return leaderboardList
+        .firstWhere(
+          (e) => e.nickname == username.value,
+          orElse: () => LeaderboardModel(
+            nickname: '',
+            achievementPoints: 0,
+            creditPoints: 0,
+          ),
+        )
+        .achievementPoints;
   }
 
-  void hideLottieAfterDelay() {
-    Future.delayed(Duration(seconds: 3), () {
+  void startOpenPage() {
+    if (_pageOpened.value) return;
+    _pageOpened.value = true;
+    showLottie.value = true;
+    Future.delayed(const Duration(seconds: 3), () {
       showLottie.value = false;
     });
-  }
-
-  void playOpenSound() {
-    print("play soud ");
-    player.play(AssetSource('sound/coin.mp3'));
-  }
-
-  void startAnimation() {
-    hideLottieAfterDelay();
-    playOpenSound();
+    _player.play(AssetSource('sound/coin.mp3'));
   }
 
   @override
@@ -97,30 +103,7 @@ class LeaderboardController extends GetxController {
 
   @override
   void onClose() {
-    player.dispose();
+    _player.dispose();
     super.onClose();
   }
-
-  void startOpenPage() {
-    print("önReady------------------>");
-    super.onReady();
-    showLottie.value = true;
-    Future.delayed(const Duration(seconds: 3), () {
-      showLottie.value = false;
-    });
-    player = AudioPlayer();
-    playOpenSound();
-  }
-
-  // @override
-  // void onReady() {
-  //   print("önReady------------------>");
-  //   super.onReady();
-  //   showLottie.value = true;
-  //   Future.delayed(const Duration(seconds: 3), () {
-  //     showLottie.value = false;
-  //   });
-  //   player = AudioPlayer();
-  //   playOpenSound();
-  // }
 }

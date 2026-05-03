@@ -1,10 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/data/services/language_service.dart';
 import '../controllers/dashboard_controller.dart';
 import 'tabs/home_tab.dart';
 import 'tabs/schedule_tab.dart';
@@ -24,7 +24,9 @@ class DashboardPage extends GetView<DashboardController> {
     ];
 
     return Obx(
-      () => PopScope(
+      () {
+        Get.find<LanguageService>().currentLanguage.value;
+        return PopScope(
         canPop: false,
         onPopInvoked: (pop) {
           if (pop) return;
@@ -35,11 +37,11 @@ class DashboardPage extends GetView<DashboardController> {
           bottomNavigationBar: Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF3B2B27),
+              color: AppColors.richBrown,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 10,
                 ),
@@ -66,7 +68,7 @@ class DashboardPage extends GetView<DashboardController> {
                       width: 24,
                       height: 24,
                     ),
-                    label: "Home",
+                    label: AppStrings.get(AppStrings.menuKeyHome),
                   ),
                   BottomNavigationBarItem(
                     icon: AppAssetUtils.svg(
@@ -75,7 +77,7 @@ class DashboardPage extends GetView<DashboardController> {
                       height: 32,
                       color: AppColors.gold,
                     ),
-                    label: "Forum",
+                    label: AppStrings.get(AppStrings.menuKeyCommunity),
                   ),
                   BottomNavigationBarItem(
                     icon: AppAssetUtils.svg(
@@ -83,7 +85,7 @@ class DashboardPage extends GetView<DashboardController> {
                       width: 24,
                       height: 24,
                     ),
-                    label: "Schedule",
+                    label: AppStrings.get(AppStrings.menuKeySchedule),
                   ),
                   BottomNavigationBarItem(
                     icon: AppAssetUtils.svg(
@@ -91,14 +93,15 @@ class DashboardPage extends GetView<DashboardController> {
                       width: 24,
                       height: 24,
                     ),
-                    label: "Profile",
+                    label: AppStrings.get(AppStrings.menuKeyProfile),
                   ),
                 ],
               ),
             ),
           ),
         ),
-      ),
+      );
+      },
     );
   }
 }

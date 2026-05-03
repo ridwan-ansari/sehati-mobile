@@ -1,10 +1,10 @@
-// ignore_for_file: avoid_print, prefer_is_empty
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/services/auth_service.dart';
+import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/data/services/user_service.dart';
 import '../routes/app_routes.dart';
@@ -17,50 +17,60 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-    _checkLogin();
-  }
-
   final _authService = AuthService();
   final _userService = UserService();
 
-  Future<void> _checkLogin() async {
-    final token = LocalStorageService.getAccessToken();
-    print("token : $token");
+  @override
+  void initState() {
+    super.initState();
+    _initializeServices();
+  }
 
+  Future<void> _initializeServices() async {
+    await Get.putAsync<LanguageService>(() => LanguageService.initialize());
+    _checkLogin();
+  }
+
+  Future<void> _checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    if (mounted) {
-      if (token != null && token.isNotEmpty) {
-        refreshToken();
-        var nutritionData = await _userService.getUserNutrition();
+    if (!mounted) return;
 
-        if (nutritionData?.length == 0) {
-          Get.toNamed(AppRoutes.NUTRITION);
-          return;
-        }
-        Get.offAllNamed(AppRoutes.DASHBOARD);
-      } else {
-        Get.offAllNamed(AppRoutes.LOGIN);
+    final token = LocalStorageService.getAccessToken();
+
+    if (token != null && token.isNotEmpty) {
+      _refreshToken();
+      final nutritionData = await _userService.getUserNutrition();
+      if (nutritionData?.isEmpty ?? true) {
+        Get.offAllNamed(AppRoutes.NUTRITION);
+        return;
       }
+      Get.offAllNamed(AppRoutes.DASHBOARD);
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      final hasSelectedLanguage = prefs.getBool('has_selected_language') ?? false;
+
+      if (!hasSelectedLanguage) {
+        Get.offAllNamed(AppRoutes.LANGUAGE);
+        return;
+      }
+
+      final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+      Get.offAllNamed(
+        hasSeenOnboarding ? AppRoutes.WELCOME : AppRoutes.ONBOARDING,
+      );
     }
   }
 
-  Future<void> refreshToken() async {
+  Future<void> _refreshToken() async {
     final token = LocalStorageService.getRefreshToken();
-
     if (token == null) return;
-
     try {
       final newAccess = await _authService.refreshToken(refreshToken: token);
       if (newAccess != null) {
         LocalStorageService.setAccessToken(newAccess);
       }
-    } catch (e) {
-      print("Refresh token failed: $e");
-    }
+    } catch (_) {}
   }
 
   @override

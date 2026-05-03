@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
@@ -21,11 +20,11 @@ class ChattingController extends GetxController {
   final ChatSocketService socketService = ChatSocketService();
 
   late ChatRepository repo;
-  RxBool isLoading = false.obs;
-  RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
-  RxList<ChatMessageModel> chats = <ChatMessageModel>[].obs;
-  Rxn<ChatMessageModel> replyChat = Rxn<ChatMessageModel>();
-  RxList<UserChatModel> userList = <UserChatModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
+  final RxList<ChatMessageModel> chats = <ChatMessageModel>[].obs;
+  final Rxn<ChatMessageModel> replyChat = Rxn<ChatMessageModel>();
+  final RxList<UserChatModel> userList = <UserChatModel>[].obs;
   final TextEditingController textController = TextEditingController();
   final ScrollController userScrollController = ScrollController();
   final ScrollController chatScrollController = ScrollController();
@@ -36,42 +35,37 @@ class ChattingController extends GetxController {
 
   int _page = 0;
   final int _limit = 20;
-  String _lastQuery = "";
-  int chatPage = 0;
-  final int chatLimit = 10;
-  bool chatHasMore = true;
-  RxBool chatIsLoading = false.obs;
-  RxString currentRoomKey = "".obs;
+  String _lastQuery = '';
+  int _chatPage = 0;
+  final int _chatLimit = 10;
+  bool _chatHasMore = true;
+  final RxBool chatIsLoading = false.obs;
+  final RxString currentRoomKey = ''.obs;
 
   bool _hasMore = true;
   bool _isFetching = false;
 
+  int get chatPage => _chatPage;
+  int get chatLimit => _chatLimit;
+  bool get chatHasMore => _chatHasMore;
+
   @override
   void onInit() {
     super.onInit();
-
     socketService.connect();
     initSocket();
     getRooms();
-
     repo = ChatRepository(socketService);
-
-    userScrollController.addListener(_onScroll);
-    chatScrollController.addListener(() {
-      if (chatScrollController.position.pixels <= 100 &&
-          chatHasMore &&
-          !chatIsLoading.value) {
-        chatPage++;
-        loadMessages(roomKey: currentRoomKey.value, refresh: false);
-      }
-    });
+    userScrollController.addListener(_onUserScroll);
+    chatScrollController.addListener(_onChatScroll);
   }
 
   @override
   void onClose() {
-    userScrollController.removeListener(_onScroll);
+    _debounce?.cancel();
+    userScrollController.removeListener(_onUserScroll);
     userScrollController.dispose();
-    currentRoomKey.value = "";
+    currentRoomKey.value = '';
     super.onClose();
   }
 
@@ -86,71 +80,49 @@ class ChattingController extends GetxController {
   }
 
   Future<void> refreshOldMessages() async {
-    print("Refreshing old messages...");
-    if (!chatHasMore || chatIsLoading.value) return;
-    print("Loading more messages...");
+    if (!_chatHasMore || chatIsLoading.value) return;
     chatIsLoading.value = true;
-    chatPage++;
+    _chatPage++;
 
     final messages = await _chatService.getMessages(
       roomKey: currentRoomKey.value,
-      offset: chatPage * chatLimit,
-      limit: chatLimit,
+      offset: _chatPage * _chatLimit,
+      limit: _chatLimit,
     );
-    print("Loaded ${messages.length} more messages.");
-    print("Loaded ${chats.length} more messages.");
 
-    final converted = messages.map((e) {
-      return ChatMessageModel(
-        id: e.id,
-        message: e.message,
-        senderId: e.senderId,
-        receiverId: e.receiverId,
-        createdAt: e.createdAt,
-        type: e.type,
-      );
-    }).toList();
+    final converted = messages.map((e) => ChatMessageModel(
+          id: e.id,
+          message: e.message,
+          senderId: e.senderId,
+          receiverId: e.receiverId,
+          createdAt: e.createdAt,
+          type: e.type,
+        )).toList();
 
-    chats.addAll(converted); // ⬅ TAMBAH DI BAWAH (karena reverse: true)
-    chatHasMore = converted.length == chatLimit;
-
+    chats.addAll(converted);
+    _chatHasMore = converted.length == _chatLimit;
     chatIsLoading.value = false;
   }
 
-  // ============================================================
-  //  SOCKET
-  // ============================================================
   void initSocket() async {
     final connected = await socketService.connect();
-    if (!connected) {
-      print("❌ Socket gagal connect");
-      return;
-    }
-
-    print("✔ WebSocket Ready");
+    if (!connected) return;
 
     socketService.stream.listen((raw) async {
-      print("WS EVENT [CONTROLLER]: $raw");
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final incomingRoomKey = data['room_key'] as String?;
 
-      Map<String, dynamic> data = jsonDecode(raw);
-      final incomingRoomKey = data['room_key'];
-
-      if (currentRoomKey.isEmpty) {
+      if (currentRoomKey.isEmpty && incomingRoomKey != null) {
         currentRoomKey.value = incomingRoomKey;
-        print("📌 Room key initialized from socket: ${currentRoomKey.value}");
       }
 
       if (incomingRoomKey == currentRoomKey.value) {
-        print("📩 New message for active room: ${currentRoomKey.value}");
         await loadMessages(roomKey: currentRoomKey.value, refresh: true);
         await getRooms();
       }
     });
   }
 
-  // ============================================================
-  //  GET ROOMS
-  // ============================================================
   Future<void> getRooms() async {
     try {
       isLoading(true);
@@ -161,128 +133,96 @@ class ChattingController extends GetxController {
     }
   }
 
-  // ============================================================
-  //  LOAD MESSAGES
-  // ============================================================
   Future<void> loadMessages({
     required String roomKey,
     bool refresh = true,
   }) async {
-    print("Loading messages for roomKey: $roomKey");
     if (chatIsLoading.value) return;
     chatIsLoading.value = true;
 
     try {
       if (refresh) {
-        chatPage = 0;
-        chatHasMore = true;
+        _chatPage = 0;
+        _chatHasMore = true;
         chats.clear();
       }
 
       final messages = await _chatService.getMessages(
         roomKey: roomKey,
-        offset: chatPage * chatLimit,
-        limit: chatLimit,
+        offset: _chatPage * _chatLimit,
+        limit: _chatLimit,
       );
 
-      final converted = messages.map((e) {
-        return ChatMessageModel(
-          id: e.id,
-          message: e.message,
-          senderId: e.senderId,
-          receiverId: e.receiverId,
-          createdAt: e.createdAt,
-          type: e.type,
-        );
-      }).toList();
+      final converted = messages.map((e) => ChatMessageModel(
+            id: e.id,
+            message: e.message,
+            senderId: e.senderId,
+            receiverId: e.receiverId,
+            createdAt: e.createdAt,
+            type: e.type,
+          )).toList();
 
       chats.addAll(converted);
+      _chatHasMore = converted.length == _chatLimit;
 
-      chatHasMore = converted.length == chatLimit;
-
-      if (refresh) {
-        scrollToBottom();
-      }
+      if (refresh) scrollToBottom();
     } finally {
       chatIsLoading.value = false;
     }
   }
 
-  // ============================================================
-  //  SEND MESSAGE
-  // ============================================================
   Future<void> addChat(String receiverId) async {
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
-    final newMessage = ChatMessage(to: receiverId, message: text);
-    repo.sendChat(newMessage);
-
+    repo.sendChat(ChatMessage(to: receiverId, message: text));
     scrollToBottom();
   }
 
-  // ============================================================
-  //  SEARCH USERS (Realtime + Debounce)
-  // ============================================================
   void onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       searchUsers(query);
     });
   }
 
   Future<void> searchUsers(String query) async {
-    if (query.isEmpty) {
-      return getAllUsers();
-    }
-
+    if (query.isEmpty) return getAllUsers();
     _lastQuery = query;
     _page = 0;
     _hasMore = true;
-
     await _fetchUsers(query, append: false);
   }
 
   Future<void> getAllUsers() async {
     _page = 0;
     _hasMore = true;
-    _lastQuery = "";
-    await _fetchUsers("", append: false);
+    _lastQuery = '';
+    await _fetchUsers('', append: false);
   }
 
-  // ============================================================
-  //  PAGINATION FETCH
-  // ============================================================
   Future<void> _fetchUsers(String query, {bool append = false}) async {
     if (_isFetching || !_hasMore) return;
-
     _isFetching = true;
-
     try {
       final users = await _chatService.searchUsers(
         query: query,
         offset: _page * _limit,
         limit: _limit,
       );
-
       if (append) {
         userList.addAll(users);
       } else {
         userList.assignAll(users);
       }
-
       _hasMore = users.length == _limit;
     } finally {
       _isFetching = false;
     }
   }
 
-  // ============================================================
-  //  SCROLL LISTENER FOR PAGINATION
-  // ============================================================
-  void _onScroll() {
+  void _onUserScroll() {
     if (!_hasMore || _isFetching) return;
-
     if (userScrollController.position.pixels >=
         userScrollController.position.maxScrollExtent - 200) {
       _page++;
@@ -290,16 +230,18 @@ class ChattingController extends GetxController {
     }
   }
 
-  // ============================================================
-  //  UTILITIES
-  // ============================================================
-  void clearChats() {
-    chats.clear();
+  void _onChatScroll() {
+    if (chatScrollController.position.pixels <= 100 &&
+        _chatHasMore &&
+        !chatIsLoading.value) {
+      _chatPage++;
+      loadMessages(roomKey: currentRoomKey.value, refresh: false);
+    }
   }
 
-  void clearReply() {
-    replyChat.value = null;
-  }
+  void clearChats() => chats.clear();
+
+  void clearReply() => replyChat.value = null;
 
   Future<void> showWsNotification({
     required String title,
@@ -325,10 +267,8 @@ class ChattingController extends GetxController {
 
   Future<ProfileData?> getUserById(String userId) async {
     try {
-      final profile = await _userService.getUserId(userId: userId);
-      return profile;
-    } catch (e) {
-      print("Error fetching user profile: $e");
+      return await _userService.getUserId(userId: userId);
+    } catch (_) {
       return null;
     }
   }

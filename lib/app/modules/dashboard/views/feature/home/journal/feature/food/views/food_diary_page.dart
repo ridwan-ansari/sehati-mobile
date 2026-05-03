@@ -20,7 +20,8 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.gold,
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
         title: Text("Food Diary Journal"),
       ),
       body: SingleChildScrollView(

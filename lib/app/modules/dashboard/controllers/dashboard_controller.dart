@@ -1,26 +1,25 @@
-// ignore_for_file: unrelated_type_equality_checks, deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
-  DateTime? lastBackPressed;
+  DateTime? _lastBackPressed;
 
   void changeTab(int index) {
     selectedIndex.value = index;
   }
 
   Future<bool> onWillPop(BuildContext context) async {
-    if (selectedIndex != 0) {
+    if (selectedIndex.value != 0) {
       selectedIndex.value = 0;
       return false;
     }
+
     final now = DateTime.now();
-    if (lastBackPressed == null ||
-        now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
-      lastBackPressed = now;
+    if (_lastBackPressed == null ||
+        now.difference(_lastBackPressed!) > const Duration(seconds: 2)) {
+      _lastBackPressed = now;
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -28,12 +27,12 @@ class DashboardController extends GetxController {
           elevation: 0,
           behavior: SnackBarBehavior.floating,
           padding: EdgeInsets.zero,
-          margin: EdgeInsets.only(bottom: 60, left: 0, right: 0),
+          margin: const EdgeInsets.only(bottom: 60),
           content: Align(
             alignment: Alignment.bottomCenter,
             child: IntrinsicWidth(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(50),
@@ -49,14 +48,10 @@ class DashboardController extends GetxController {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.info_outline,
-                      color: Colors.grey,
-                      size: 18,
-                    ),
-                    SizedBox(width: 8),
+                    const Icon(Icons.info_outline, color: Colors.grey, size: 18),
+                    const SizedBox(width: 8),
                     Text(
-                      "Tekan sekali lagi untuk keluar",
+                      'Press back again to exit',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[800],
@@ -73,6 +68,7 @@ class DashboardController extends GetxController {
       );
       return false;
     }
+
     await SystemNavigator.pop();
     return true;
   }

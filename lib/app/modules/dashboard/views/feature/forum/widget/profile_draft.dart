@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ProfileDraft extends StatelessWidget {
@@ -137,7 +138,14 @@ class ProfileDraft extends StatelessWidget {
                 crossAxisSpacing: 1,
               ),
               itemBuilder: (context, index) {
-                return Image.network(posts[index], fit: BoxFit.cover);
+                return CachedNetworkImage(
+                  imageUrl: posts[index],
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) =>
+                      Container(color: Colors.grey[200]),
+                  errorWidget: (_, __, ___) =>
+                      const Icon(Icons.broken_image_outlined),
+                );
               },
             ),
           ],

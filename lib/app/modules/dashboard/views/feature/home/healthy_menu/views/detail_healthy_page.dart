@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, use_super_parameters
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -52,7 +53,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.gold,
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
         title: Text(widget.recipe.title),
       ),
       body: SingleChildScrollView(
@@ -63,11 +65,18 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           children: [
             if (widget.recipe.imageUrl.isNotEmpty)
               AnimatedIn(
-                child: Image.network(
-                  '$BASE_URL${widget.recipe.imageUrl}',
+                child: CachedNetworkImage(
+                  imageUrl: '$BASE_URL${widget.recipe.imageUrl}',
                   width: double.infinity,
                   height: 250,
                   fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    width: double.infinity,
+                    height: 250,
+                    color: Colors.grey[200],
+                  ),
+                  errorWidget: (_, __, ___) =>
+                      const Icon(Icons.broken_image_outlined, size: 48),
                 ),
               ),
             const SizedBox(height: 16),

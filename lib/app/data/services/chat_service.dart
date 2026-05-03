@@ -1,6 +1,7 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/chat_message_model.dart';
 import 'package:sehati/app/data/models/response/chat_room_model.dart';
@@ -10,13 +11,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatService {
   late WebSocketChannel channel;
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {'Accept': 'application/json'},
-      connectTimeout: Duration(seconds: 10),
-      receiveTimeout: Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio = DioFactory.create(includeContentType: false);
   ChatService() {
     channel = WebSocketChannel.connect(
       Uri.parse('wss://sehatiapps.web.id/ws/chat'),

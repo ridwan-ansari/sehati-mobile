@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
@@ -43,7 +44,7 @@ class ContactCardWidget extends StatelessWidget {
                       backgroundColor: Colors.grey.withOpacity(0.5),
                       backgroundImage:
                           (profileUrl.isNotEmpty)
-                          ? NetworkImage(profileUrl)
+                          ? CachedNetworkImageProvider(profileUrl)
                           : null,
                       child: (profileUrl.isEmpty)
                           ? Icon(Icons.person, size: 56 , color: AppColors.white,)

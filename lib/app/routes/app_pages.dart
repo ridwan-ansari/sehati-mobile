@@ -34,6 +34,9 @@ import 'package:sehati/app/modules/profile/bindings/profile_binding.dart';
 import 'package:sehati/app/modules/splash_page.dart';
 import 'package:sehati/app/routes/app_routes.dart';
 import '../modules/auth/views/login_page.dart';
+import '../modules/auth/views/language_selection_page.dart';
+import '../modules/auth/views/onboarding_page.dart';
+import '../modules/auth/views/welcome_page.dart';
 import '../modules/dashboard/views/dashboard_page.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -64,6 +67,24 @@ class AppPages {
       transitionDuration: Duration(milliseconds: 500),
     ),
 
+    GetPage(
+      name: AppRoutes.LANGUAGE,
+      page: () => const LanguageSelectionPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: AppRoutes.ONBOARDING,
+      page: () => const OnboardingPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: AppRoutes.WELCOME,
+      page: () => const WelcomePage(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 400),
+    ),
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginPage(),

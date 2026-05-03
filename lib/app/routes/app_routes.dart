@@ -2,6 +2,9 @@
 
 abstract class AppRoutes {
   static const SPLASH = '/splash';
+  static const LANGUAGE = '/language';
+  static const ONBOARDING = '/onboarding';
+  static const WELCOME = '/welcome';
   static const LOGIN = '/login';
   static const SIGNUP = '/signup';
   static const NUTRITION = '/nutrition';

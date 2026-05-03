@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -92,7 +93,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                             child: ListTile(
                               leading: CircleAvatar(
                                 backgroundImage:
-                                    NetworkImage("$BASE_URL${c.picture}"),
+                                    CachedNetworkImageProvider('$BASE_URL${c.picture}'),
                               ),
                               title: Text(c.nickname),
                               subtitle: Column(

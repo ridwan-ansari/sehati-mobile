@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/edutainment/controllers/edutainment_controller.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/edutainment/views/video_detail_page.dart';
@@ -22,7 +24,14 @@ class EdutainmentPage extends GetView<EdutainmentController> {
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.yellowLight),
+            child: CircularProgressIndicator(color: AppColors.orangeLight),
+          );
+        }
+
+        if (controller.errorMessage.isNotEmpty) {
+          return AppErrorWidget(
+            message: controller.errorMessage.value,
+            onRetry: () => controller.loadVideos(reset: true),
           );
         }
 
@@ -63,13 +72,20 @@ class EdutainmentPage extends GetView<EdutainmentController> {
 
   Widget _buildHeader() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.black),
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColors.richBrown,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: AnimatedIn(
         child: const Text(
-          "Enjoy the video and get the reward point!",
-          style: TextStyle(color: Colors.white, fontSize: 14),
+          'Enjoy the video and get the reward point!',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
           textAlign: TextAlign.center,
         ),
       ),
@@ -89,7 +105,7 @@ class EdutainmentPage extends GetView<EdutainmentController> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha:0.06),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -106,12 +122,17 @@ class EdutainmentPage extends GetView<EdutainmentController> {
                     top: Radius.circular(16),
                   ),
                   child: AnimatedIn(
-                    child: Image.network(
-                      thumbnailUrl,
+                    child: CachedNetworkImage(
+                      imageUrl: thumbnailUrl,
                       width: double.infinity,
                       height: 180,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      placeholder: (_, __) => Container(
+                        width: double.infinity,
+                        height: 180,
+                        color: Colors.grey[200],
+                      ),
+                      errorWidget: (_, __, ___) => Container(
                         width: double.infinity,
                         height: 180,
                         color: Colors.grey.shade300,
@@ -132,7 +153,7 @@ class EdutainmentPage extends GetView<EdutainmentController> {
                     child: AnimatedIn(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha:0.4),
                           shape: BoxShape.circle,
                         ),
                         padding: const EdgeInsets.all(10),

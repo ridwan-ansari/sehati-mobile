@@ -18,12 +18,14 @@ class ForumController extends GetxController {
 
   var isLoading = false.obs;
   var isCommentLoading = false.obs;
+  var errorMessage = ''.obs;
   var limit = 20;
   var offset = 0;
   var isMoreDataAvailable = true.obs;
 
   Future<void> fetchForums() async {
     try {
+      errorMessage.value = '';
       isLoading.value = true;
       offset = 0;
       final data = await _service.getForum(limit: limit, offset: offset);
@@ -32,6 +34,8 @@ class ForumController extends GetxController {
         content.assignAll(data);
         isMoreDataAvailable.value = data.length == limit;
       }
+    } catch (_) {
+      errorMessage.value = 'Failed to load posts. Check your connection.';
     } finally {
       isLoading.value = false;
     }

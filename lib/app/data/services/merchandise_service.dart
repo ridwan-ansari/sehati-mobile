@@ -1,22 +1,14 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/merchandise_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class MerchandiseService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio = DioFactory.create();
 
   Future<List<MerchandiseModel>?> getMerchandise({
     int limit = 20,

@@ -1,10 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/recipe_model.dart';
@@ -26,59 +26,79 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 12.0),
+          const SizedBox(height: 12),
           AnimatedIn(
             child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: Colors.black87),
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.richBrown,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: const Text(
-                "Welcome to various healthy menu recipe!",
+                'Explore healthy recipes!',
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
           ),
           Expanded(
-            child: Container(
-              color: AppColors.yellowLight,
-              child: SingleChildScrollView(
-                controller: controller.scrollController,
-                child: Column(
-                  children: [
-                    Obx(
-                      () => ListView.builder(
+            child: Obx(() {
+              if (controller.isLoading.value && controller.recipes.isEmpty) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.orangeLight),
+                );
+              }
+              if (controller.errorMessage.isNotEmpty && controller.recipes.isEmpty) {
+                return AppErrorWidget(
+                  message: controller.errorMessage.value,
+                  onRetry: () => controller.fetchRecipes(reset: true),
+                );
+              }
+              return Container(
+                color: AppColors.yellowLight,
+                child: SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: Column(
+                    children: [
+                      ListView.builder(
                         itemCount: controller.recipes.length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          final item = controller.recipes[index];
-                          return _recipeCard(item);
+                          return _RecipeCard(recipe: controller.recipes[index]);
                         },
                       ),
-                    ),
-                    Obx(
-                      () => controller.isLoading.value
-                          ? const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
-                            )
-                          : const SizedBox(),
-                    ),
-                  ],
+                      if (controller.isLoading.value)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(
+                            color: AppColors.orangeLight,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _recipeCard(RecipeModel recipe) {
+class _RecipeCard extends StatelessWidget {
+  const _RecipeCard({required this.recipe});
+
+  final RecipeModel recipe;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(12),
@@ -90,19 +110,17 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
               height: 125,
               width: 125,
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.5),
+                color: AppColors.gold.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: BoxBorder.all(color: Colors.brown, width: 2),
+                border: Border.all(color: Colors.brown, width: 2),
                 image: DecorationImage(
-                  image: NetworkImage("$BASE_URL${recipe.imageUrl}"),
+                  image: CachedNetworkImageProvider('$BASE_URL${recipe.imageUrl}'),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
           const SizedBox(width: 12),
-
-          // Informasi
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,12 +129,9 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
                   child: GradienLabelRight(title: recipe.title, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-
                 AnimatedIn(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Get.to(RecipeDetailPage(recipe: recipe));
-                    },
+                    onPressed: () => Get.to(RecipeDetailPage(recipe: recipe)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.black,
@@ -130,7 +145,7 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
                       ),
                     ),
                     child: const Text(
-                      "More Details",
+                      'View Details',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -138,15 +153,6 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                // Text(
-                //   "Reward: ${recipe.}",
-                //   style: const TextStyle(
-                //     color: Colors.black87,
-                //     fontSize: 13,
-                //     fontWeight: FontWeight.w500,
-                //   ),
-                // ),
               ],
             ),
           ),

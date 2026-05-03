@@ -8,7 +8,10 @@ class Validator {
 
   static String? password(String? value) {
     if (value == null || value.isEmpty) return 'password cannot be empty';
-    if (value.length < 6) return 'Minimum 6 characters';
+    final passwordRegex = RegExp(r'^(?=.*[a-zA-Z])(?=.*\d).{8,}$');
+    if (!passwordRegex.hasMatch(value)) {
+      return 'Password must be at least 8 characters, containing letters and numbers';
+    }
     return null;
   }
 

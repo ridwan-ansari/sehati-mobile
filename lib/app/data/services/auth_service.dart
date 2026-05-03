@@ -1,7 +1,8 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -10,16 +11,7 @@ import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:get/get.dart' as go;
 
 class AuthService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio = DioFactory.create();
 
   /// REGISTER USER
   Future<Response?> registerUser({
@@ -76,7 +68,13 @@ class AuthService {
       return false;
     } on DioException catch (e) {
       print("❌ OTP Verification Error: ${e.response?.data ?? e.message}");
-      return false;
+      String message = "OTP verification failed";
+      if (e.response?.data != null && e.response?.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+      throw Exception(message);
     }
   }
 

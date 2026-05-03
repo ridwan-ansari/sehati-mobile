@@ -1,6 +1,7 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -9,15 +10,9 @@ import 'package:sehati/app/data/models/response/professional_res_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class ProfessionalService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ),
+  final Dio _dio = DioFactory.create(
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
   );
 
   /// ==================================================
@@ -116,7 +111,9 @@ class ProfessionalService {
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Appointment request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("${e.response?.data["message"] ?? e.message}");
+      final data = e.response?.data;
+      final msg = (data is Map) ? (data['message'] ?? e.message) : e.message;
+      SnackbarUtils.show("$msg");
       return false;
     }
   }

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/recipe_model.dart';
 import 'package:sehati/app/data/services/healthy_service.dart';
-import 'package:sehati/app/common/utils/snackbar_utils.dart';
 
 class HealthyMenuController extends GetxController {
   final HealthyService _service = HealthyService();
@@ -13,6 +12,7 @@ class HealthyMenuController extends GetxController {
 
   var recipes = <RecipeModel>[].obs;
   var isLoading = false.obs;
+  var errorMessage = ''.obs;
 
   int limit = 10;
   int offset = 0;
@@ -42,6 +42,7 @@ class HealthyMenuController extends GetxController {
         offset = 0;
         hasMore = true;
         recipes.clear();
+        errorMessage.value = '';
       }
       if (!hasMore) return;
       isLoading.value = true;
@@ -53,15 +54,10 @@ class HealthyMenuController extends GetxController {
       if (data != null && data.isNotEmpty) {
         recipes.addAll(data);
         offset += limit;
-        if (data.length < limit) {
-          hasMore = false;
-        } else {
-          hasMore = true;
-        }
-      } else {
-        SnackbarUtils.show("No recipes to show here");
+        hasMore = data.length >= limit;
       }
     } catch (_) {
+      errorMessage.value = 'Failed to load recipes. Check your connection.';
     } finally {
       isLoading.value = false;
     }

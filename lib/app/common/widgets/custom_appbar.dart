@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -45,35 +46,39 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              (logoSvg != null && logoSvg!.isNotEmpty)
-                  ? Container(
-                      height: 46,
-                      width: 46,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFC107),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: AppAssetUtils.svg(
-                          logoSvg!,
+              Tooltip(
+                message: 'Back to Home',
+                child: GestureDetector(
+                  onTap: () => Get.offAllNamed('/dashboard'),
+                  child: (logoSvg != null && logoSvg!.isNotEmpty)
+                      ? Container(
+                          height: 46,
+                          width: 46,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFC107),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: AppAssetUtils.svg(
+                              logoSvg!,
+                              width: 50,
+                              height: 50,
+                              color: Colors.black,
+                            ),
+                          ),
+                        )
+                      : AppAssetUtils.svg(
+                          AppAssets.logoIcon,
                           width: 50,
                           height: 50,
-                          color: Colors.black,
                         ),
-                      ),
-                    )
-                  : AppAssetUtils.svg(
-                      AppAssets.logoIcon,
-                      width: 50,
-                      height: 50,
-                    ),
+                ),
+              ),
 
-              // === SEARCH BOX ===
-              
               Expanded(
                 child: Container(
-                  height: 46, // sedikit lebih kecil biar proporsional
+                  height: 46,
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFC107),
@@ -116,7 +121,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
 
-              // === PROFILE AVATAR ===
               Obx((() {
                 final profile = profileController.dataProfile.value;
                 return GestureDetector(
@@ -129,7 +133,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             height: 192.0,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: NetworkImage(
+                                image: CachedNetworkImageProvider(
                                   "$BASE_URL${profile?.picture}",
                                 ),
                                 fit: BoxFit.cover,
@@ -145,7 +149,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     radius: 22,
                     backgroundImage:
                         (profile != null && profile.picture.isNotEmpty)
-                        ? NetworkImage("$BASE_URL${profile.picture}")
+                        ? CachedNetworkImageProvider("$BASE_URL${profile.picture}")
                         : AssetImage(AppAssets.profileIcon) as ImageProvider,
                   ),
                 );

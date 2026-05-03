@@ -1,8 +1,9 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 //TODO PERBAIKI CPYAN
 
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -12,15 +13,9 @@ import 'package:sehati/app/data/models/response/sleep_record_response.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class SleepService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ),
+  final Dio _dio = DioFactory.create(
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
   );
 
   /// ===============================================

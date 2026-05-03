@@ -14,72 +14,97 @@ Future<void> showFoodGramDialog({
     context: context,
     barrierDismissible: false,
     builder: (_) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          "Add Food",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              foodName,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      return StatefulBuilder(
+        builder: (context, setState) {
+          bool isGramEmpty = gramC.text.isEmpty;
+          gramC.addListener(() {
+            setState(() {});
+          });
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text(
+              "Add Food",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-
-            const SizedBox(height: 6),
-
-            /// Kcal per 100g
-            Text(
-              "$kcalPer100g kcal / 100g",
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  foodName,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "$kcalPer100g kcal / 100g",
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Text(
+                      "Gram",
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                    const Text(
+                      " *",
+                      style: TextStyle(fontSize: 14, color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: gramC,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Input gram",
+                    suffixText: "g",
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                if (isGramEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      "Gram amount is required",
+                      style: TextStyle(fontSize: 12, color: Colors.red.shade600),
+                    ),
+                  ),
+              ],
             ),
-
-            const SizedBox(height: 16),
-
-            /// Input gram
-            TextField(
-              controller: gramC,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: "Input gram",
-                suffixText: "g",
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: AppColors.black.withOpacity(0.5)),
                 ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(color: AppColors.black.withOpacity(0.5)),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, // warna tombol
-              foregroundColor: Colors.white, // warna teks & icon
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isGramEmpty ? Colors.grey.shade300 : Colors.orange,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: isGramEmpty
+                    ? null
+                    : () {
+                        final gram = int.tryParse(gramC.text) ?? 0;
+                        final totalKcal = ((kcalPer100g / 100) * gram).round();
+                        Navigator.pop(context);
+                        onSubmit(gram, totalKcal);
+                      },
+                child: AnimatedIn(child: const Text("Add")),
               ),
-            ),
-            onPressed: () {
-              final gram = int.tryParse(gramC.text) ?? 0;
-              final totalKcal = ((kcalPer100g / 100) * gram).round();
-
-              Navigator.pop(context);
-              onSubmit(gram, totalKcal);
-            },
-            child: AnimatedIn(child: const Text("Add")),
-          ),
-        ],
+            ],
+          );
+        },
       );
     },
   );

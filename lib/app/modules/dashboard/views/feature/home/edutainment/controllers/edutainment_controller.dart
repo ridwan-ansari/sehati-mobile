@@ -8,6 +8,7 @@ class EdutainmentController extends GetxController {
 
   var isLoading = false.obs;
   var isLoadMore = false.obs;
+  var errorMessage = ''.obs;
   var videos = <VideoModel>[].obs;
 
   int limit = 10;
@@ -37,22 +38,27 @@ class EdutainmentController extends GetxController {
       offset = 0;
       hasMore = true;
       videos.clear();
+      errorMessage.value = '';
     }
 
     isLoading.value = true;
 
-    final response = await _service.getVideos(
-      limit: limit,
-      offset: 0,
-      search: searchController.text,
-    );
+    try {
+      final response = await _service.getVideos(
+        limit: limit,
+        offset: 0,
+        search: searchController.text,
+      );
 
-    if (response != null) {
-      videos.assignAll(response);
-      hasMore = response.length == limit;
+      if (response != null) {
+        videos.assignAll(response);
+        hasMore = response.length == limit;
+      }
+    } catch (_) {
+      errorMessage.value = 'Failed to load videos. Check your connection.';
+    } finally {
+      isLoading.value = false;
     }
-
-    isLoading.value = false;
   }
 
   // ------------------------------------------

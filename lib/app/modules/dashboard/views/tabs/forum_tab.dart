@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/post_card.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';
 
@@ -13,41 +14,46 @@ class ForumTab extends GetView<ForumController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Social",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
-        ),
+        title: const Text('Community'),
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
         actions: [
           GestureDetector(
             onTap: () => Get.toNamed('/take_photo'),
-            child: AppAssetUtils.svg(
-              AppAssets.socialCamera,
-              width: 32,
-              height: 32,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: AppAssetUtils.svg(
+                AppAssets.socialCamera,
+                width: 28,
+                height: 28,
+                color: Colors.white,
+              ),
             ),
           ),
-          const SizedBox(width: 16),
-          // GestureDetector(
-          //   onTap: () => Get.toNamed('/social_profile'),
-          //   child: AppAssetUtils.svg(
-          //     AppAssets.scoialProfile,
-          //     width: 32,
-          //     height: 32,
-          //   ),
-          // ),
-          // const SizedBox(width: 16),
         ],
-        backgroundColor: Colors.white,
       ),
-
-      // BODY
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.orangeLight),
+          );
+        }
+
+        if (controller.errorMessage.isNotEmpty) {
+          return AppErrorWidget(
+            message: controller.errorMessage.value,
+            onRetry: controller.fetchForums,
+          );
         }
 
         if (controller.content.isEmpty) {
-          return const Center(child: Text("Belum ada postingan"));
+          return const Center(
+            child: Text(
+              'No posts yet.\nBe the first to share!',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black54, height: 1.5),
+            ),
+          );
         }
 
         return RefreshIndicator(

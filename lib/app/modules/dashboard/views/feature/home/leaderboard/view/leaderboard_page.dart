@@ -1,5 +1,3 @@
-// ignore_for_file: unrelated_type_equality_checks
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -10,37 +8,49 @@ import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/utils/formatter.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/controller/leaderboard_controller.dart';
 
-class LeaderboardView extends GetView<LeaderboardController> {
+class LeaderboardView extends StatefulWidget {
   const LeaderboardView({super.key});
 
-  String ordinalNumber(int number) {
-    if (number >= 11 && number <= 13) return "${number}th";
+  @override
+  State<LeaderboardView> createState() => _LeaderboardViewState();
+}
+
+class _LeaderboardViewState extends State<LeaderboardView> {
+  late final LeaderboardController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<LeaderboardController>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.startOpenPage();
+    });
+  }
+
+  String _ordinalSuffix(int number) {
+    if (number >= 11 && number <= 13) return '${number}th';
     switch (number % 10) {
       case 1:
-        return "${number}st";
+        return '${number}st';
       case 2:
-        return "${number}nd";
+        return '${number}nd';
       case 3:
-        return "${number}rd";
+        return '${number}rd';
       default:
-        return "${number}th";
+        return '${number}th';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (controller.init == false) {
-      controller.init.value = true;
-      controller.startOpenPage();
-    }
     return Stack(
       children: [
         Scaffold(
-          backgroundColor: const Color(0xFFF8E36A),
+          backgroundColor: AppColors.yellowLight,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF3E2E1A),
+            backgroundColor: AppColors.richBrown,
             title: const Text(
-              "Leaderboard Rank",
+              'Leaderboard',
               style: TextStyle(color: Colors.white),
             ),
             centerTitle: true,
@@ -54,7 +64,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
             }
 
             if (controller.leaderboardList.isEmpty) {
-              return const Center(child: Text("No data available."));
+              return const Center(child: Text('No data available.'));
             }
 
             final list = controller.leaderboardList;
@@ -71,27 +81,27 @@ class LeaderboardView extends GetView<LeaderboardController> {
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: AnimatedIn(
-                      child: const Row(
+                    child: const AnimatedIn(
+                      child: Row(
                         children: [
                           Expanded(
                             flex: 1,
                             child: Text(
-                              "Rank",
+                              'Rank',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "Name",
+                              'Name',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "Total Point",
+                              'Points',
                               textAlign: TextAlign.right,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -99,7 +109,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "Saldo",
+                              'Balance',
                               textAlign: TextAlign.right,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -118,7 +128,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                         itemBuilder: (context, index) {
                           final item = list[index];
                           final isMe = item.nickname == controller.username.value;
-                      
+
                           return Container(
                             decoration: BoxDecoration(
                               color: isMe
@@ -132,7 +142,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                                 Expanded(
                                   flex: 1,
                                   child: Text(
-                                    ordinalNumber(index + 1),
+                                    _ordinalSuffix(index + 1),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: isMe
@@ -178,7 +188,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                                         width: 16,
                                         color: AppColors.orangeLight,
                                       ),
-                                      const SizedBox(width: 4.0),
+                                      const SizedBox(width: 4),
                                       Text(
                                         Formatter.compactNumber(
                                           item.creditPoints,
@@ -209,13 +219,9 @@ class LeaderboardView extends GetView<LeaderboardController> {
         Obx(() {
           if (!controller.showLottie.value) return const SizedBox();
 
-          return Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+          return Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Lottie.asset(AppAssets.coinLottieAnimation),
             ),
           );

@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, unnecessary_string_interpolations
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
@@ -49,7 +50,7 @@ class RoomChatCardWidget extends StatelessWidget {
                 radius: 28,
                 backgroundColor: Colors.grey.shade200,
                 backgroundImage:
-                    imageUrl != null ? NetworkImage(imageUrl) : null,
+                    imageUrl != null ? CachedNetworkImageProvider(imageUrl) : null,
                 child: imageUrl == null
                     ? const Icon(Icons.person, color: Colors.grey, size: 30)
                     : null,

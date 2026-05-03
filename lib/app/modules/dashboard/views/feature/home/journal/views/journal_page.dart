@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label_right.dart';
 import '../controllers/journal_controller.dart';
 
@@ -12,84 +14,87 @@ class JournalPage extends GetView<JournalController> {
 
   @override
   Widget build(BuildContext context) {
-    final journals = [
-      {
-        "title": "Food Diary",
-        "image": AppAssets.foodDiary,
-        "reward": "100 points",
-        "route": "/food_diary",
-      },
-      {
-        "title": "Food Habit",
-        "image": AppAssets.habits,
-        "reward": "100 points",
-        "route": "/food_habit",
-      },
-      {
-        "title": "Exercise Habit",
-        "image": AppAssets.exercise,
-        "reward": "100 points",
-        "route": "/exercise",
-      },
-    ];
+    return Obx(() {
+      Get.find<LanguageService>().currentLanguage.value;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.gold,
-        title: Text("Daily Journal"),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12.0),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(color: Colors.black87),
-            child: const Text(
-              "Write Down Your Daily Journal, Here!",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+      final journals = [
+        {
+          "title": AppStrings.get(AppStrings.menuKeyFoodDiary),
+          "image": AppAssets.foodDiary,
+          "reward": "100 points",
+          "route": "/food_diary",
+        },
+        {
+          "title": AppStrings.get(AppStrings.menuKeyFoodHabit),
+          "image": AppAssets.habits,
+          "reward": "100 points",
+          "route": "/food_habit",
+        },
+        {
+          "title": AppStrings.get(AppStrings.menuKeyExerciseHabit),
+          "image": AppAssets.exercise,
+          "reward": "100 points",
+          "route": "/exercise",
+        },
+      ];
+
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.richBrown,
+          foregroundColor: Colors.white,
+          title: Text(AppStrings.get(AppStrings.menuKeyDailyJournal)),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12.0),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: const BoxDecoration(color: Colors.black87),
+              child: Text(
+                AppStrings.get(AppStrings.menuKeyWriteJournal),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: AppColors.yellowLight,
-              child: Column(
-                children: [
-                  ListView.builder(
-                    itemCount: journals.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final item = journals[index];
-                      return _buildJournalCard(item);
-                    },
-                  ),
-                ],
+            Expanded(
+              child: Container(
+                color: AppColors.yellowLight,
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      itemCount: journals.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final item = journals[index];
+                        return _buildJournalCard(item);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildJournalCard(Map<String, String> item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
-
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AnimatedIn(child: AppAssetUtils.image(item['image']??'' , width: 125)),
+          AnimatedIn(child: AppAssetUtils.image(item['image'] ?? '', width: 125)),
           const SizedBox(width: 12),
 
-          // Informasi
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,16 +119,16 @@ class JournalPage extends GetView<JournalController> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    child: const Text(
-                      "START JOURNALLING",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    child: Text(
+                      AppStrings.get(AppStrings.menuKeyStartJournalling).toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ),
                 ),
                 const SizedBox(height: 6),
                 AnimatedIn(
                   child: Text(
-                    "Reward: ${item["reward"]}",
+                    "${AppStrings.get(AppStrings.menuKeyReward)}: ${item["reward"]}",
                     style: const TextStyle(
                       color: Colors.black87,
                       fontSize: 13,

@@ -69,6 +69,7 @@ dependencies:
   audioplayers: ^6.5.1
   awesome_notifications: ^0.10.1
   syncfusion_flutter_pdfviewer: ^31.2.16
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

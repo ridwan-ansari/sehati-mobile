@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -17,355 +18,414 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
   @override
   Widget build(BuildContext context) {
     final ProfessionalData doctor = Get.arguments;
-    controller.profeeesionalDetail.value = doctor;
+    final hasPhone = doctor.phoneNumber != null && doctor.phoneNumber!.isNotEmpty;
+
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            _headerText(doctor),
-            Expanded(child: _profileCard(context, doctor)),
-          ],
+      backgroundColor: AppColors.brownLight,
+      appBar: AppBar(
+        title: Text(
+          doctor.fullname ?? 'Appointment',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
       ),
-    );
-  }
-
-  // ============================
-  // HEADER
-  // ============================
-  Widget _headerText(ProfessionalData doctor) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Colors.black,
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: Text(
-      "Set Appointment with ${doctor.fullname}",
-      textAlign: TextAlign.center,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
-    ),
-  );
-
-  // ============================
-  // PROFILE CARD
-  // ============================
-  Widget _profileCard(BuildContext context, ProfessionalData doctor) {
-    return Container(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: Colors.amber),
-      child: Column(
-        children: [
-          _doctorProfile(doctor),
-          const SizedBox(height: 24),
-          if (doctor.phoneNumber!.isNotEmpty)
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () async {
-                await launchUrl(
-                  Uri.parse("https://wa.me/62${doctor.phoneNumber}"),
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Container(
-                height: 56,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                  horizontal: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _DoctorProfileCard(doctor: doctor),
+            const SizedBox(height: 16),
+            _ConfirmButton(controller: controller, doctorId: doctor.id ?? ''),
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppAssetUtils.svg(
-                      AppAssets.whatsAppIcon,
-                      width: 28,
-                      height: 28,
-                    ),
-                    const SizedBox(width: 6),
                     const Text(
-                      "WhatsApp",
+                      'Schedule',
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    _DatePickerRow(controller: controller, doctor: doctor),
+                    const SizedBox(height: 12),
+                    _TimePickerRow(controller: controller),
+                    const SizedBox(height: 16),
+                    _MeetingOptions(controller: controller),
                   ],
                 ),
               ),
             ),
-
-          const SizedBox(height: 16),
-          Obx(() => _datePicker(context)),
-          const SizedBox(height: 16),
-          Obx(() => _timePicker(context)),
-          const SizedBox(height: 20),
-          _meetingOptions(),
-          const SizedBox(height: 20),
-          _confirmButton(),
-          // Spacer(),
-          // _googleCalendarInfo(),
-        ],
+            if (hasPhone) ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await launchUrl(
+                      Uri.parse('https://wa.me/62${doctor.phoneNumber}'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  icon: AppAssetUtils.svg(
+                    AppAssets.whatsAppIcon,
+                    width: 20,
+                    height: 20,
+                    color: AppColors.whatsapp,
+                  ),
+                  label: const Text('Chat via WhatsApp'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.whatsapp,
+                    side: const BorderSide(color: AppColors.whatsapp, width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
+}
 
-  // ============================
-  // DOKTER PROFILE
-  // ============================
-  Widget _doctorProfile(ProfessionalData doctor) => Row(
-    children: [
-      ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: 90,
-          height: 100,
-          child: Image.network(
-            "$BASE_URL/${doctor.picture}",
-            width: 90,
-            height: 100,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-      const SizedBox(width: 16),
-      Expanded(
-        child: Column(
+class _DoctorProfileCard extends StatelessWidget {
+  const _DoctorProfileCard({required this.doctor});
+
+  final ProfessionalData doctor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              doctor.fullname ?? "",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              doctor.specialization ?? "",
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black26,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 6),
-            if (doctor.bio != null && doctor.bio!.isNotEmpty)
-              Text(
-                doctor.bio!,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black45,
-                  height: 1.3,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: '$BASE_URL/${doctor.picture}',
+                width: 90,
+                height: 100,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(
+                  width: 90,
+                  height: 100,
+                  color: Colors.grey[200],
+                ),
+                errorWidget: (_, __, ___) => Container(
+                  width: 90,
+                  height: 100,
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.person, size: 40),
                 ),
               ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    doctor.fullname ?? '',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    doctor.specialization ?? '',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (doctor.bio != null && doctor.bio!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      doctor.bio!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                        height: 1.4,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
-    ],
-  );
+    );
+  }
+}
 
-  // ============================
-  // DATE PICKER
-  // ============================
-  Widget _datePicker(BuildContext context) => _buildPicker(
-    icon: Icons.calendar_today,
-    label: "Set the date!",
-    value: controller.selectedDate.value.isEmpty
-        ? "Pick a date"
-        : controller.selectedDate.value,
+class _DatePickerRow extends StatelessWidget {
+  const _DatePickerRow({required this.controller, required this.doctor});
 
-    onTap: () async {
-      final professional = controller.profeeesionalDetail.value;
+  final AppointmentController controller;
+  final ProfessionalData doctor;
 
-      if (professional.availableDays == null) return;
-      DateTime getNearestAvailableDate(DateTime start, AvailableDays days) {
-        DateTime date = start;
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => _PickerRow(
+          icon: Icons.calendar_today,
+          label: 'Date',
+          value: controller.selectedDate.value.isEmpty
+              ? 'Pick a date'
+              : controller.selectedDate.value,
+          onTap: () async {
+            if (doctor.availableDays == null) return;
 
-        while (true) {
-          final weekday = date.weekday;
+            DateTime getNearestAvailable(DateTime start, AvailableDays days) {
+              DateTime d = start;
+              for (int i = 0; i < 365; i++) {
+                final w = d.weekday;
+                final ok = (w == DateTime.monday && days.monday == true) ||
+                    (w == DateTime.tuesday && days.tuesday == true) ||
+                    (w == DateTime.wednesday && days.wednesday == true) ||
+                    (w == DateTime.thursday && days.thursday == true) ||
+                    (w == DateTime.friday && days.friday == true) ||
+                    (w == DateTime.saturday && days.saturday == true) ||
+                    (w == DateTime.sunday && days.sunday == true);
+                if (ok) return d;
+                d = d.add(const Duration(days: 1));
+              }
+              return start;
+            }
 
-          final allowed =
-              (weekday == DateTime.monday && days.monday == true) ||
-              (weekday == DateTime.tuesday && days.tuesday == true) ||
-              (weekday == DateTime.wednesday && days.wednesday == true) ||
-              (weekday == DateTime.thursday && days.thursday == true) ||
-              (weekday == DateTime.friday && days.friday == true) ||
-              (weekday == DateTime.saturday && days.saturday == true) ||
-              (weekday == DateTime.sunday && days.sunday == true);
-
-          if (allowed) return date;
-
-          date = date.add(const Duration(days: 1));
-        }
-      }
-
-      final initial = getNearestAvailableDate(
-        DateTime.now(),
-        professional.availableDays!,
-      );
-
-      final picked = await showDatePicker(
-        context: context,
-        initialDate: initial,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: AppColors.orangeLight,
-                onSurface: Colors.black,
+            final avail = doctor.availableDays!;
+            final initial = getNearestAvailable(DateTime.now(), avail);
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: initial,
+              firstDate: DateTime.now(),
+              lastDate: DateTime(2100),
+              builder: (ctx, child) => Theme(
+                data: Theme.of(ctx).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: AppColors.orangeLight,
+                    onSurface: AppColors.textDark,
+                  ),
+                ),
+                child: child!,
               ),
-            ),
-            child: child!,
-          );
-        },
-        selectableDayPredicate: (day) {
-          final d = professional.availableDays!;
+              selectableDayPredicate: (day) {
+                return (day.weekday == DateTime.monday && avail.monday == true) ||
+                    (day.weekday == DateTime.tuesday && avail.tuesday == true) ||
+                    (day.weekday == DateTime.wednesday && avail.wednesday == true) ||
+                    (day.weekday == DateTime.thursday && avail.thursday == true) ||
+                    (day.weekday == DateTime.friday && avail.friday == true) ||
+                    (day.weekday == DateTime.saturday && avail.saturday == true) ||
+                    (day.weekday == DateTime.sunday && avail.sunday == true);
+              },
+            );
+            if (picked != null) {
+              controller.selectedDate.value = DateFormat('dd/MM/yy').format(picked);
+            }
+          },
+        ));
+  }
+}
 
-          return (day.weekday == DateTime.monday && d.monday == true) ||
-              (day.weekday == DateTime.tuesday && d.tuesday == true) ||
-              (day.weekday == DateTime.wednesday && d.wednesday == true) ||
-              (day.weekday == DateTime.thursday && d.thursday == true) ||
-              (day.weekday == DateTime.friday && d.friday == true) ||
-              (day.weekday == DateTime.saturday && d.saturday == true) ||
-              (day.weekday == DateTime.sunday && d.sunday == true);
-        },
-      );
+class _TimePickerRow extends StatelessWidget {
+  const _TimePickerRow({required this.controller});
 
-      if (picked != null) {
-        controller.selectedDate.value = DateFormat('dd/MM/yy').format(picked);
-      }
-    },
-  );
+  final AppointmentController controller;
 
-  // ============================
-  // TIME PICKER
-  // ============================
-  Widget _timePicker(BuildContext context) => _buildPicker(
-    icon: Icons.access_time,
-    label: "Set the time!",
-    value: controller.selectedTime.value.isEmpty
-        ? "Pick a time"
-        : controller.selectedTime.value,
-    onTap: () async {
-      final picked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: AppColors.orangeLight,
-                onSurface: Colors.black,
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => _PickerRow(
+          icon: Icons.access_time,
+          label: 'Time',
+          value: controller.selectedTime.value.isEmpty
+              ? 'Pick a time'
+              : controller.selectedTime.value,
+          onTap: () async {
+            final picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+              builder: (ctx, child) => Theme(
+                data: Theme.of(ctx).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: AppColors.orangeLight,
+                    onSurface: AppColors.textDark,
+                  ),
+                ),
+                child: child!,
               ),
-            ),
-            child: child!,
-          );
-        },
-      );
-      if (picked != null) {
-        controller.selectedTime.value = picked.format(context);
-      }
-    },
-  );
+            );
+            if (picked != null) {
+              controller.selectedTime.value = picked.format(context);
+            }
+          },
+        ));
+  }
+}
 
-  Widget _buildPicker({
-    required IconData icon,
-    required String label,
-    required String value,
-    required VoidCallback onTap,
-  }) => Row(
-    children: [
-      Icon(icon, color: Colors.deepOrange, size: 45),
-      const SizedBox(width: 12),
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.deepOrangeAccent, width: 1.5),
-            borderRadius: BorderRadius.circular(30),
-            color: Colors.white,
-          ),
-          child: Text(value),
-        ),
-      ),
-    ],
-  );
+class _PickerRow extends StatelessWidget {
+  const _PickerRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
 
-  // ============================
-  // MEETING OPTIONS
-  // ============================
-  Widget _meetingOptions() => Obx(() {
+  final IconData icon;
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Row(
-          children: [
-            Column(
-              children: [
-                const Text("Meet her directly\nin the office?"),
-                Switch(
-                  value: controller.meetInOffice.value,
-                  onChanged: controller.toggleMeetInOffice,
-                  activeColor: Colors.green,
-                ),
-              ],
-            ),
-          ],
+        Icon(icon, color: AppColors.orangeLight, size: 22),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textMedium,
+          ),
         ),
-        Column(
-          children: [
-            const Text("Meet her directly\nby zoom?"),
-            Switch(
-              value: controller.meetByZoom.value,
-              onChanged: controller.toggleMeetByZoom,
-              activeColor: Colors.deepPurple,
+        const SizedBox(width: 12),
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.orangeLight, width: 1.5),
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
             ),
-          ],
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+          ),
         ),
       ],
     );
+  }
+}
+
+class _MeetingOptions extends StatelessWidget {
+  const _MeetingOptions({required this.controller});
+
+  final AppointmentController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _MeetToggle(
+              label: 'In-office',
+              value: controller.meetInOffice.value,
+              activeColor: Colors.green,
+              onChanged: controller.toggleMeetInOffice,
+            ),
+            _MeetToggle(
+              label: 'Via Zoom',
+              value: controller.meetByZoom.value,
+              activeColor: Colors.deepPurple,
+              onChanged: controller.toggleMeetByZoom,
+            ),
+          ],
+        ));
+  }
+}
+
+class _MeetToggle extends StatelessWidget {
+  const _MeetToggle({
+    required this.label,
+    required this.value,
+    required this.activeColor,
+    required this.onChanged,
   });
 
-  // ============================
-  // CONFIRM BUTTON
-  // ============================
-  Widget _confirmButton() => Obx(() {
-    return ElevatedButton(
-      onPressed: controller.isValid
-          ? () async {
-              await controller.submitAppointment();
-            }
-          : null,
+  final String label;
+  final bool value;
+  final Color activeColor;
+  final ValueChanged<bool> onChanged;
 
-      style: ElevatedButton.styleFrom(
-        backgroundColor: controller.isValid ? Colors.deepOrange : Colors.grey,
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      ),
-      child: const Text(
-        "Confirm Appointment",
-        style: TextStyle(fontSize: 16, color: Colors.white),
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textMedium,
+          ),
+        ),
+        Switch(value: value, onChanged: onChanged, activeColor: activeColor),
+      ],
+    );
+  }
+}
+
+class _ConfirmButton extends StatelessWidget {
+  const _ConfirmButton({required this.controller, required this.doctorId});
+
+  final AppointmentController controller;
+  final String doctorId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => ElevatedButton(
+        onPressed: controller.isValid
+            ? () async => controller.submitAppointment(professionalId: doctorId)
+            : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: controller.isValid ? AppColors.orangeLight : Colors.grey.shade400,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          elevation: 0,
+        ),
+        child: const Text(
+          'Make Appointment',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
-  });
-
-  Widget _googleCalendarInfo() => Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      const Text("Mark on "),
-      AppAssetUtils.svg(AppAssets.googleCalIcon, width: 28, height: 28),
-    ],
-  );
+  }
 }

@@ -1,7 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/schedule_res_model.dart';
 
 class ScheduleCardWidget extends StatelessWidget {
@@ -30,18 +32,23 @@ class ScheduleCardWidget extends StatelessWidget {
         // Avatar
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            shedule.professional?.picture != null
-                ? "https://your-base-url.com${shedule.professional?.picture}"
-                : "",
+          child: CachedNetworkImage(
+            imageUrl: shedule.professional?.picture != null
+                ? '$BASE_URL${shedule.professional!.picture}'
+                : '',
             width: 80,
             height: 80,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
+            placeholder: (_, __) => Container(
+              width: 80,
+              height: 80,
+              color: Colors.grey[200],
+            ),
+            errorWidget: (_, __, ___) => Container(
               width: 80,
               height: 80,
               color: Colors.grey[300],
-              child: Icon(Icons.person, size: 32),
+              child: const Icon(Icons.person, size: 32),
             ),
           ),
         ),

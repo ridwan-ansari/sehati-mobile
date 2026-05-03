@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
@@ -8,7 +9,6 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentPage extends GetView<AppointmentController> {
@@ -22,8 +22,17 @@ class AppointmentPage extends GetView<AppointmentController> {
         onSearchChanged: (value) {},
       ),
       body: Obx(() {
-        if (controller.profeeesionalList.isEmpty) {
+        if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.profeeesionalList.isEmpty) {
+          return const Center(
+            child: Text(
+              'No professionals available',
+              style: TextStyle(color: Colors.black54),
+            ),
+          );
         }
 
         final grouped = controller.groupedBySpecialization;
@@ -70,17 +79,16 @@ class AppointmentPage extends GetView<AppointmentController> {
     );
   }
 
-  /// --- HEADER SECTION ---
   Widget _buildSectionHeader(String title) {
     return Row(
       children: [
-        AppAssetUtils.svg(AppAssets.hendIcon, width: 45, height: 45),
+        AppAssetUtils.svg(AppAssets.handIcon, width: 45, height: 45),
         const SizedBox(width: 8),
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF3B2B27),
+              color: AppColors.richBrown,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Row(
@@ -119,18 +127,17 @@ class AppointmentPage extends GetView<AppointmentController> {
     String? phone,
     dynamic doctor,
   ) {
-    final hasPhone = phone != null && phone.isNotEmpty;
-
     return SizedBox(
-      width: 190,
+      width: 180,
       child: Material(
         borderRadius: BorderRadius.circular(14),
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.2),
+        elevation: 3,
+        shadowColor: Colors.black.withOpacity(0.15),
         color: AppColors.yellowLight,
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
           onTap: () {
+            controller.resetSelection();
             Get.toNamed('/appointment_detail', arguments: doctor);
           },
           child: Padding(
@@ -138,27 +145,28 @@ class AppointmentPage extends GetView<AppointmentController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                /// FOTO DOKTER
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    image,
-                    width: 120,
-                    height: 120,
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    width: 110,
+                    height: 110,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 120,
-                      height: 120,
+                    placeholder: (_, __) => Container(
+                      width: 110,
+                      height: 110,
+                      color: Colors.grey[200],
+                    ),
+                    errorWidget: (_, __, ___) => Container(
+                      width: 110,
+                      height: 110,
                       color: Colors.grey.shade300,
                       alignment: Alignment.center,
                       child: const Icon(Icons.person, size: 40),
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
-                /// NAMA
                 Text(
                   name,
                   textAlign: TextAlign.center,
@@ -167,12 +175,10 @@ class AppointmentPage extends GetView<AppointmentController> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
+                    color: AppColors.textDark,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
-                /// SPESIALIS
                 Text(
                   role,
                   textAlign: TextAlign.center,
@@ -180,48 +186,22 @@ class AppointmentPage extends GetView<AppointmentController> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
-
                 const Spacer(),
-
-                /// TOMBOL WHATSAPP
-                if (hasPhone)
-                  InkWell(
-                    borderRadius: BorderRadius.circular(8),
-                    onTap: () async {
-                      await launchUrl(
-                        Uri.parse("https://wa.me/62$phone"),
-                        mode: LaunchMode.externalApplication,
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AppAssetUtils.svg(
-                            AppAssets.whatsAppIcon,
-                            width: 20,
-                            height: 20,
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            "WhatsApp",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.richBrown,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Book Now',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
+                ),
               ],
             ),
           ),

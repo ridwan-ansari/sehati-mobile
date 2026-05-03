@@ -14,93 +14,89 @@ class SleepPage extends GetView<SleepController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: AppColors.gold, title: Text("Sleep")),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              color: Colors.black,
-              child: AnimatedIn(
-                child: const Text(
-                  "Welcome to your self-monitoring page!",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                  textAlign: TextAlign.center,
+      appBar: AppBar(
+        backgroundColor: AppColors.richBrown,
+        foregroundColor: Colors.white,
+        title: const Text('Sleep Tracker'),
+      ),
+      body: RefreshIndicator(
+        onRefresh: controller.fetchInitial,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                color: Colors.black,
+                child: const AnimatedIn(
+                  child: Text(
+                    'Welcome to your sleep journal!',
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            ),
-            _buildBodyweightMonitoring(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ===== Bodyweight Monitoring =====
-  Widget _buildBodyweightMonitoring() {
-    return RefreshIndicator(
-      onRefresh: () => controller.fetchInitial(),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            MonitoringSectionHeader(
-              title: "Welcome to your sleep habit journal",
-            ),
-            const SizedBox(height: 16),
-            MonitoringInputCard(
-              children: [
-                _buildRow(
-                  label: "Date of measurement",
-                  input: _buildDateField(),
-                  subtitle: "Record your sleep time from yesterday",
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    MonitoringSectionHeader(
+                      title: 'Sleep Habit Journal',
+                    ),
+                    const SizedBox(height: 16),
+                    MonitoringInputCard(
+                      children: [
+                        _buildRow(
+                          label: 'Date of measurement',
+                          input: _buildDateField(),
+                          subtitle: 'Record your sleep time from yesterday',
+                        ),
+                        _buildRow(
+                          label: 'Sleep time',
+                          input: _buildTimeField(controller.sleepTime),
+                        ),
+                        _buildRow(
+                          label: 'Wake-up time',
+                          input: _buildTimeField(controller.wakeUpTime),
+                        ),
+                        _buildRow(
+                          label: 'Sleep duration',
+                          input: MonitoringInputField(
+                            isEdit: true,
+                            controller: controller.durationSleepController,
+                            hint: 'Autofill',
+                          ),
+                        ),
+                        _buildRow(
+                          label: 'Target duration / day',
+                          input: MonitoringInputField(
+                            controller: controller.targetSleepController,
+                            hint: 'Hours',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _saveButton(onPressed: controller.submitSleep),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Aim for 8 hours of sleep per day.',
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Obx(() {
+                      if (controller.chartData.isEmpty) {
+                        return const AnimatedIn(child: Text('No data yet.'));
+                      }
+                      return SleepChart(data: controller.chartData);
+                    }),
+                    const SizedBox(height: 40),
+                  ],
                 ),
-                _buildRow(
-                  label: "Sleep time",
-                  input: _buildTimeField(controller.sleepTime),
-                ),
-                _buildRow(
-                  label: "Wake up time",
-                  input: _buildTimeField(controller.wakeUpTime),
-                ),
-                _buildRow(
-                  label: "Sleep Duration",
-                  input: MonitoringInputField(
-                    isEdit: true,
-                    controller: controller.durationSleepController,
-                    hint: "Autofill",
-                  ),
-                ),
-                _buildRow(
-                  label: "Target Sleep Duration/day",
-                  input: MonitoringInputField(
-                    controller: controller.targetSleepController,
-                    hint: 'Hours',
-                    // keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                _saveButton(onPressed: controller.submitSleep),
-
-                const SizedBox(height: 8.0),
-                Text(
-                  "Maintain your ideal sleep duration at 8 hours per day",
-                  style: TextStyle(fontSize: 12.0, color: Colors.black54),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20.0),
-            Obx(() {
-              if (controller.chartData.isEmpty) {
-                return AnimatedIn(child: const Text("No data yet."));
-              }
-              return SleepChart(data: controller.chartData);
-            }),
-
-            const SizedBox(height: 40),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -110,53 +106,56 @@ class SleepPage extends GetView<SleepController> {
     required String label,
     required Widget input,
     String? subtitle,
-  }) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnimatedIn(
-                child: Text(
-                  label,
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                ),
-              ),
-              AnimatedIn(
-                child: Text(
-                  subtitle ?? "",
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
+  }) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnimatedIn(
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
-                ),
+                  if (subtitle != null)
+                    AnimatedIn(
+                      child: Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(flex: 2, child: input),
+          ],
         ),
-        const SizedBox(width: 10),
-        Expanded(flex: 2, child: input),
-      ],
-    ),
-  );
+      );
 
-  Widget _saveButton({required void Function()? onPressed}) => SizedBox(
+  Widget _saveButton({required VoidCallback? onPressed}) => SizedBox(
     width: double.infinity,
     child: ElevatedButton.icon(
       onPressed: onPressed,
-      icon: const Icon(Icons.calculate, color: AppColors.orangeLight, size: 24),
-      label: AnimatedIn(
-        child: const Text(
-          "Calculate",
-          style: TextStyle(
-            color: AppColors.orangeLight,
-            fontWeight: FontWeight.bold,
-          ),
+      icon: const Icon(Icons.save_alt, color: AppColors.orangeLight, size: 24),
+      label: const Text(
+        'Save',
+        style: TextStyle(
+          color: AppColors.orangeLight,
+          fontWeight: FontWeight.bold,
         ),
       ),
       style: ElevatedButton.styleFrom(
@@ -169,7 +168,7 @@ class SleepPage extends GetView<SleepController> {
 
   Widget _buildDateField() {
     return GestureDetector(
-      onTap: () => controller.selectDate(),
+      onTap: controller.selectDate,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
         decoration: BoxDecoration(
@@ -182,7 +181,7 @@ class SleepPage extends GetView<SleepController> {
             child: AnimatedIn(
               child: Text(
                 controller.selectedDate.value.isEmpty
-                    ? "Date of Measurement"
+                    ? 'Select Date'
                     : controller.selectedDate.value,
                 style: const TextStyle(color: Colors.orange, fontSize: 16),
               ),
@@ -218,8 +217,8 @@ class SleepPage extends GetView<SleepController> {
           return AnimatedIn(
             child: Text(
               time == null
-                  ? "Select Time"
-                  : "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}",
+                  ? 'Select Time'
+                  : '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(color: Colors.orange, fontSize: 16),
               textAlign: TextAlign.center,
             ),

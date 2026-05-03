@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -42,8 +43,8 @@ class PostCard extends StatelessWidget {
               children: [
                 AnimatedIn(
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      "$BASE_URL${post.user.picture}",
+                    backgroundImage: CachedNetworkImageProvider(
+                      '$BASE_URL${post.user.picture}',
                     ),
                     radius: 21,
                   ),
@@ -82,11 +83,17 @@ class PostCard extends StatelessWidget {
             AnimatedIn(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  "$BASE_URL${post.imageUrl}",
+                child: CachedNetworkImage(
+                  imageUrl: '$BASE_URL${post.imageUrl}',
                   height: 300,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                  ),
+                  errorWidget: (_, __, ___) =>
+                      const Icon(Icons.broken_image_outlined),
                 ),
               ),
             ),

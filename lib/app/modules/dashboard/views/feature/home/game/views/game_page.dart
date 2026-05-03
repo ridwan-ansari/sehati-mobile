@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/game_model.dart';
@@ -27,21 +29,50 @@ class GamePage extends GetView<GameController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12.0),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              color: Colors.black,
-              child: AnimatedIn(
+            AnimatedIn(
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.richBrown,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: const Text(
-                  "Play the games by exchange your point!",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  'Spend your points to unlock games!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Obx(
-              () => ListView.builder(
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(40),
+                    child: CircularProgressIndicator(
+                      color: AppColors.orangeLight,
+                    ),
+                  ),
+                );
+              }
+              if (controller.errorMessage.isNotEmpty) {
+                return AppErrorWidget(
+                  message: controller.errorMessage.value,
+                  onRetry: controller.fetchGames,
+                );
+              }
+              if (controller.games.isEmpty) {
+                return const AppErrorWidget(
+                  message: 'No games available yet.',
+                );
+              }
+              return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: controller.games.length,
@@ -49,8 +80,8 @@ class GamePage extends GetView<GameController> {
                   final game = controller.games[index];
                   return _buildGameCard(game);
                 },
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),
@@ -90,9 +121,13 @@ class GamePage extends GetView<GameController> {
                             height: 100,
                             width: 100,
                             color: Colors.grey.shade200,
-                            child: Image.network(
-                              "$BASE_URL${game.imageUrl}",
+                            child: CachedNetworkImage(
+                              imageUrl: '$BASE_URL${game.imageUrl}',
                               fit: BoxFit.cover,
+                              placeholder: (_, __) =>
+                                  Container(color: Colors.grey[200]),
+                              errorWidget: (_, __, ___) =>
+                                  const Icon(Icons.broken_image_outlined),
                             ),
                           ),
                           if (game.isClaim)

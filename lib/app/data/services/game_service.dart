@@ -1,4 +1,5 @@
-import 'package:dio/dio.dart';
+﻿import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -7,16 +8,7 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/game/views/game_
 import 'local_storage_service.dart';
 
 class GameService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio = DioFactory.create();
 
   Future<List<GameModel>?> getGames({
     String name = "",

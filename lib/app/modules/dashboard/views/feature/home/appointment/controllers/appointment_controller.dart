@@ -19,7 +19,7 @@ class AppointmentController extends GetxController {
   final meetByZoom = false.obs;
 
   var profeeesionalList = <ProfessionalData>[].obs;
-  var profeeesionalDetail = ProfessionalData().obs;
+  final isLoading = true.obs;
 
   @override
   void onInit() {
@@ -28,10 +28,19 @@ class AppointmentController extends GetxController {
   }
 
   void loadProfessionals() async {
+    isLoading.value = true;
     final result = await professionalService.getProfessionals();
     if (result != null) {
       profeeesionalList.assignAll(result);
     }
+    isLoading.value = false;
+  }
+
+  void resetSelection() {
+    selectedDate.value = '';
+    selectedTime.value = '';
+    meetInOffice.value = false;
+    meetByZoom.value = false;
   }
 
   /// =====================================
@@ -129,28 +138,29 @@ class AppointmentController extends GetxController {
   /// =====================================
   /// SUBMIT APPOINTMENT TO API BACKEND
   /// =====================================
-  Future<void> submitAppointment() async {
-    if (profeeesionalDetail.value.id == null) {
-      Get.snackbar("Error", "Professional not selected");
+  Future<void> submitAppointment({required String professionalId}) async {
+    if (professionalId.isEmpty) {
+      SnackbarUtils.show("Professional not selected");
       return;
     }
 
     if (!isValid) {
-      Get.snackbar("Error", "Please complete all appointment details");
+      SnackbarUtils.show("Please complete all appointment details");
       return;
     }
+
     final success = await professionalService.createAppointment(
-      professionalId: profeeesionalDetail.value.id!,
+      professionalId: professionalId,
       appointmentDate: selectedDate.value,
       appointmentTime: selectedTime.value,
       notes: meetInOffice.value ? "Meet in office" : "Meet via zoom",
     );
 
     if (success) {
-      // await signIn();
       Get.back();
-      SnackbarUtils.show( isError: false,
-        "Appointment Created\n Your appointment has been scheduled successfully",
+      SnackbarUtils.show(
+        "Appointment scheduled successfully",
+        isError: false,
       );
     }
   }
