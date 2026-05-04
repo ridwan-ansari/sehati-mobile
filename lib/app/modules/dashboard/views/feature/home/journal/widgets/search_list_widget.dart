@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class SearchListWidget<T> extends StatefulWidget {
   final List<T> items;
@@ -47,7 +48,7 @@ class _SearchListWidgetState<T> extends State<SearchListWidget<T>> {
                   horizontal: 12,
                   vertical: 10,
                 ),
-                hintText: "Search food...",
+                hintText: AppStrings.get(AppStrings.commonKeySearchFood),
                 hintStyle: const TextStyle(color: Colors.grey),
                 border: InputBorder.none,
                 suffixIcon: const Icon(Icons.search, size: 24),

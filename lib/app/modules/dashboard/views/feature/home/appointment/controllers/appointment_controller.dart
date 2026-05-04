@@ -158,10 +158,6 @@ class AppointmentController extends GetxController {
 
     if (success) {
       Get.back();
-      SnackbarUtils.show(
-        "Appointment scheduled successfully",
-        isError: false,
-      );
     }
   }
 

@@ -55,7 +55,7 @@ class MRAApp extends StatelessWidget {
 
     return Obx(
       () => GetMaterialApp(
-        title: 'Sehati App',
+        title: 'Sehati',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,

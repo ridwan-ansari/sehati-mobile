@@ -41,8 +41,8 @@ class EdutainmentService {
         throw Exception(response.data['message'] ?? 'Gagal memuat data video');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? e.error;
-      SnackbarUtils.show(isError: true, msg + "${e.response?.statusCode}");
+      final msg = e.response?.data['message'] ?? e.message ?? 'Gagal memuat data video';
+      SnackbarUtils.show(isError: true, msg);
       return null;
     }
   }
@@ -77,8 +77,9 @@ class EdutainmentService {
     } on DioException catch (e) {
       print("[E]CLAIM YOUTUBE STATUS : ${e.response?.statusCode}");
       print("[E]CLAIM YOUTUBE STATUS : ${e.response?.data}");
-      final msg = e.response?.data['message'] ?? e.message;
-      SnackbarUtils.show(isError: true, msg);
+      SnackbarUtils.show(
+          isError: true,
+          e.response?.data['message'] ?? e.message ?? "An error occurred");
       return false;
     }
   }

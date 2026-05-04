@@ -1,6 +1,8 @@
 ﻿// ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -15,32 +17,45 @@ class MerchandiseService {
     int offset = 0,
     String name = "",
   }) async {
-    print("🚀 Fetching merchandise: name='$name', limit=$limit, offset=$offset");
+    debugPrint("💎 MerchandiseService: getMerchandise started (name='$name')");
     try {
       final token = LocalStorageService.getAccessToken();
+      debugPrint("💎 MerchandiseService: token retrieved (empty? ${token?.isEmpty ?? 'true'})");
+      
       if (token == null || token.isEmpty) {
         SnackbarUtils.show("Token not found, please login again.");
         return null;
       }
 
+      final url = "${ApiEndpoints.MERCHANDISE}/?name=$name&limit=$limit&offset=$offset";
+      debugPrint("💎 MerchandiseService: GET $url");
+      
       final response = await _dio.get(
-        "${ApiEndpoints.MERCHANDISE}/?name=$name&limit=$limit&offset=$offset",
+        url,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      print("RESPONSE : ${response.statusCode}");
+      
+      debugPrint("💎 MerchandiseService: response status code: ${response.statusCode}");
       if (response.statusCode == 200) {
         final List data = response.data['data'];
+        debugPrint("💎 MerchandiseService: mapping ${data.length} items");
         return data.map((e) => MerchandiseModel.fromJson(e)).toList();
-      } else {
-        print("ERROR : ${response.data}");
-        throw Exception(response.data['message']);
       }
+      debugPrint("💎 MerchandiseService: ERROR status code: ${response.statusCode}, body: ${response.data}");
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
-      print("ERROR statusCode getMerchandise : ${e.response?.statusCode}");
-      print("ERROR error getMerchandise: ${e.message}");
-      final msg = e.response?.data['message'] ?? "Failed to load merchandise";
+      debugPrint("💎 MerchandiseService: DioException - ${e.type}, message: ${e.message}, response: ${e.response?.statusCode}");
+      debugPrint("ERROR statusCode getMerchandise : ${e.response?.statusCode}");
+      debugPrint("ERROR error getMerchandise: ${e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
-      rethrow;
+      return null;
+    } catch (e) {
+      debugPrint("GENERIC ERROR getMerchandise: $e");
+      SnackbarUtils.show(isError: true, "Failed to load merchandise data");
+      return null;
     }
   }
 
@@ -52,6 +67,7 @@ class MerchandiseService {
     }
 
     try {
+      EasyLoading.show(status: "Processing claim...");
       var response = await _dio.post(
         '${ApiEndpoints.MERCHANDISE}/claim',
         data: FormData.fromMap({'merchandise_id': merchId}),
@@ -63,17 +79,26 @@ class MerchandiseService {
           },
         ),
       );
-      print("ERROR : ${response.statusCode}");
-      return response.data;
-    } catch (e) {
-      if (e is DioException) {
+      EasyLoading.dismiss();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
+        return response.data;
+      }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
+    } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("ERROR : ${e.response?.statusCode}");
       print("ERROR : ${e.response?.data}");
-        SnackbarUtils.show(e.response?.data["message"] ?? "Claim failed");
-      } else {
-        SnackbarUtils.show("Unexpected error");
-      }
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
+      return null;
+    } catch (e) {
+      EasyLoading.dismiss();
+      SnackbarUtils.show("An error occurred");
+      return null;
     }
-    return null;
   }
 }

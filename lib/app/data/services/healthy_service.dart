@@ -1,5 +1,6 @@
 ﻿// ignore_for_file: avoid_print
 import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -41,7 +42,8 @@ class HealthyService {
         throw Exception(response.data['message'] ?? 'Gagal memuat resep');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? 'Gagal memuat resep';
+      EasyLoading.dismiss();
+      final msg = e.response?.data?['message'] ?? e.message ?? 'Gagal memuat resep';
       SnackbarUtils.show(isError: true, msg);
       rethrow;
     }
@@ -54,6 +56,7 @@ class HealthyService {
         SnackbarUtils.show("Token not found. Please log in again.");
         return;
       }
+      EasyLoading.show(status: "Claiming point...");
       final response = await _dio.post(
         "${ApiEndpoints.RECIPE}claim-point",
         data: {"recipe_id": recipeId},
@@ -65,18 +68,18 @@ class HealthyService {
           },
         ),
       );
+      EasyLoading.dismiss();
       print("CLAIM ${response.statusCode}");
-      if (response.statusCode == 201) {
-        print("Berhasil Claim claim Point");
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        SnackbarUtils.show(isError: false, response.data['message'] ?? "Point claimed successfully!");
       } else {
-        print("[E]-claimPoint: ${response.statusMessage}");
-        print("[E]-claimPoint: ${response.statusCode}");
-        return;
+        SnackbarUtils.show(response.data['message'] ?? "Failed to claim point");
       }
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ [E]-claimPoint: ${e.response?.data ?? e.message}");
-      print("[E]-claimPoint: ${e.response?.statusCode}");
-      return;
+      final msg = e.response?.data?['message'] ?? e.message ?? "Failed to claim point";
+      SnackbarUtils.show(isError: true, msg);
     }
   }
 }

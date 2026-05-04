@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import 'package:sehati/app/data/models/video_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/edutainment/controllers/edutainment_controller.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/edutainment/views/video_detail_page.dart';
 
@@ -13,19 +15,19 @@ class EdutainmentPage extends GetView<EdutainmentController> {
   const EdutainmentPage({super.key});
 
   @override
-
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() => Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: CustomAppBar(
         logoSvg: AppAssets.tvIcon,
-        onSearchChanged: controller.onSearchChanged,
+        title: AppStrings.get(AppStrings.menuKeyEdutainment),
+        onSearchChanged: (v) => controller.onSearchChanged(v),
         controller: controller.searchController,
+        showBackButton: true,
       ),
-      body: Obx(() {
+      body: Builder(builder: (context) {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.orangeLight),
-          );
+          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
         }
 
         if (controller.errorMessage.isNotEmpty) {
@@ -36,77 +38,57 @@ class EdutainmentPage extends GetView<EdutainmentController> {
         }
 
         if (controller.videos.isEmpty) {
-          return const Center(child: Text("No videos found."));
+          return Center(
+            child: Text(
+              AppStrings.get(AppStrings.eduKeyNoVideos),
+              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
+            ),
+          );
         }
 
         return Column(
           children: [
-            const SizedBox(height: 12.0),
-            _buildHeader(),
             Expanded(
               child: ListView.builder(
                 controller: controller.scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: controller.hasMore
+                padding: const EdgeInsets.all(20),
+                itemCount: controller.hasMore.value
                     ? controller.videos.length + 1
                     : controller.videos.length,
                 itemBuilder: (context, index) {
                   if (index == controller.videos.length) {
                     return const Padding(
                       padding: EdgeInsets.all(20),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
                     );
                   }
 
                   final video = controller.videos[index];
-
-                  return Column(children: [buildVideoCard(context, video)]);
+                  return buildVideoCard(context, video);
                 },
               ),
             ),
           ],
         );
       }),
-    );
+    ));
   }
 
-  Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.richBrown,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: AnimatedIn(
-        child: const Text(
-          'Enjoy the video and get the reward point!',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  Widget buildVideoCard(BuildContext context, video) {
+  Widget buildVideoCard(BuildContext context, VideoModel video) {
     final videoId = extractYouTubeId(video.youtubeUrl);
     final thumbnailUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg";
 
     return GestureDetector(
       onTap: () => Get.to(() => VideoDetailPage(video: video)),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
+        margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha:0.06),
-              blurRadius: 8,
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
@@ -114,141 +96,71 @@ class EdutainmentPage extends GetView<EdutainmentController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thumbnail + Overlay
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: AnimatedIn(
-                    child: CachedNetworkImage(
-                      imageUrl: thumbnailUrl,
-                      width: double.infinity,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        width: double.infinity,
-                        height: 180,
-                        color: Colors.grey[200],
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        width: double.infinity,
-                        height: 180,
-                        color: Colors.grey.shade300,
-                        child: const Icon(
-                          Icons.image,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  child: CachedNetworkImage(
+                    imageUrl: thumbnailUrl,
+                    width: double.infinity,
+                    height: 180,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(width: double.infinity, height: 180, color: Colors.grey[100]),
                   ),
                 ),
-
-                // Play icon overlay
                 Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: AnimatedIn(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha:0.4),
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        child: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ),
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.3), shape: BoxShape.circle),
+                      padding: const EdgeInsets.all(12),
+                      child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 40),
                     ),
                   ),
                 ),
-
-                // Reward badge
-                // Positioned(
-                //   right: 12,
-                //   top: 12,
-                //   child: Container(
-                //     padding: const EdgeInsets.symmetric(
-                //       horizontal: 10,
-                //       vertical: 6,
-                //     ),
-                //     decoration: BoxDecoration(
-                //       color: Colors.orange.shade600,
-                //       borderRadius: BorderRadius.circular(12),
-                //     ),
-                //     child: Text(
-                //       "+${video.rewardPoints} pts",
-                //       style: const TextStyle(
-                //         color: Colors.white,
-                //         fontWeight: FontWeight.w600,
-                //         fontSize: 13,
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
-
-            // Content
             Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnimatedIn(
-                    child: Text(
-                      video.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                        height: 1.3,
-                      ),
-                    ),
+                  Text(
+                    video.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark, height: 1.3),
                   ),
-
-                  const SizedBox(height: 6),
-
-                  AnimatedIn(
-                    child: Text(
-                      video.description,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade700,
-                        height: 1.4,
-                      ),
-                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    video.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600, height: 1.5),
                   ),
-
-                  const SizedBox(height: 12),
-                  if (video.durationSeconds != null)
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 16,
-                          color: Colors.grey.shade600,
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.orangeLight.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          video.durationSeconds == null
-                              ? "Duration not available"
-                              : "${(video.durationSeconds! ~/ 60)} menit",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.timer_outlined, size: 14, color: AppColors.orangeLight),
+                            const SizedBox(width: 6),
+                            Text(
+                              video.durationSeconds == null ? "N/A" : "${(video.durationSeconds! ~/ 60)} ${AppStrings.get(AppStrings.eduKeyMinutes)}",
+                              style: const TextStyle(fontSize: 12, color: AppColors.orangeLight, fontWeight: FontWeight.w700),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -258,34 +170,13 @@ class EdutainmentPage extends GetView<EdutainmentController> {
     );
   }
 
-  // Extract YT video ID
   String extractYouTubeId(String url) {
-    final uri = Uri.parse(url);
-    if (uri.queryParameters.containsKey('v')) {
-      return uri.queryParameters['v']!;
+    try {
+      final uri = Uri.parse(url);
+      if (uri.queryParameters.containsKey('v')) return uri.queryParameters['v']!;
+      return uri.pathSegments.last;
+    } catch (_) {
+      return "";
     }
-    return uri.pathSegments.last;
-  }
-
-  Widget titleContent({required String title}) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.orangeLight, Color.fromARGB(60, 255, 255, 255)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
   }
 }

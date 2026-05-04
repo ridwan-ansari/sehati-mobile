@@ -51,8 +51,8 @@ class WelcomePage extends StatelessWidget {
                   AnimatedIn(
                     child: Text(
                       isEn
-                          ? 'Your health companion for a better life.'
-                          : 'Teman kesehatan Anda untuk hidup lebih baik.',
+                          ? 'Sehati, your companion for a better life.'
+                          : 'Sehati, teman Anda untuk hidup lebih baik.',
                       style: const TextStyle(fontSize: 14, color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),

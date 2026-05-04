@@ -45,13 +45,14 @@ class SleepService {
         final result = NutritionResponse.fromJson(response.data);
         return result.data;
       } else {
-        SnackbarUtils.show("Failed to load nutrition data.");
+        SnackbarUtils.show(response.data['message'] ?? "An error occurred");
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Nutrition request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("${e.message}");
+      final msg = e.response?.data['message'] ?? e.message ?? "Failed to load nutrition data";
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -64,12 +65,12 @@ class SleepService {
         return false;
       }
 
-      EasyLoading.show();
+      EasyLoading.show(status: "Saving sleep record...");
       print("body data ; ${request.toJson()}");
 
       if (request.targetSleep <= 0) {
-        SnackbarUtils.show("Target sleep hours must be greater than 0");
         EasyLoading.dismiss();
+        SnackbarUtils.show("Target sleep hours must be greater than 0");
         return false;
       }
 
@@ -92,18 +93,18 @@ class SleepService {
       if (response.statusCode == 201) {
         SnackbarUtils.show(
           isError: false,
-          "Your sleep record has been saved successfully.",
+          response.data['message'] ?? "Success",
         );
         return true;
       } else {
         SnackbarUtils.show(
-          "Failed to save your sleep record. Please try again.",
+          response.data['message'] ?? "An error occurred",
         );
         return false;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      final errorMsg = e.response!.data["detail"]?[0]["msg"]??"Error";
+      final errorMsg = e.response?.data['message'] ?? e.response?.data["detail"]?[0]["msg"] ?? e.message ?? "Error";
       SnackbarUtils.show(errorMsg);
       return false;
     }
@@ -134,7 +135,10 @@ class SleepService {
       return null;
     } on DioException catch (e) {
       print("❌ Pagination Error: ${e.response?.data}");
+      final msg = e.response?.data['message'] ?? e.message ?? "Failed to load sleep records";
+      SnackbarUtils.show(msg);
       return null;
     }
   }
 }
+

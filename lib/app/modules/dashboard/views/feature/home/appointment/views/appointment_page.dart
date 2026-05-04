@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -17,125 +18,107 @@ class AppointmentPage extends GetView<AppointmentController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: CustomAppBar(
         logoSvg: AppAssets.doctorIcon,
-        onSearchChanged: (value) {},
+        title: AppStrings.get(AppStrings.menuKeyAppointment),
+        showBackButton: true,
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
         }
 
-        if (controller.profeeesionalList.isEmpty) {
-          return const Center(
-            child: Text(
-              'No professionals available',
-              style: TextStyle(color: Colors.black54),
-            ),
-          );
-        }
-
-        final grouped = controller.groupedBySpecialization;
-
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: grouped.entries.map((entry) {
-            final specialization = entry.key;
-            final professionals = entry.value;
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionHeader(specialization),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 262,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: professionals.length,
-                    itemBuilder: (context, index) {
-                      final doctor = professionals[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _buildDoctorCard(
-                          context,
-                          "$BASE_URL/${doctor.picture}",
-                          doctor.fullname ?? "",
-                          doctor.specialization ?? "",
-                          doctor.phoneNumber,
-                          doctor,
-                        ),
-                      );
-                    },
-                  ),
+        return controller.profeeesionalList.isEmpty
+            ? Center(
+                child: Text(
+                  AppStrings.getOr('No counselors available', 'Belum ada konselor tersedia'),
+                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
                 ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                itemCount: controller.groupedBySpecialization.length,
+                itemBuilder: (context, index) {
+                  final entry = controller.groupedBySpecialization.entries.elementAt(index);
+                  final specialization = entry.key;
+                  final counselors = entry.value;
 
-                const SizedBox(height: 25),
-              ],
-            );
-          }).toList(),
-        );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader(specialization),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 250,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: counselors.length,
+                          itemBuilder: (context, idx) {
+                            final doctor = counselors[idx];
+                            return _buildCounselorCard(doctor);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  );
+                },
+              );
       }),
     );
   }
 
   Widget _buildSectionHeader(String title) {
-    return Row(
-      children: [
-        AppAssetUtils.svg(AppAssets.handIcon, width: 45, height: 45),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
             decoration: BoxDecoration(
-              color: AppColors.richBrown,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AnimatedIn(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: const [
-                    Icon(Icons.circle, size: 8, color: Colors.white),
-                    SizedBox(width: 6),
-                    Icon(Icons.circle, size: 8, color: Colors.white),
-                  ],
-                ),
-              ],
+              color: AppColors.orangeLight,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textDark,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const Spacer(),
+          const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 20),
+        ],
+      ),
     );
   }
 
-  Widget _buildDoctorCard(
-    BuildContext context,
-    String image,
-    String name,
-    String role,
-    String? phone,
-    dynamic doctor,
-  ) {
-    return SizedBox(
-      width: 180,
+  Widget _buildCounselorCard(dynamic doctor) {
+    return Container(
+      width: 170,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
-        borderRadius: BorderRadius.circular(14),
-        elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.15),
-        color: AppColors.yellowLight,
+        color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           onTap: () {
             controller.resetSelection();
             Get.toNamed('/appointment_detail', arguments: doctor);
@@ -143,62 +126,85 @@ class AppointmentPage extends GetView<AppointmentController> {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: image,
-                    width: 110,
-                    height: 110,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(
-                      width: 110,
-                      height: 110,
-                      color: Colors.grey[200],
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: CachedNetworkImage(
+                        imageUrl: "$BASE_URL/${doctor.picture}",
+                        width: double.infinity,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          height: 120,
+                          color: Colors.grey[100],
+                        ),
+                        errorWidget: (_, __, ___) => Container(
+                          height: 120,
+                          color: Colors.grey[100],
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                        ),
+                      ),
                     ),
-                    errorWidget: (_, __, ___) => Container(
-                      width: 110,
-                      height: 110,
-                      color: Colors.grey.shade300,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.person, size: 40),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.favorite_border_rounded,
+                          size: 16,
+                          color: Colors.redAccent,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Text(
-                  name,
+                  doctor.fullname ?? "",
                   textAlign: TextAlign.center,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
                     color: AppColors.textDark,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  role,
+                  doctor.specialization ?? "",
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black45,
+                  ),
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.richBrown,
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.orangeLight.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Book Now',
-                    style: TextStyle(
+                  child: Text(
+                    AppStrings.get(AppStrings.menuKeyBookNow),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.orangeLight,
                     ),
                   ),
                 ),

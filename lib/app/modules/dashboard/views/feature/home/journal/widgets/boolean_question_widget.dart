@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/models/response/exercise_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/exercise/controllers/exercise_controller.dart';
 
@@ -27,141 +28,152 @@ class BooleanQuestionWidget extends StatelessWidget {
         .length;
     bool semuaTerisi = jawabanTerisi == totalSoal;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFFFE082), Color(0xFFFFB74D)],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.yellow.shade50,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${AppStrings.get(AppStrings.exerciseKeyQuestion)} ${index + 1} ${AppStrings.get(AppStrings.exerciseKeyOf)} $totalSoal',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
                 children: [
+                  const Icon(Icons.stars_rounded, color: Colors.amber, size: 16),
+                  const SizedBox(width: 4),
                   Text(
-                    'Question ${index + 1} / $totalSoal',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  AnimatedIn(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.monetization_on, color: Colors.amber),
-                        const SizedBox(width: 4),
-                        Text(
-                          '+${question.rewardPoints}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber,
-                          ),
-                        ),
-                      ],
-                    ),
+                    '+${question.rewardPoints} ${AppStrings.get(AppStrings.commonKeyPointsLabel)}',
+                    style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.amber, fontSize: 12),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              AnimatedIn(
-                child: Text(
-                  question.question,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ...question.options.entries.map((entry) {
-                return AnimatedIn(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: question.selectedOption == entry.key
-                            ? AppColors.orangeLight
-                            : const Color(0xFF3D2C1C),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        question.selectedOption = entry.key;
-                        question.answerText = entry.value;
-                        controller.exerciseList.refresh();
-                      },
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(entry.value),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (index > 0)
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                          color: Color(0xFFFFB74D),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        AnimatedIn(
+          child: Text(
+            question.question,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+              color: AppColors.textDark,
+              height: 1.4,
+            ),
+          ),
+        ),
+        const SizedBox(height: 32),
+        Expanded(
+          child: ListView(
+            children: question.options.entries.map((entry) {
+              bool isSelected = question.selectedOption == entry.key;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AnimatedIn(
+                  child: InkWell(
+                    onTap: () {
+                      question.selectedOption = entry.key;
+                      question.answerText = entry.value;
+                      controller.exerciseList.refresh();
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF2196F3) : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? const Color(0xFF2196F3) : Colors.grey.shade200,
                           width: 2,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        foregroundColor: Color(0xFFFFB74D),
                       ),
-                      onPressed: () => pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
+                      child: Row(
+                        children: [
+                          Icon(
+                            isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                            color: isSelected ? Colors.white : Colors.grey.shade400,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              entry.value,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                color: isSelected ? Colors.white : AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: const Text("Previous"),
                     ),
-                  if (index < totalSoal - 1)
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.orangeLight,
-                      ),
-                      onPressed: () => pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      ),
-                      child: const Text("Next"),
-                    ),
-                  if (index == totalSoal - 1)
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: semuaTerisi
-                            ? AppColors.orangeLight
-                            : Colors.grey,
-                      ),
-                      onPressed: semuaTerisi
-                          ? () => controller.submitAllAnswers()
-                          : null,
-                      child: const Text("Submit"),
-                    ),
-                ],
-              ),
-            ],
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ),
-      ),
+        const SizedBox(height: 24),
+        _buildNavigation(semuaTerisi),
+      ],
+    );
+  }
+
+  Widget _buildNavigation(bool semuaTerisi) {
+    return Row(
+      children: [
+        if (index > 0)
+          Expanded(
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: BorderSide(color: Colors.grey.shade300),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () => pageController.previousPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              ),
+              child: Text(AppStrings.get(AppStrings.commonKeyBack), style: const TextStyle(color: AppColors.textMedium, fontWeight: FontWeight.w700)),
+            ),
+          ),
+        if (index > 0) const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: index == totalSoal - 1 
+                  ? (semuaTerisi ? const Color(0xFF2196F3) : Colors.grey.shade300)
+                  : const Color(0xFF2196F3),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            onPressed: () {
+              if (index < totalSoal - 1) {
+                pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              } else if (semuaTerisi) {
+                controller.submitAllAnswers();
+              }
+            },
+            child: Text(
+              index == totalSoal - 1 ? AppStrings.get(AppStrings.exerciseKeyFinish) : AppStrings.get(AppStrings.exerciseKeyNext),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

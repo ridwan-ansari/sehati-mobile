@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
 
@@ -105,8 +106,8 @@ class InputTextFieldWithReply extends StatelessWidget {
                       minLines: 1,
                       keyboardType: TextInputType.multiline,
                       controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message',
+                      decoration: InputDecoration(
+                        hintText: AppStrings.get(AppStrings.chatKeyTypeMessage),
                         border: InputBorder.none,
                       ),
                     ),

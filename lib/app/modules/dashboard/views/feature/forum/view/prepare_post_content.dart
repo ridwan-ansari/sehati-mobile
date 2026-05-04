@@ -1,134 +1,81 @@
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
-import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/camera_controller.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import '../controller/forum_controller.dart';
 
-class PreparePostContent extends GetView<CameraControllerX> {
-  const PreparePostContent({super.key});
+class PreparePostContentPage extends GetView<ForumController> {
+  const PreparePostContentPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Colors.white,
-          leading: GestureDetector(
-            onTap: () {
-              controller.selectedImage.value = null;
-              controller.isNext.value = false;
-              Get.back();
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: AppAssetUtils.svg(
-                AppAssets.cancelIcon,
-                width: 24,
-                height: 24,
+    final File imageFile = Get.arguments;
+
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      appBar: CustomAppBar(
+        title: AppStrings.get(AppStrings.forumKeyPostContent),
+        showBackButton: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.file(
+                imageFile,
+                width: double.infinity,
+                height: 250,
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-          title: AnimatedIn(
-            child: Text(
-              controller.isNext.value ? "new post" : "",
-              style: TextStyle(color: Colors.black, fontSize: 16),
+            const SizedBox(height: 32),
+            Text(
+              AppStrings.getOr('Share your health journey...', 'Bagikan perjalanan sehatmu...'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark),
             ),
-          ),
-          actions: [const SizedBox(width: 12.0)],
-        ),
-        body: SingleChildScrollView(
-          controller: ScrollController(),
-          child: Column(
-            children: [
-              controller.isNext.value == false
-                  ? Center(
-                      child: Obx(() {
-                        final file = controller.selectedImage.value;
-                        if (file == null) {
-                          return const SizedBox(
-                            height: 512,
-                            child: Center(child: AnimatedIn(child: Text("No photos"))),
-                          );
-                        }
-                        return AnimatedIn(
-                          child: Container(
-                            height: 512,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: FileImage(file),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    )
-                  : Obx(() {
-                      final file = controller.selectedImage.value;
-                      if (file == null) {
-                        return const SizedBox(
-                          height: 250,
-                          width: 250,
-                          child: Center(child: AnimatedIn(child: Text("No photos"))),
-                        );
-                      }
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            height: 250,
-                            width: 250,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: FileImage(file),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
-              if (controller.isNext.value)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: AnimatedIn(
-                          child: TextField(
-                            maxLines: null,
-                            maxLength: 300,
-                            onChanged: (v) => controller.description.value = v,
-                            decoration: InputDecoration(
-                              hintText: "Write a post description...",
-                              border: InputBorder.none,
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.all(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            const SizedBox(height: 12),
+            AnimatedIn(
+              child: TextField(
+                controller: controller.contentController,
+                maxLines: 6,
+                style: const TextStyle(fontSize: 15, color: AppColors.textDark),
+                decoration: InputDecoration(
+                  hintText: AppStrings.getOr('Write something here...', 'Tulis sesuatu di sini...'),
+                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  contentPadding: const EdgeInsets.all(20),
                 ),
-            ],
-          ),
-        ),
-        floatingActionButton: TextButton(
-          onPressed: controller.isNext.value
-              ? () => controller.postContent()
-              : () => controller.isNext.value = true,
-          child: AnimatedIn(
-            child: Text(
-              controller.isNext.value ? "Upload" : "Next",
-              style: TextStyle(color: Colors.black),
+              ),
             ),
-          ),
+            const SizedBox(height: 40),
+            Obx(() => SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: controller.isPosting.value ? null : () => controller.submitPost(imageFile.path),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.richBrown,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: controller.isPosting.value
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : Text(
+                        AppStrings.get(AppStrings.commonKeySubmit).toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                      ),
+              ),
+            )),
+          ],
         ),
       ),
     );

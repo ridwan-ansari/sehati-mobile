@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/enum/activity_level.dart';
@@ -20,6 +21,7 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/
 
 class FoodDiaryController extends GetxController {
   final dateController = TextEditingController();
+  final RxString selectedDate = "".obs;
   final FoodService _foodService = FoodService();
   final controllerSearch = TextEditingController();
   final controllerDesiredEnergy = TextEditingController();
@@ -46,6 +48,7 @@ class FoodDiaryController extends GetxController {
       expanded[type.label] = false.obs;
     }
     dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    selectedDate.value = dateController.text;
     loadData();
     loadLatestNutrition();
   }
@@ -178,7 +181,7 @@ class FoodDiaryController extends GetxController {
   Future<void> submitDiary() async {
     if (controllerDesiredEnergy.text.trim().isEmpty ||
         controllerDesiredEnergy.text.trim() == "0") {
-      SnackbarUtils.show("Desired energy cannot be zero.");
+      SnackbarUtils.show(AppStrings.get(AppStrings.foodKeyDesiredEnergyZero));
       return;
     }
 

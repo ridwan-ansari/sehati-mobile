@@ -279,7 +279,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.PREPARE_POST_CONTENT,
-      page: () => const PreparePostContent(),
+      page: () => const PreparePostContentPage(),
       binding: ForumBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: Duration(milliseconds: 300),

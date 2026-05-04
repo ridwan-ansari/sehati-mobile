@@ -1,4 +1,5 @@
 ﻿import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -25,11 +26,12 @@ class HabitService {
         final List data = response.data['data'];
         return data.map((e) => HabitQuestionModel.fromJson(e)).toList();
       } else {
-        throw Exception(response.data['message'] ?? 'Gagal memuat soal');
+        throw Exception(response.data['message'] ?? 'An error occurred');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? '';
-  
+      EasyLoading.dismiss();
+      final msg = e.response?.data?['message'] ?? e.message ?? "An error occurred";
+
       SnackbarUtils.show(isError: true, msg);
       rethrow;
     }
@@ -52,17 +54,21 @@ class HabitService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 201) {
-        SnackbarUtils.show(isError: false, "Answer sent successfully");
+        EasyLoading.dismiss();
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return true;
       } else {
+        EasyLoading.dismiss();
         SnackbarUtils.show(
-          response.data['message'] ?? "Failed to send reply",
+          response.data['message'] ?? "An error occurred",
         );
         return false;
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Failed to send reply";
-      SnackbarUtils.show(msg + "(${e.response?.statusCode})");
+      EasyLoading.dismiss();
+      final msg = e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(isError: true, msg);
       return false;
     }
   }

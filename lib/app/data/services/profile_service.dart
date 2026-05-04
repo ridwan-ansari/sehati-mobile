@@ -21,7 +21,7 @@ class ProfileService {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
-      EasyLoading.show();
+      EasyLoading.show(status: "Loading profile...");
 
       final response = await _dio.get(
         ApiEndpoints.USER_PROFILE,
@@ -40,13 +40,14 @@ class ProfileService {
         return data.data;
       } else {
         print("⚠️ Failed to fetch profile: ${response.statusMessage}");
-        SnackbarUtils.show("Failed to load profile.");
+        SnackbarUtils.show(response.data['message'] ?? "Failed to load profile.");
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Profile request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("Network error occurred.");
+      final msg = e.response?.data['message'] ?? e.message ?? "Network error occurred.";
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -82,17 +83,18 @@ class ProfileService {
       print('upload [icture : ${response.statusCode}]');
       if (response.statusCode == 201 ) {
         print("✅ UPLOAD FOTO BERHASIL: ${response.data}");
-        SnackbarUtils.show(isError: false, "Foto profil berhasil diperbarui");
+        SnackbarUtils.show(isError: false, response.data['message'] ?? "Foto profil berhasil diperbarui");
         return response.data;
       } else {
         print("⚠️ UPLOAD FOTO GAGAL: ${response.statusMessage}");
-        SnackbarUtils.show("Gagal mengunggah foto");
+        SnackbarUtils.show(response.data['message'] ?? "Gagal mengunggah foto");
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ UPLOAD FOTO ERROR: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("Terjadi kesalahan saat mengunggah foto");
+      final msg = e.response?.data['message'] ?? e.message ?? "Terjadi kesalahan saat mengunggah foto";
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -123,13 +125,14 @@ class ProfileService {
         return response.data;
       } else {
         print("⚠️ USER LIST FAILED: ${response.statusMessage}");
-        SnackbarUtils.show("Gagal memuat daftar pengguna");
+        SnackbarUtils.show(response.data['message'] ?? "Gagal memuat daftar pengguna");
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ USER LIST ERROR: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("Terjadi kesalahan saat memuat data pengguna");
+      final msg = e.response?.data['message'] ?? e.message ?? "Terjadi kesalahan saat memuat data pengguna";
+      SnackbarUtils.show(msg);
       return null;
     }
   }

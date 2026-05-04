@@ -1,16 +1,14 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/game_model.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/game/widgets/gradien_game_label.dart';
 import '../controllers/game_controller.dart';
 
 class GamePage extends GetView<GameController> {
@@ -19,244 +17,164 @@ class GamePage extends GetView<GameController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: CustomAppBar(
         logoSvg: AppAssets.gameIcon,
+        title: AppStrings.get(AppStrings.menuKeyGame),
         onSearchChanged: (value) {},
+        showBackButton: true,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12.0),
-            AnimatedIn(
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.richBrown,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Spend your points to unlock games!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+        }
+        if (controller.errorMessage.isNotEmpty) {
+          return AppErrorWidget(
+            message: controller.errorMessage.value,
+            onRetry: controller.fetchGames,
+          );
+        }
+        if (controller.games.isEmpty) {
+          return Center(
+            child: Text(
+              AppStrings.get(AppStrings.menuKeyNoGamesYet),
+              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 20),
-            Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(
-                      color: AppColors.orangeLight,
-                    ),
-                  ),
-                );
-              }
-              if (controller.errorMessage.isNotEmpty) {
-                return AppErrorWidget(
-                  message: controller.errorMessage.value,
-                  onRetry: controller.fetchGames,
-                );
-              }
-              if (controller.games.isEmpty) {
-                return const AppErrorWidget(
-                  message: 'No games available yet.',
-                );
-              }
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.games.length,
-                itemBuilder: (context, index) {
-                  final game = controller.games[index];
-                  return _buildGameCard(game);
-                },
-              );
-            }),
-          ],
-        ),
-      ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: controller.games.length,
+          itemBuilder: (context, index) {
+            final game = controller.games[index];
+            return _buildGameCard(game);
+          },
+        );
+      }),
     );
   }
 
   Widget _buildGameCard(GameModel game) {
-    RxBool isExpanded = false.obs;
-
-    return Obx(() {
-      return Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: game.isClaim ? () => controller.onGameTap(game.id) : null,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 100,
-                            width: 100,
-                            color: Colors.grey.shade200,
-                            child: CachedNetworkImage(
-                              imageUrl: '$BASE_URL${game.imageUrl}',
-                              fit: BoxFit.cover,
-                              placeholder: (_, __) =>
-                                  Container(color: Colors.grey[200]),
-                              errorWidget: (_, __, ___) =>
-                                  const Icon(Icons.broken_image_outlined),
-                            ),
-                          ),
-                          if (game.isClaim)
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: AnimatedIn(
-                                  child: const Text(
-                                    "Claimed",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: 100,
-                      child: ElevatedButton(
-                        onPressed: game.isClaim
-                            ? () => controller.onGameTap(game.id)
-                            : () => controller.claimGame(game.id),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: game.isClaim
-                              ? Colors.green
-                              : AppColors.orangeLight,
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: AnimatedIn(
-                          child: Text(
-                            game.isClaim ? "Play" : "Claim",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: '$BASE_URL${game.imageUrl}',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(color: Colors.grey[100]),
+                        errorWidget: (_, __, ___) => Container(
+                          width: 100,
+                          height: 100,
+                          color: Colors.grey[100],
+                          child: const Icon(Icons.videogame_asset_rounded, color: Colors.grey),
                         ),
                       ),
-                    ),
-                  ],
+                      if (game.isClaim)
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+                            child: const Icon(Icons.check, color: Colors.white, size: 10),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GradienGameLabel(title: game.name, fontSize: 15),
-
+                      Text(
+                        game.name,
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.textDark),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 6),
-
-                      AnimatedIn(
-                        child: AnimatedIn(
-                          child: Text(
-                            game.description,
-                            maxLines: isExpanded.value ? 10 : 2,
-                            overflow: isExpanded.value
-                                ? TextOverflow.visible
-                                : TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              color: Colors.black87,
-                              height: 1.3,
+                      Text(
+                        game.description,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, height: 1.4),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.stars_rounded, size: 14, color: Colors.amber),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "${game.pricePoints} pts",
+                                  style: const TextStyle(color: Colors.amber, fontSize: 11, fontWeight: FontWeight.w800),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ),
-
-                      GestureDetector(
-                        onTap: () => isExpanded.value = !isExpanded.value,
-                        child: Text(
-                          isExpanded.value ? "Less" : "More",
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFE082),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: AnimatedIn(
-                          child: Text(
-                            "Unlock: -${game.pricePoints} pts",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
+                          const Spacer(),
+                          SizedBox(
+                            height: 36,
+                            child: ElevatedButton(
+                              onPressed: game.isClaim
+                                  ? () => controller.onGameTap(game.id)
+                                  : () => controller.claimGame(game.id),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: game.isClaim ? Colors.green : AppColors.orangeLight,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: Text(
+                                game.isClaim ? "Play" : "Claim",
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

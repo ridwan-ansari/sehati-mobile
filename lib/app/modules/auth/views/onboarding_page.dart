@@ -47,7 +47,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Future<void> _finish() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('has_seen_onboarding', true);
-    Get.offAllNamed(AppRoutes.INPUTPROFILE);
+    Get.offAllNamed(AppRoutes.WELCOME);
   }
 
   void _nextPage() {

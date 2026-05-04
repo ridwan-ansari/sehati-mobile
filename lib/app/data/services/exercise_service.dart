@@ -28,8 +28,9 @@ class ExerciseService {
         throw Exception(response.data['message'] ?? 'Gagal memuat soal');
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? '';
-      SnackbarUtils.show(isError: true, msg);
+      SnackbarUtils.show(
+          isError: true,
+          e.response?.data['message'] ?? e.message ?? 'Gagal memuat soal');
       rethrow;
     }
   }
@@ -52,7 +53,9 @@ class ExerciseService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 201) {
-        SnackbarUtils.show(isError: false, "Answer sent successfully");
+        SnackbarUtils.show(
+            isError: false,
+            response.data['message'] ?? "Answer sent successfully");
         return true;
       } else {
         SnackbarUtils.show(
@@ -61,8 +64,8 @@ class ExerciseService {
         return false;
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Failed to send reply";
-      SnackbarUtils.show(msg);
+      SnackbarUtils.show(
+          e.response?.data['message'] ?? e.message ?? "Failed to send reply");
       return false;
     }
   }

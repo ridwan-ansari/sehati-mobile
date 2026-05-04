@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/widgets/app_error_widget.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/recipe_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/healthy_menu/views/detail_healthy_page.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label_right.dart';
 import '../controllers/healthy_menu_controller.dart';
 
 class HealthyMenuPage extends GetView<HealthyMenuController> {
@@ -17,146 +17,136 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() => Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: CustomAppBar(
         logoSvg: AppAssets.healthyMenuIcon,
+        title: AppStrings.get(AppStrings.menuKeyRecipes),
         controller: controller.searchController,
         onSearchChanged: controller.onSearchChanged,
+        showBackButton: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12),
-          AnimatedIn(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              decoration: BoxDecoration(
-                color: AppColors.richBrown,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                'Explore healthy recipes!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-                textAlign: TextAlign.center,
-              ),
+      body: Builder(builder: (context) {
+        if (controller.isLoading.value && controller.recipes.isEmpty) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+        }
+        if (controller.errorMessage.isNotEmpty && controller.recipes.isEmpty) {
+          return AppErrorWidget(
+            message: controller.errorMessage.value,
+            onRetry: () => controller.fetchRecipes(reset: true),
+          );
+        }
+        if (controller.recipes.isEmpty) {
+          return Center(
+            child: Text(
+              AppStrings.getOr("No recipes found.", "Resep tidak ditemukan."),
+              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
             ),
-          ),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value && controller.recipes.isEmpty) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.orangeLight),
-                );
-              }
-              if (controller.errorMessage.isNotEmpty && controller.recipes.isEmpty) {
-                return AppErrorWidget(
-                  message: controller.errorMessage.value,
-                  onRetry: () => controller.fetchRecipes(reset: true),
-                );
-              }
-              return Container(
-                color: AppColors.yellowLight,
-                child: SingleChildScrollView(
-                  controller: controller.scrollController,
-                  child: Column(
-                    children: [
-                      ListView.builder(
-                        itemCount: controller.recipes.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return _RecipeCard(recipe: controller.recipes[index]);
-                        },
-                      ),
-                      if (controller.isLoading.value)
-                        const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: CircularProgressIndicator(
-                            color: AppColors.orangeLight,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+          );
+        }
+
+        return ListView.builder(
+          controller: controller.scrollController,
+          padding: const EdgeInsets.all(20),
+          itemCount: controller.recipes.length + (controller.isLoading.value ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == controller.recipes.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
               );
-            }),
-          ),
-        ],
-      ),
-    );
+            }
+            return _RecipeCard(recipe: controller.recipes[index]);
+          },
+        );
+      }),
+    ));
   }
 }
 
 class _RecipeCard extends StatelessWidget {
   const _RecipeCard({required this.recipe});
-
   final RecipeModel recipe;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AnimatedIn(
-            child: Container(
-              height: 125,
-              width: 125,
-              decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.brown, width: 2),
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider('$BASE_URL${recipe.imageUrl}'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => Get.to(() => RecipeDetailPage(recipe: recipe)),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                AnimatedIn(
-                  child: GradienLabelRight(title: recipe.title, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                AnimatedIn(
-                  child: ElevatedButton(
-                    onPressed: () => Get.to(RecipeDetailPage(recipe: recipe)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.black,
-                      side: const BorderSide(color: Colors.black, width: 2),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: const Text(
-                      'View Details',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CachedNetworkImage(
+                    imageUrl: '$BASE_URL${recipe.imageUrl}',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(color: Colors.grey[100]),
+                    errorWidget: (_, __, ___) => Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.grey[100],
+                      child: const Icon(Icons.restaurant_menu_rounded, color: Colors.grey),
                     ),
                   ),
                 ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        recipe.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.orangeLight.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          AppStrings.getOr('View Details', 'Lihat Detail'),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.orangeLight,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

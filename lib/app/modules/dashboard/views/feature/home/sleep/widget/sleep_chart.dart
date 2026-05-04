@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/legend_item.dart';
 
@@ -12,7 +13,7 @@ class SleepChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: Text("No sleep records found"));
+      return Center(child: Text(AppStrings.get(AppStrings.sleepKeyNoRecords)));
     }
 
     return InteractiveViewer(
@@ -33,10 +34,10 @@ class SleepChart extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  LegendItem(color: Colors.green, label: "Sleeping duration"),
-                  SizedBox(width: 20),
-                  LegendItem(color: Colors.redAccent, label: "Target"),
+                children: [
+                  LegendItem(color: Colors.green, label: AppStrings.get(AppStrings.sleepKeySleepingDuration)),
+                  const SizedBox(width: 20),
+                  LegendItem(color: Colors.redAccent, label: AppStrings.get(AppStrings.sleepKeyTargetLabel)),
                 ],
               ),
               const SizedBox(height: 10),

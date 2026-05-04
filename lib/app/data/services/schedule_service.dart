@@ -33,12 +33,13 @@ class ScheduleService {
         final result = ScheduleResponse.fromJson(response.data);
         return result.data;
       } else {
-        SnackbarUtils.show("Failed to load schedules.");
+        SnackbarUtils.show(response.data['message'] ?? "Failed to load schedules.");
         return null;
       }
     } on DioException catch (e) {
       print("❌ schedule request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("${e.message}");
+      final msg = e.response?.data['message'] ?? e.message ?? "Failed to load schedules";
+      SnackbarUtils.show(msg);
       return null;
     }
   }

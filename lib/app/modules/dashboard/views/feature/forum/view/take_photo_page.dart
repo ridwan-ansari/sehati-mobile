@@ -1,78 +1,69 @@
-import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/camera_controller.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/forum/view/prepare_post_content.dart';
+import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/widgets/custom_appbar.dart';
+import '../controller/forum_controller.dart';
 
-class TakePhotoPage extends GetView<CameraControllerX> {
+class TakePhotoPage extends GetView<ForumController> {
   const TakePhotoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          CameraAwesomeBuilder.awesome(
-            saveConfig: SaveConfig.photo(),
-            availableFilters: [
-              AwesomeFilter.Sierra,
-              AwesomeFilter.AddictiveRed,
-              AwesomeFilter.AddictiveBlue,
-            ],
-            onMediaCaptureEvent: (event) {
-              if (event.isPicture &&
-                  event.status == MediaCaptureStatus.success) {
-                final path = event.captureRequest.path;
-
-                if (path != null) {
-                  controller.selectedImage.value = File(path);
-                  Get.to(() => const PreparePostContent());
-                }
-              }
-            },
-
-            onMediaTap: (mediaCapture) {
-              mediaCapture.captureRequest.when(
-                single: (single) {
-                  if (single.file?.path != null) {
-                    controller.selectedImage.value = File(single.file!.path);
-                    Get.back(result: controller.selectedImage.value);
-                  }
-                },
-                multiple: (multiple) {},
-              );
-            },
-          ),
-        ],
+      backgroundColor: Colors.black,
+      appBar: CustomAppBar(
+        title: AppStrings.get(AppStrings.forumKeyTakePhoto),
+        showBackButton: true,
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            padding: EdgeInsets.zero,
-            child: Obx(
-              ()=> controller.showFab.value == true? Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.photo, color: Colors.white, size: 65),
-                    onPressed: () async {
-                      await controller.pickFromGallery();
-                      if (controller.selectedImage.value != null) {
-                        Get.to(() => const PreparePostContent());
-                      }
-                    },
+      body: FutureBuilder<void>(
+        future: controller.initializeCamera(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Stack(
+              children: [
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: CameraPreview(controller.cameraController!),
                   ),
-                ],
-              ):SizedBox.shrink(),
-            ),
+                ),
+                Positioned(
+                  bottom: 40,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: _buildCaptureButton(),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildCaptureButton() {
+    return GestureDetector(
+      onTap: () => controller.takePhoto(),
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 4),
+        ),
+        child: Container(
+          width: 60,
+          height: 60,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
           ),
-          const SizedBox(width: 24.0),
-        ],
+        ),
       ),
     );
   }

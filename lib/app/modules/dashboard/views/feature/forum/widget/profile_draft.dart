@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class ProfileDraft extends StatelessWidget {
   const ProfileDraft({super.key});
@@ -53,9 +54,9 @@ class ProfileDraft extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStat("9", "Posts"),
-                        _buildStat("2.5K", "Followers"),
-                        _buildStat("342", "Following"),
+                        _buildStat("9", AppStrings.get(AppStrings.forumKeyPosts)),
+                        _buildStat("2.5K", AppStrings.get(AppStrings.forumKeyFollowers)),
+                        _buildStat("342", AppStrings.get(AppStrings.forumKeyFollowing)),
                       ],
                     ),
                   ),
@@ -115,9 +116,9 @@ class ProfileDraft extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {},
-                  child: const Text(
-                    "Edit Profile",
-                    style: TextStyle(
+                  child: Text(
+                    AppStrings.get(AppStrings.profileKeyEditProfile),
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                     ),

@@ -1,4 +1,5 @@
 ﻿import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -33,13 +34,15 @@ class GameService {
         final List data = response.data['data'];
         return data.map((e) => GameModel.fromJson(e)).toList();
       } else {
+        EasyLoading.dismiss();
         SnackbarUtils.show(response.data['message'] ?? "Failed to load games");
         return null;
       }
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ get games error: ${e.response?.data ?? e.message}");
       print("❌ get games error: ${e.response?.statusCode}");
-      final msg = e.response?.data['message'] ?? "Network error";
+      final msg = e.response?.data?['message'] ?? e.message ?? "Network error";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -58,16 +61,19 @@ class GameService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
-        SnackbarUtils.show(isError: false,response.data["message"]);
+        EasyLoading.dismiss();
+        SnackbarUtils.show(
+            isError: false, response.data["message"] ?? "Game claimed successfully");
       } else {
+        EasyLoading.dismiss();
         SnackbarUtils.show(response.data['message'] ?? "Failed to claim game");
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Network error";
+      EasyLoading.dismiss();
+      final msg = e.response?.data?['message'] ?? e.message ?? "Network error";
       SnackbarUtils.show(isError: true, msg);
     }
   }
-
 
   Future<void> playGame({required String gameId}) async {
     try {
@@ -82,6 +88,7 @@ class GameService {
         () => GamePlayPage(linkUrl: playUrl, title: "Play Game", token: token),
       );
     } catch (e) {
+      EasyLoading.dismiss();
       SnackbarUtils.show(isError: true, "Error loading game");
     }
   }

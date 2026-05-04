@@ -4,6 +4,6 @@ import 'package:sehati/app/modules/dashboard/views/feature/home/merchandise/cont
 class MerchandiseBinding extends Bindings {
   @override
   void dependencies() {
-     Get.lazyPut<MerchandiseController>(() => MerchandiseController());
+     Get.put<MerchandiseController>(MerchandiseController());
   }
 }

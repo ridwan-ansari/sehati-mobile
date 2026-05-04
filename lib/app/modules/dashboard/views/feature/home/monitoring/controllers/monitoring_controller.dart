@@ -30,6 +30,7 @@ class MonitoringController extends GetxController
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
   var errorMessage = ''.obs;
+  var isCalculated = false.obs;
 
   final scrollController = ScrollController();
   @override
@@ -125,11 +126,10 @@ class MonitoringController extends GetxController
         imtController.text = result.bmi.toString();
         zScoreController.text = result.status;
         idealController.text = result.idealWeightKg.toString();
+        isCalculated.value = true;
       }
       _initData();
-    } catch (_) {
-      SnackbarUtils.show('Failed to save. Please try again.');
-    }
+    } catch (_) {}
   }
 
   Future<void> selectDate() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_card.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_field.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_section_header.dart';
@@ -13,11 +14,21 @@ class SleepPage extends GetView<SleepController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() => Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.richBrown,
         foregroundColor: Colors.white,
-        title: const Text('Sleep Tracker'),
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          AppStrings.get(AppStrings.menuKeySleep),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: controller.fetchInitial,
@@ -25,43 +36,30 @@ class SleepPage extends GetView<SleepController> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                color: Colors.black,
-                child: const AnimatedIn(
-                  child: Text(
-                    'Welcome to your sleep journal!',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
                     MonitoringSectionHeader(
-                      title: 'Sleep Habit Journal',
+                      title: AppStrings.getOr('Sleep Habit Journal', 'Jurnal Kebiasaan Tidur'),
                     ),
                     const SizedBox(height: 16),
                     MonitoringInputCard(
                       children: [
                         _buildRow(
-                          label: 'Date of measurement',
+                          label: AppStrings.get(AppStrings.nutritionKeyDateMeasurement),
                           input: _buildDateField(),
-                          subtitle: 'Record your sleep time from yesterday',
                         ),
                         _buildRow(
-                          label: 'Sleep time',
+                          label: AppStrings.getOr('Sleep time', 'Waktu tidur'),
                           input: _buildTimeField(controller.sleepTime),
                         ),
                         _buildRow(
-                          label: 'Wake-up time',
+                          label: AppStrings.getOr('Wake-up time', 'Waktu bangun'),
                           input: _buildTimeField(controller.wakeUpTime),
                         ),
                         _buildRow(
-                          label: 'Sleep duration',
+                          label: AppStrings.getOr('Sleep duration', 'Durasi tidur'),
                           input: MonitoringInputField(
                             isEdit: true,
                             controller: controller.durationSleepController,
@@ -69,25 +67,30 @@ class SleepPage extends GetView<SleepController> {
                           ),
                         ),
                         _buildRow(
-                          label: 'Target duration / day',
+                          label: AppStrings.get(AppStrings.sleepKeyTarget),
                           input: MonitoringInputField(
                             controller: controller.targetSleepController,
-                            hint: 'Hours',
+                            hint: AppStrings.get(AppStrings.sleepKeyHours),
                           ),
                         ),
                         const SizedBox(height: 16),
                         _saveButton(onPressed: controller.submitSleep),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Aim for 8 hours of sleep per day.',
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                        Text(
+                          AppStrings.getOr('Aim for 8 hours of sleep per day.', 'Targetkan tidur 8 jam setiap hari.'),
+                          style: const TextStyle(fontSize: 12, color: Colors.black54),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 32),
                     Obx(() {
                       if (controller.chartData.isEmpty) {
-                        return const AnimatedIn(child: Text('No data yet.'));
+                        return Center(
+                          child: Text(
+                            AppStrings.get(AppStrings.sleepKeyNoData),
+                            style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
+                          ),
+                        );
                       }
                       return SleepChart(data: controller.chartData);
                     }),
@@ -99,45 +102,27 @@ class SleepPage extends GetView<SleepController> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildRow({
     required String label,
     required Widget input,
-    String? subtitle,
   }) =>
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnimatedIn(
-                    child: Text(
-                      label,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  if (subtitle != null)
-                    AnimatedIn(
-                      child: Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                ],
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: AppColors.textDark,
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -148,20 +133,18 @@ class SleepPage extends GetView<SleepController> {
 
   Widget _saveButton({required VoidCallback? onPressed}) => SizedBox(
     width: double.infinity,
-    child: ElevatedButton.icon(
+    height: 50,
+    child: ElevatedButton(
       onPressed: onPressed,
-      icon: const Icon(Icons.save_alt, color: AppColors.orangeLight, size: 24),
-      label: const Text(
-        'Save',
-        style: TextStyle(
-          color: AppColors.orangeLight,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: AppColors.orangeLight,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(
+        AppStrings.get(AppStrings.commonKeySave),
+        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
       ),
     ),
   );
@@ -170,21 +153,19 @@ class SleepPage extends GetView<SleepController> {
     return GestureDetector(
       onTap: controller.selectDate,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          border: Border.all(color: AppColors.orangeLight),
-          borderRadius: BorderRadius.circular(50),
+          color: Colors.white,
+          border: Border.all(color: AppColors.orangeLight.withValues(alpha: 0.5)),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Obx(
           () => Center(
-            child: AnimatedIn(
-              child: Text(
-                controller.selectedDate.value.isEmpty
-                    ? 'Select Date'
-                    : controller.selectedDate.value,
-                style: const TextStyle(color: Colors.orange, fontSize: 16),
-              ),
+            child: Text(
+              controller.selectedDate.value.isEmpty
+                  ? AppStrings.get(AppStrings.nutritionKeySelectDate)
+                  : controller.selectedDate.value,
+              style: const TextStyle(color: AppColors.orangeLight, fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
         ),
@@ -206,21 +187,20 @@ class SleepPage extends GetView<SleepController> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: AppColors.orangeLight),
-          borderRadius: BorderRadius.circular(50),
+          border: Border.all(color: AppColors.orangeLight.withValues(alpha: 0.5)),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Obx(() {
           final time = timeRx.value;
-          return AnimatedIn(
+          return Center(
             child: Text(
               time == null
-                  ? 'Select Time'
+                  ? AppStrings.getOr('Select Time', 'Pilih Waktu')
                   : '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(color: Colors.orange, fontSize: 16),
-              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.orangeLight, fontSize: 14, fontWeight: FontWeight.w700),
             ),
           );
         }),

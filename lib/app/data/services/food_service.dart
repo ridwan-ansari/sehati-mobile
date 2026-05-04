@@ -29,11 +29,12 @@ class FoodService {
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => FoodModel.fromJson(e)).toList();
-      } else {
-        throw Exception(response.data['message'] ?? 'Gagal memuat data');
       }
+      SnackbarUtils.show(response.data['message'] ?? 'An error occurred');
+      return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? '';
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -61,12 +62,12 @@ class FoodService {
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => FoodModel.fromJson(e)).toList();
-      } else {
-        SnackbarUtils.show(response.data['message'] ?? "Gagal memuat data");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "";
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -92,21 +93,21 @@ class FoodService {
         "desired_energy_requirement": desiredEnergyRequirement,
         "data": data,
       };
-      print("status code : ${body}");
       final response = await _dio.post(
         ApiEndpoints.FOOD_ANSWER,
         data: body,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      if (response.statusCode == 201) {
-        SnackbarUtils.show(isError: false, "Answer sent successfully");
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return true;
-      } else {
-        SnackbarUtils.show(response.data['message'] ?? "Failed to send reply");
-        return false;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return false;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Failed to send reply";
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(msg);
       return false;
     }
@@ -129,15 +130,15 @@ class FoodService {
       );
       if (response.statusCode == 200) {
         return NutritionData.fromJson(response.data['data']);
-      } else {
-        SnackbarUtils.show(
-          response.data['message'] ?? "Gagal memuat data nutrisi",
-          isError: true,
-        );
-        return null;
       }
+      SnackbarUtils.show(
+        response.data['message'] ?? "An error occurred",
+        isError: true,
+      );
+      return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? '';
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -181,17 +182,19 @@ class FoodService {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return NutritionCalculator.fromJson(response.data["data"]);
-      } else {
-        SnackbarUtils.show("Gagal hitung kalori", isError: true);
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred",
+          isError: true);
+      return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? '';
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
   }
-    // ---------------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------------
   // GET FOOD DIARY ANALYSIS
   // ---------------------------------------------------------------------------
   Future<List<FoodDiaryAnalysis>?> getDiaryAnalysis({
@@ -211,15 +214,13 @@ class FoodService {
       );
       if (response.statusCode == 200) {
         final List data = response.data['data'];
-        return data
-            .map((e) => FoodDiaryAnalysis.fromJson(e))
-            .toList();
-      } else {
-        SnackbarUtils.show("Failed to load diary analysis");
-        return null;
+        return data.map((e) => FoodDiaryAnalysis.fromJson(e)).toList();
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? "Network error";
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(isError: true, msg);
       return null;
     }

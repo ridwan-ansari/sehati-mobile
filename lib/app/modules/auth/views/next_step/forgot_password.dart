@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/utils/validator.dart';
 import 'package:sehati/app/common/widgets/app_button.dart';
@@ -42,7 +43,7 @@ class ForgotPasswordPage extends GetView<AuthController> {
                         color: Colors.black,
                       ),
                     ),
-                    labelText: "Email",
+                    labelText: AppStrings.get(AppStrings.commonKeyEmail),
                     labelStyle: const TextStyle(color: Colors.orange),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -73,7 +74,7 @@ class ForgotPasswordPage extends GetView<AuthController> {
                               ),
                             ),
 
-                            labelText: "OTP",
+                            labelText: AppStrings.get(AppStrings.forgotKeyOtp),
                             labelStyle: const TextStyle(color: Colors.orange),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -133,7 +134,7 @@ class ForgotPasswordPage extends GetView<AuthController> {
                               onPressed: () =>
                                   controller.isPasswordHidden.toggle(),
                             ),
-                            labelText: "New Password",
+                            labelText: AppStrings.get(AppStrings.forgotKeyNewPassword),
                             labelStyle: const TextStyle(color: Colors.orange),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -184,7 +185,7 @@ class ForgotPasswordPage extends GetView<AuthController> {
                               onPressed: () =>
                                   controller.isPasswordHidden.toggle(),
                             ),
-                            labelText: "Confirm Password",
+                            labelText: AppStrings.get(AppStrings.forgotKeyConfirmPassword),
                             labelStyle: const TextStyle(color: Colors.orange),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),

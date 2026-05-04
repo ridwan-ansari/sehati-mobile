@@ -1,4 +1,4 @@
-﻿// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -54,27 +54,30 @@ class AuthService {
   /// VERIFY OTP
   Future<bool> verifyOtp({required String email, required String code}) async {
     try {
+      EasyLoading.show(status: "Verifying OTP...");
       final response = await _dio.post(
         ApiEndpoints.VERIFY_ACCOUNT,
         queryParameters: {"email": email, "code": code},
         options: Options(headers: {"Accept": "application/json"}),
       );
+      EasyLoading.dismiss();
       print('-> otp ${response.statusCode}');
       print('-> otp ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("✅ OTP Verified: ${response.data}");
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return true;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
       return false;
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ OTP Verification Error: ${e.response?.data ?? e.message}");
-      String message = "OTP verification failed";
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      throw Exception(message);
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
+      return false;
     }
   }
 
@@ -84,6 +87,7 @@ class AuthService {
     required String password,
   }) async {
     try {
+      EasyLoading.show(status: "Logging in...");
       final response = await _dio.post(
         ApiEndpoints.LOGIN,
         data: {'email': email, 'password': password},
@@ -94,6 +98,7 @@ class AuthService {
           },
         ),
       );
+      EasyLoading.dismiss();
 
       if (response.statusCode == 200) {
         print("✅ LOGIN SUCCESS: ${response.data}");
@@ -103,23 +108,20 @@ class AuthService {
         await LocalStorageService.setRefreshToken(
           response.data['data']['refresh_token'],
         );
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return response.data['data'];
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
       return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-
-      String message = "Terjadi kesalahan";
-      if (e.response != null &&
-          e.response?.data != null &&
-          e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      SnackbarUtils.show(message);
+      print("❌ LOGIN ERROR: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
+      return null;
     }
-    return null;
   }
 
   /// REFRESH TOKEN
@@ -151,7 +153,10 @@ class AuthService {
       print("❌ REFRESH TOKEN ERROR: ${e.response?.data ?? e.message}");
       if (e.response?.statusCode == 401) {
         LocalStorageService.clearTokens();
-        SnackbarUtils.show('anda telah logout');
+        final msg = e.response?.data?['message'] ??
+            e.message ??
+            "Session expired, please login again";
+        SnackbarUtils.show(msg);
         go.Get.toNamed('/login');
       }
       return null;
@@ -161,20 +166,29 @@ class AuthService {
   /// RESET PASSWORD
   Future<bool> forgotPassword({required String email}) async {
     try {
+      EasyLoading.show(status: "Sending reset link...");
       final response = await _dio.post(
         '${ApiEndpoints.RESET_PASSWORD}?email=$email',
         options: Options(headers: {'Accept': 'application/json'}),
       );
+      EasyLoading.dismiss();
 
       if (response.statusCode == 200 && response.data['status_code'] == 200) {
         print("✅ Reset password success: ${response.data}");
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return true;
       } else {
         print("⚠️ Reset password failed: ${response.data}");
+        SnackbarUtils.show(response.data['message'] ?? "An error occurred");
         return false;
       }
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ Reset password error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
       return false;
     }
   }
@@ -186,6 +200,7 @@ class AuthService {
     required String confirmPassword,
   }) async {
     try {
+      EasyLoading.show(status: "Resetting password...");
       final data = {
         'email': email,
         'code': otp,
@@ -202,16 +217,17 @@ class AuthService {
         ),
         data: data,
       );
+      EasyLoading.dismiss();
 
       print("✅ Reset password success: ${response.data}");
+      SnackbarUtils.show(isError: false, response.data['message'] ?? "Success");
       return response;
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ Reset password error: ${e.response?.data ?? e.message}");
-      if (e.response != null) {
-        print("❌ RESET PASSWORD CONFIRM FAILED: ${e.response?.data}");
-      } else {
-        print("⚠️ NETWORK ERROR: ${e.message}");
-      }
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
       rethrow;
     }
   }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/animations/swing_animation.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
@@ -469,7 +470,8 @@ class _FeatureGridState extends State<_FeatureGrid> {
     {'icon': AppAssets.chatIcon, 'labelKey': AppStrings.menuKeyChat, 'route': '/chatting', 'color': Color(0xFF3F51B5)},
     {'icon': AppAssets.healthyMenuIcon, 'labelKey': AppStrings.menuKeyRecipes, 'route': '/healthy_menu', 'color': Color(0xFF8BC34A)},
     {'icon': AppAssets.reminderIcon, 'labelKey': AppStrings.menuKeyReminder, 'route': '/reminder', 'color': Color(0xFFFF9800)},
-    {'icon': Icons.bedtime_outlined, 'labelKey': AppStrings.menuKeySleep, 'route': '/sleep', 'color': Color(0xFF5C6BC0)},
+    {'icon': AppAssets.sleepIcon, 'labelKey': AppStrings.menuKeySleep, 'route': '/sleep', 'color': Color(0xFF5C6BC0)},
+    {'icon': AppAssets.giftBoxIcon, 'labelKey': AppStrings.menuKeyMerchandise, 'route': '/merchandise', 'color': Color(0xFFE91E63)},
   ];
 
   @override
@@ -554,8 +556,12 @@ class _FeatureGridState extends State<_FeatureGrid> {
                       icon: f['icon'],
                       label: AppStrings.get(f['labelKey'] as String),
                       color: f['color'] as Color,
-                      onTap: () => Get.toNamed(f['route'] as String)
-                          ?.then((_) => widget.leader.onInit()),
+                      shouldAnimate: f['icon'] == AppAssets.reminderIcon,
+                      onTap: () {
+                        print("💎 HomeTab: Navigating to ${f['route']}");
+                        Get.toNamed(f['route'] as String)
+                          ?.then((_) => widget.leader.onInit());
+                      },
                     ),
                   ),
                 )
@@ -572,16 +578,31 @@ class _FeatureItem extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.color,
+    this.shouldAnimate = false,
     this.onTap,
   });
 
   final dynamic icon;
   final String label;
   final Color color;
+  final bool shouldAnimate;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    Widget iconWidget = icon is IconData
+        ? Icon(icon as IconData, color: color, size: 26)
+        : AppAssetUtils.svg(
+            icon as String,
+            width: 26,
+            height: 26,
+            color: color,
+          );
+
+    if (shouldAnimate) {
+      iconWidget = SwingAnimation(child: iconWidget);
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -596,14 +617,7 @@ class _FeatureItem extends StatelessWidget {
               border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
             ),
             child: Center(
-              child: icon is IconData
-                  ? Icon(icon as IconData, color: color, size: 26)
-                  : AppAssetUtils.svg(
-                      icon as String,
-                      width: 26,
-                      height: 26,
-                      color: color,
-                    ),
+              child: iconWidget,
             ),
           ),
           const SizedBox(height: 6),

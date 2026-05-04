@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class GamePlayPage extends StatefulWidget {
   final String linkUrl;
@@ -199,22 +200,21 @@ class _GamePlayPageState extends State<GamePlayPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Izin $permissionName Diperlukan'),
+        title: Text("${AppStrings.get(AppStrings.commonKeyPermissionRequired)} $permissionName"),
         content: Text(
-          'Aplikasi memerlukan izin $permissionName untuk fitur ini. '
-          'Silakan aktifkan di pengaturan.',
+          "${AppStrings.get(AppStrings.commonKeyPermissionMessage)} ($permissionName)",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Batal'),
+            child: Text(AppStrings.get(AppStrings.commonKeyCancel)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               openAppSettings();
             },
-            child: Text('Buka Pengaturan'),
+            child: Text(AppStrings.get(AppStrings.commonKeyOpenSettings)),
           ),
         ],
       ),

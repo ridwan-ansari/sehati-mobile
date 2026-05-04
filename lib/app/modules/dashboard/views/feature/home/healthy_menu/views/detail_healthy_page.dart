@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/recipe_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/healthy_menu/controllers/healthy_menu_controller.dart';
@@ -22,23 +23,13 @@ class RecipeDetailPage extends StatefulWidget {
 
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
   final GlobalKey<SfPdfViewerState> pdfViewerKey = GlobalKey();
-
   final ScrollController _scrollController = ScrollController();
   final HealthyMenuController controller = Get.find();
   bool _isPointClaimed = false;
-  void _downloadPDF(String url) async {
-    final fullUrl = url;
-    if (await canLaunch(fullUrl)) {
-      await launch(fullUrl);
-    } else {
-      throw 'Could not launch $fullUrl';
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(() {
       if (_scrollController.position.atEdge &&
           _scrollController.position.pixels != 0 &&
@@ -52,87 +43,124 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.richBrown,
         foregroundColor: Colors.white,
-        title: Text(widget.recipe.title),
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          widget.recipe.title,
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.recipe.imageUrl.isNotEmpty)
-              AnimatedIn(
-                child: CachedNetworkImage(
-                  imageUrl: '$BASE_URL${widget.recipe.imageUrl}',
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
+              Stack(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: '$BASE_URL${widget.recipe.imageUrl}',
                     width: double.infinity,
-                    height: 250,
-                    color: Colors.grey[200],
+                    height: 280,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(color: Colors.grey[200]),
                   ),
-                  errorWidget: (_, __, ___) =>
-                      const Icon(Icons.broken_image_outlined, size: 48),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 24,
+                      decoration: const BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            const SizedBox(height: 16),
-            AnimatedIn(
-              child: Text(
-                widget.recipe.title,
-                style: const TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.orangeLight.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      widget.recipe.category.toUpperCase(),
+                      style: const TextStyle(color: AppColors.orangeLight, fontWeight: FontWeight.w800, fontSize: 11),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.recipe.title,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.recipe.description,
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700, height: 1.6),
+                  ),
+                  const SizedBox(height: 32),
+                  if (widget.recipe.fileUrl.isNotEmpty) ...[
+                    const Text(
+                      "Recipe Guide",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 500,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: SfPdfViewer.network("$BASE_URL${widget.recipe.fileUrl}", key: pdfViewerKey),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _downloadPDF("$BASE_URL${widget.recipe.fileUrl}"),
+                        icon: const Icon(Icons.download_rounded),
+                        label: Text(AppStrings.getOr('Download PDF', 'Unduh PDF')),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orangeLight,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 40),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            AnimatedIn(
-              child: Text(
-                widget.recipe.category,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 16),
-            AnimatedIn(
-              child: Text(
-                widget.recipe.description,
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 24),
-            if (widget.recipe.fileUrl.isNotEmpty)
-              SizedBox(
-                height: 512,
-                child: AnimatedIn(
-                  child: SfPdfViewer.network(
-                    "$BASE_URL${widget.recipe.fileUrl}",
-                    key: pdfViewerKey,
-                  ),
-                ),
-              ),
-
-            if (widget.recipe.fileUrl.isNotEmpty)
-              ElevatedButton.icon(
-                onPressed: () =>
-                    _downloadPDF("$BASE_URL${widget.recipe.fileUrl}"),
-                icon: const Icon(Icons.download),
-                label: AnimatedIn(child: const Text('Download')),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orangeLight,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 24,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 52.0),
           ],
         ),
       ),
     );
+  }
+
+  void _downloadPDF(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
   }
 }

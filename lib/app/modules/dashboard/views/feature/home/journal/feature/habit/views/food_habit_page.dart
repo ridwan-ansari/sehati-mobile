@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/widget/row_input_field.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/frequency_input_widget.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/gradien_label.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/header_title.dart';
-
 import '../controllers/food_habit_controller.dart';
 
 class FoodHabitPage extends GetView<FoodHabitController> {
@@ -20,128 +17,197 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.richBrown,
         foregroundColor: Colors.white,
-        title: Text("Food Habit Journal"),
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          AppStrings.get(AppStrings.habitKeyFoodHabit),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: Obx(
         () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
-            : _buildBody(),
+            ? const Center(child: CircularProgressIndicator(color: AppColors.orangeLight))
+            : _buildBody(context),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 12.0),
-          AnimatedIn(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text(
-                "Welcome to Your Food Habit Journal!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
+          _buildWelcomeHeader(),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDateField(),
+                const SizedBox(height: 24),
+                HeaderTitleWidget(title: AppStrings.getOr("Habit Questionnaire", "Kuesioner Kebiasaan")),
+                const SizedBox(height: 16),
+                ...controller.groupedQuestions.entries.map((entry) {
+                  return _buildCategorySection(entry.key, entry.value);
+                }).toList(),
+                const SizedBox(height: 32),
+                _buildSubmitButton(),
+                const SizedBox(height: 40),
+              ],
             ),
           ),
-
-          const SizedBox(height: 16),
-          HeaderTitleWidget(title: "Record Your Food Habit!"),
-
-          const SizedBox(height: 8),
-          RowInputField(
-            isEditable: false,
-            label: "Date",
-            controller: controller.vegetableController,
-            hintText: TimeUtils.formatShortDate(DateTime.now()),
-          ),
-
-          const SizedBox(height: 12),
-
-          ...controller.groupedQuestions.entries.map((entry) {
-            final category = entry.key;
-            final questions = entry.value;
-
-            return AnimatedIn(
-              child: _buildSection(
-                title: category,
-                questions: questions,
-              ),
-            );
-          }).toList(),
-
-          const SizedBox(height: 12.0),
-          _buildSubmitButton(),
-          const SizedBox(height: 54.0),
         ],
       ),
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required List<HabitQuestionModel> questions,
-  }) {
-    final isExpanded = controller.expandedCategories[title] ?? false;
-    final shownQuestions = isExpanded ? questions : questions.take(1).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        HeaderTitleWidget(title: "Record Your Food Diary!"),
-        const SizedBox(height: 8),
-
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.gold,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: [
-              GradientLabel(
-                title: "Do you consume kind of $title listed below",
+  Widget _buildWelcomeHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      decoration: const BoxDecoration(
+        color: AppColors.richBrown,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: AnimatedIn(
+        child: Column(
+          children: [
+            Text(
+              AppStrings.get(AppStrings.habitKeyDailyJournal),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              AppStrings.get(AppStrings.habitKeyConsistency),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.7),
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    ...shownQuestions.map((q) => _buildQuestionItem(q)).toList(),
+  Widget _buildDateField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.calendar_today_rounded, color: Color(0xFF4CAF50), size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.get(AppStrings.foodKeyJournalDate),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  TimeUtils.formatShortDate(DateTime.now()),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                    if (questions.length > 1)
-                      TextButton(
+  Widget _buildCategorySection(String title, List<HabitQuestionModel> questions) {
+    return Obx(() {
+      final isExpanded = controller.expandedCategories[title] ?? false;
+      final shownQuestions = isExpanded ? questions : questions.take(1).toList();
+
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: Color(0xFF2E7D32),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  ...shownQuestions.map((q) => _buildQuestionItem(q)).toList(),
+                  if (questions.length > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: TextButton(
                         onPressed: () => controller.toggleCategory(title),
                         child: Text(
-                          isExpanded ? "Show Less..." : "Click More...",
+                          isExpanded ? AppStrings.get(AppStrings.habitKeyShowLess) : "${AppStrings.get(AppStrings.foodKeyViewAll)} ${questions.length - 1} ${AppStrings.get(AppStrings.habitKeyViewMore)}",
                           style: const TextStyle(
-                            color: Colors.black38,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF4CAF50),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
-    );
+      );
+    });
   }
 
   Widget _buildQuestionItem(HabitQuestionModel question) {
@@ -150,52 +216,29 @@ class FoodHabitPage extends GetView<FoodHabitController> {
         : question.selectedOption == "yes";
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: currentValue == true ? 3 : 4,
             child: Text(
               question.question,
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: AppColors.textDark,
               ),
             ),
           ),
-
-          const SizedBox(width: 10),
-
-          Flexible(
-            flex:  1,
-            child: Row(
-              children: [
-                YesNoSwitch(
-                  value: currentValue,
-                  onChanged: (val) {
-                    controller.selectOption(
-                      question,
-                      val ? "yes" : "no",
-                      val ? 1 : 0,
-                    );
-                  },
-                ),
-
-                // if (currentValue == true) ...[
-                //   const SizedBox(width: 8),
-                //   Expanded(
-                //     child: FrequencyInputWidget(
-                //       initialValue: question.frequency ?? 1,
-                //       onChanged: (val) {
-                //         question.frequency = val;
-                //         controller.questions.refresh();
-                //       },
-                //     ),
-                //   ),
-                // ]
-              ],
-            ),
+          const SizedBox(width: 16),
+          YesNoSwitch(
+            value: currentValue,
+            onChanged: (val) {
+              controller.selectOption(
+                question,
+                val ? "yes" : "no",
+                val ? 1 : 0,
+              );
+            },
           ),
         ],
       ),
@@ -207,16 +250,21 @@ class FoodHabitPage extends GetView<FoodHabitController> {
     final filled = controller.questions.where((q) => q.selectedOption != null).length;
     final enabled = total == filled;
 
-    return Center(
-      child: ElevatedButton.icon(
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton(
         onPressed: enabled ? controller.submitAllAnswers : null,
-        icon: const Icon(Icons.check),
-        label: const Text("Submit"),
         style: ElevatedButton.styleFrom(
-          backgroundColor: enabled ? AppColors.orangeLight : Colors.grey,
+          backgroundColor: const Color(0xFF4CAF50),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          disabledBackgroundColor: Colors.grey.shade300,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        child: Text(
+          enabled ? AppStrings.get(AppStrings.habitKeySubmit) : "${AppStrings.get(AppStrings.habitKeyCompleteAll)} ($filled/$total)",
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
         ),
       ),
     );

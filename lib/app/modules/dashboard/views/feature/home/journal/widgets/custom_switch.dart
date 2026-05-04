@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class YesNoSwitch extends StatelessWidget {
   final bool? value; // null = belum dipilih
@@ -18,7 +19,7 @@ class YesNoSwitch extends StatelessWidget {
 
   String _labelText() {
     if (value == null) return "?";            // default
-    return value! ? "YES" : "NO";
+    return value! ? AppStrings.get(AppStrings.commonKeyYes) : AppStrings.get(AppStrings.commonKeyNo);
   }
 
   @override

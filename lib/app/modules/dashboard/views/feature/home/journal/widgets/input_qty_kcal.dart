@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 Future<void> showFoodGramDialog({
   required BuildContext context,
@@ -23,9 +24,9 @@ Future<void> showFoodGramDialog({
 
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text(
-              "Add Food",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            title: Text(
+              AppStrings.get(AppStrings.foodKeyAddFood),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -43,9 +44,9 @@ Future<void> showFoodGramDialog({
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text(
-                      "Gram",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    Text(
+                      AppStrings.get(AppStrings.foodKeyGram),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const Text(
                       " *",
@@ -58,7 +59,7 @@ Future<void> showFoodGramDialog({
                   controller: gramC,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    hintText: "Input gram",
+                    hintText: AppStrings.get(AppStrings.foodKeyInputGram),
                     suffixText: "g",
                     isDense: true,
                     border: OutlineInputBorder(
@@ -70,7 +71,7 @@ Future<void> showFoodGramDialog({
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      "Gram amount is required",
+                      AppStrings.get(AppStrings.foodKeyGramRequired),
                       style: TextStyle(fontSize: 12, color: Colors.red.shade600),
                     ),
                   ),
@@ -80,7 +81,7 @@ Future<void> showFoodGramDialog({
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  "Cancel",
+                  AppStrings.get(AppStrings.commonKeyCancel),
                   style: TextStyle(color: AppColors.black.withOpacity(0.5)),
                 ),
               ),
@@ -100,7 +101,7 @@ Future<void> showFoodGramDialog({
                         Navigator.pop(context);
                         onSubmit(gram, totalKcal);
                       },
-                child: AnimatedIn(child: const Text("Add")),
+                child: AnimatedIn(child: Text(AppStrings.get(AppStrings.commonKeyAdd))),
               ),
             ],
           );

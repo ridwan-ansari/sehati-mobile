@@ -1,10 +1,12 @@
 ﻿import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/reminder_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class RemindersService {
   final Dio _dio = DioFactory.create(
@@ -21,7 +23,7 @@ class RemindersService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
       final response = await _dio.get(
@@ -37,12 +39,14 @@ class RemindersService {
       if (response.statusCode == 200) {
         final reminderList = ReminderResponse.fromJson(response.data);
         return reminderList.dataList;
-      } else {
-        print("Failed to load reminders: ${response.statusMessage}");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
       print("❌ get reminders error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -50,10 +54,11 @@ class RemindersService {
   // POST create reminder
   Future<ReminderResponse?> createReminder(Reminder reminder) async {
     try {
-      print("[SERVICE] :: ${reminder.toJson()}");
+      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyCreating));
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        EasyLoading.dismiss();
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
       final response = await _dio.post(
@@ -67,16 +72,22 @@ class RemindersService {
           },
         ),
       );
+      EasyLoading.dismiss();
 
       if (response.statusCode == 201) {
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess));
         return ReminderResponse.fromJson(response.data);
-      } else {
-        print("Failed to create reminder: ${response.statusMessage}");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
+      return null;
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ create reminder error: ${e.response?.statusCode}");
       print("❌ create reminder error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -86,7 +97,7 @@ class RemindersService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
       final response = await _dio.get(
@@ -102,12 +113,14 @@ class RemindersService {
       if (response.statusCode == 200) {
         final reminderResp = ReminderResponse.fromJson(response.data);
         return reminderResp.dataItem;
-      } else {
-        print("Failed to get reminder: ${response.statusMessage}");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
+      return null;
     } on DioException catch (e) {
       print("❌ get reminder error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -115,9 +128,11 @@ class RemindersService {
   // UPDATE reminder by id
   Future<ReminderResponse?> updateReminder(Reminder reminder) async {
     try {
+      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyUpdating));
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        EasyLoading.dismiss();
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
       final response = await _dio.put(
@@ -131,16 +146,21 @@ class RemindersService {
           },
         ),
       );
+      EasyLoading.dismiss();
 
       if (response.statusCode == 200) {
-        final reminderResp = ReminderResponse.fromJson(response.data);
-        return reminderResp;
-      } else {
-        print("Failed to update reminder: ${response.statusMessage}");
-        return null;
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess));
+        return ReminderResponse.fromJson(response.data);
       }
+      SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
+      return null;
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ update reminder error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
+      SnackbarUtils.show(msg);
       return null;
     }
   }
@@ -148,9 +168,11 @@ class RemindersService {
   // DELETE reminder by id
   Future<bool> deleteReminder(String id) async {
     try {
+      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyDeleting));
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        EasyLoading.dismiss();
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return false;
       }
       final response = await _dio.delete(
@@ -162,15 +184,21 @@ class RemindersService {
           },
         ),
       );
+      EasyLoading.dismiss();
 
       if (response.statusCode == 200) {
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess));
         return true;
-      } else {
-        print("Failed to delete reminder: ${response.statusMessage}");
-        return false;
       }
+      SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
+      return false;
     } on DioException catch (e) {
+      EasyLoading.dismiss();
       print("❌ delete reminder error: ${e.response?.data ?? e.message}");
+      final msg =
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
+      SnackbarUtils.show(msg);
       return false;
     }
   }

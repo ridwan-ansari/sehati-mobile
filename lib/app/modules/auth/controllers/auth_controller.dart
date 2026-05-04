@@ -102,7 +102,7 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isLoading.value = false;
         SnackbarUtils.show(
-          AppStrings.get(AppStrings.authKeyRegisterSuccess),
+          response.data['message'] ?? "Success",
           isError: false,
         );
         Get.offAllNamed(
@@ -112,23 +112,18 @@ class AuthController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+        SnackbarUtils.show(response?.data?['message'] ?? "An error occurred");
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-
-      String message = AppStrings.get(AppStrings.authKeyError);
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
+      final message =
+          e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(message);
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+      SnackbarUtils.show("An error occurred");
     }
   }
 
@@ -192,35 +187,24 @@ class AuthController extends GetxController {
       if (response == true) {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(
-          AppStrings.get(AppStrings.authKeyOtpSuccess),
-          isError: false,
-        );
+        // Snackbar is already shown in AuthService.verifyOtp
         await Future.delayed(const Duration(milliseconds: 800));
         Get.offAllNamed(AppRoutes.SPLASH);
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyOtpError));
       }
       return response;
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-
-      String message = AppStrings.get(AppStrings.authKeyOtpError);
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      SnackbarUtils.show(message);
+      // Snackbar is already shown in AuthService.verifyOtp
       return false;
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
       final msg = e.toString().replaceFirst('Exception: ', '');
-      SnackbarUtils.show(msg.isNotEmpty ? msg : AppStrings.get(AppStrings.authKeyOtpError));
+      SnackbarUtils.show(msg.isNotEmpty ? msg : "An error occurred");
       return false;
     }
   }
@@ -237,10 +221,7 @@ class AuthController extends GetxController {
       if (data != null) {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(
-          AppStrings.get(AppStrings.authKeyLoginSuccess),
-          isError: false,
-        );
+        // Snackbar is already shown in AuthService.login
         var nutritionData = await _userService.getUserNutrition();
         if (nutritionData?.length == 0) {
           Get.toNamed(AppRoutes.NUTRITION);
@@ -250,23 +231,15 @@ class AuthController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-
-      String message = AppStrings.get(AppStrings.authKeyError);
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      SnackbarUtils.show(message);
+      // Snackbar is already shown in AuthService.login
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+      SnackbarUtils.show("An error occurred");
     }
   }
 
@@ -285,14 +258,7 @@ class AuthController extends GetxController {
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-
-      String message = AppStrings.get(AppStrings.authKeyError);
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      SnackbarUtils.show(message);
+      // Snackbar is already shown in AuthService.refreshToken
     } catch (e) {
       log("Refresh token failed: $e");
     }
@@ -322,6 +288,7 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isConfirmForgotPass.value = true;
         isLoading.value = false;
+        // Snackbar is already shown in AuthService.forgotPassword
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
@@ -329,17 +296,11 @@ class AuthController extends GetxController {
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-
-      String message = AppStrings.get(AppStrings.authKeyError);
-      if (e.response?.data != null && e.response?.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.message != null) {
-        message = e.message!;
-      }
-      SnackbarUtils.show(message);
+      // Snackbar is already shown in AuthService.forgotPassword
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
+      SnackbarUtils.show("An error occurred");
     }
   }
 
@@ -365,6 +326,7 @@ class AuthController extends GetxController {
         );
         EasyLoading.dismiss();
         isLoading.value = false;
+        // Snackbar is already shown in AuthService.confirmForgotPassword
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -380,7 +342,7 @@ class AuthController extends GetxController {
     final heightVal = double.tryParse(heightController.text) ?? 0;
 
     if (weightVal <= 0 || heightVal <= 0) {
-      SnackbarUtils.show(AppStrings.get(AppStrings.nutritionKeyInvalidInput));
+      SnackbarUtils.show("Invalid input");
       return;
     }
 
@@ -403,13 +365,14 @@ class AuthController extends GetxController {
         status.value = result.status;
         idealWeight.value = result.idealWeightKg;
         isNutritionSaved.value = true;
+        // Snackbar is already shown in UserService.createNutrition
       } else {
-        SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+        // If result is null, UserService might have already shown an error snackbar
       }
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show(AppStrings.get(AppStrings.authKeyError));
+      SnackbarUtils.show("An error occurred");
     }
   }
 }

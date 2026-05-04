@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 
 class FoodDiaryChart extends StatelessWidget {
@@ -11,9 +12,9 @@ class FoodDiaryChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(
+      return Center(
         child: AnimatedIn(
-          child: Text("There are currently no food diaries available."),
+          child: Text(AppStrings.get(AppStrings.foodKeyNoDataChart)),
         ),
       );
     }
@@ -33,10 +34,10 @@ class FoodDiaryChart extends StatelessWidget {
             // ---------------- LEGEND ----------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                _LegendItem(color: Colors.green, label: "Requirement(Kcal)"),
-                _LegendItem(color: Colors.red, label: "Target(Kcal)"),
-                _LegendItem(color: Colors.blue, label: "Actual(Kcal)"),
+              children: [
+                _LegendItem(color: Colors.green, label: AppStrings.get(AppStrings.foodKeyRequirementKcal)),
+                _LegendItem(color: Colors.red, label: AppStrings.get(AppStrings.foodKeyTargetKcal)),
+                _LegendItem(color: Colors.blue, label: AppStrings.get(AppStrings.foodKeyActualKcal)),
               ],
             ),
 

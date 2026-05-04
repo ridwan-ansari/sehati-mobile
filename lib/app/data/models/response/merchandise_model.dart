@@ -24,15 +24,15 @@ class MerchandiseModel {
 
   factory MerchandiseModel.fromJson(Map<String, dynamic> json) {
     return MerchandiseModel(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      pricePoints: json['price_points'],
-      active: json['active'],
-      imageUrl: json['image_url'],
-      stock: json['stock'],
+      id: json['id']?.toString() ?? "",
+      name: json['name']?.toString() ?? "Unknown",
+      description: json['description']?.toString() ?? "",
+      pricePoints: json['price_points'] is int ? json['price_points'] : (int.tryParse(json['price_points']?.toString() ?? "0") ?? 0),
+      active: json['active'] == true || json['active'] == 1,
+      imageUrl: json['image_url']?.toString() ?? "",
+      stock: json['stock'] is int ? json['stock'] : (int.tryParse(json['stock']?.toString() ?? "0") ?? 0),
       isClaimed: json['is_claimed'],
-      claimStatus: json['claim'] != null ? json['claim']['status'] : null,
+      claimStatus: json['claim'] != null && json['claim'] is Map ? json['claim']['status']?.toString() : null,
     );
   }
 }

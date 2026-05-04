@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/data/services/habit_service.dart';
@@ -78,7 +79,7 @@ class FoodHabitController extends GetxController {
     final incomplete = questions.where((q) => q.selectedOption == null).toList();
 
     if (incomplete.isNotEmpty) {
-      SnackbarUtils.show("Oops! Make sure all questions have been answered.");
+      SnackbarUtils.show(AppStrings.get(AppStrings.habitKeyIncomplete));
       return;
     }
 

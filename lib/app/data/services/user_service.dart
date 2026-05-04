@@ -42,14 +42,14 @@ class UserService {
       if (response.statusCode == 200) {
         final result = NutritionResponse.fromJson(response.data);
         return result.data;
-      } else {
-        SnackbarUtils.show("Failed to load nutrition data.");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Nutrition request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("${e.message}");
+      SnackbarUtils.show(
+          e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return null;
     }
   }
@@ -94,20 +94,22 @@ class UserService {
 
         if (raw is Map<String, dynamic>) {
           final result = NutritionData.fromJson(raw);
-          SnackbarUtils.show(isError: false, "Nutrition saved!");
+          SnackbarUtils.show(
+              isError: false, response.data['message'] ?? "Success");
           return result;
         } else {
           print("❌ DATA BUKAN MAP (tidak bisa diparse NutritionData)");
-          SnackbarUtils.show(isError: false, "Nutrition saved!");
+          SnackbarUtils.show(
+              isError: false, response.data['message'] ?? "Success");
           return null;
         }
-      } else {
-        SnackbarUtils.show("Failed to save nutrition data.");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      SnackbarUtils.show("${e.response?.data["message"] ?? 'Error'}");
+      SnackbarUtils.show(
+          e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return null;
     }
   }

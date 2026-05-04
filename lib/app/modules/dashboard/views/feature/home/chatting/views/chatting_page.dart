@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/constants/app_assets.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/widgets/room_chat_card.dart';
 import '../controllers/chatting_controller.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
+
 class ChattingPage extends GetView<ChattingController> {
   const ChattingPage({super.key});
 
@@ -12,7 +14,7 @@ class ChattingPage extends GetView<ChattingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SimpleTextAppBar(
-        title: "Chat",
+        title: AppStrings.get(AppStrings.menuKeyChat),
         onBack: () {
           // custom back logic
           Get.offAllNamed('/dashboard');
@@ -23,7 +25,7 @@ class ChattingPage extends GetView<ChattingController> {
           return const Center(child: CircularProgressIndicator());
         }
         if (controller.chatRooms.isEmpty) {
-          return const Center(child: Text("No Rooms"));
+          return Center(child: Text(AppStrings.get(AppStrings.commonKeyNoRooms)));
         }
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),

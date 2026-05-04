@@ -34,9 +34,8 @@ class MerchandiseController extends GetxController {
 
   @override
   void onInit() {
+    debugPrint("💎 MerchandiseController: onInit starting");
     super.onInit();
-
-    loadMerchandise();
 
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
@@ -48,9 +47,18 @@ class MerchandiseController extends GetxController {
     });
 
     ever(searchQuery, (_) => _onSearchChanged());
+    
+    // Add a small delay to ensure the UI is ready
+    Future.delayed(const Duration(milliseconds: 500), () {
+      debugPrint("💎 MerchandiseController: triggering initial load");
+      loadMerchandise();
+    });
+    
+    debugPrint("💎 MerchandiseController: onInit finished");
   }
 
   void _onSearchChanged() {
+    debugPrint("💎 MerchandiseController: search changed to '$searchQuery'");
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -59,6 +67,7 @@ class MerchandiseController extends GetxController {
   }
 
   Future<void> resetAndSearch() async {
+    debugPrint("💎 MerchandiseController: resetAndSearch");
     offset = 0;
     hasMore = true;
     items.clear();
@@ -66,47 +75,55 @@ class MerchandiseController extends GetxController {
   }
 
   Future<void> loadMerchandise() async {
+    debugPrint("💎 MerchandiseController: loadMerchandise called, isLoading=${isLoading.value}");
     if (isLoading.value) return;
 
     isLoading.value = true;
+    try {
+      debugPrint("💎 MerchandiseController: fetching from service...");
+      final result = await _service.getMerchandise(
+        limit: limit,
+        offset: offset,
+        name: searchQuery.value,
+      );
 
-    final result = await _service.getMerchandise(
-      limit: limit,
-      offset: offset,
-      name: searchQuery.value,
-    );
-
-    if (result != null) {
-      if (result.length < limit) {
-        hasMore = false;
+      debugPrint("💎 MerchandiseController: fetch result received: ${result?.length ?? 'null'} items");
+      if (result != null) {
+        if (result.length < limit) {
+          hasMore = false;
+        }
+        items.addAll(result);
       }
-      items.addAll(result);
+    } catch (e) {
+      debugPrint("💎 MerchandiseController: ERROR in loadMerchandise: $e");
+    } finally {
+      isLoading.value = false;
+      debugPrint("💎 MerchandiseController: loadMerchandise finished, isLoading=${isLoading.value}");
     }
-
-    isLoading.value = false;
   }
 
   Future<void> loadMore() async {
-    if (!hasMore) return;
+    if (!hasMore || isLoadMore.value) return;
 
     isLoadMore.value = true;
+    try {
+      offset += limit;
 
-    offset += limit;
+      final result = await _service.getMerchandise(
+        limit: limit,
+        offset: offset,
+        name: searchQuery.value,
+      );
 
-    final result = await _service.getMerchandise(
-      limit: limit,
-      offset: offset,
-      name: searchQuery.value,
-    );
-
-    if (result != null) {
-      if (result.length < limit) {
-        hasMore = false;
+      if (result != null) {
+        if (result.length < limit) {
+          hasMore = false;
+        }
+        items.addAll(result);
       }
-      items.addAll(result);
+    } finally {
+      isLoadMore.value = false;
     }
-
-    isLoadMore.value = false;
   }
 
   Future<void> claimMerchandise({
@@ -114,45 +131,48 @@ class MerchandiseController extends GetxController {
     required String merchId,
   }) async {
     loadingId.value = merchId;
-    final result = await _service.claimMerchandise(merchId);
+    try {
+      final result = await _service.claimMerchandise(merchId);
 
-    Get.back();
-    if (result == null) return;
+      Get.back();
+      if (result == null) return;
 
-    final status = result["status_code"];
-    final message = result["message"];
+      final status = result["status_code"];
+      final message = result["message"];
 
-    if (status == 201) {
-      DialogUtils.showCustomDialog(
-        context: context,
-        content: SizedBox(
-          height: 210,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Lottie.asset(
-                AppAssets.surpriseGiftLottie,
-                width: 210,
-                height: 100,
-                fit: BoxFit.fitWidth,
-              ),
-              const SizedBox(height: 12.0),
-              Text(
-                message,
-                style: TextStyle(color: AppColors.black, fontSize: 14.0),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ],
+      if (status == 201) {
+        DialogUtils.showCustomDialog(
+          context: context,
+          content: SizedBox(
+            height: 210,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Lottie.asset(
+                  AppAssets.surpriseGiftLottie,
+                  width: 210,
+                  height: 100,
+                  fit: BoxFit.fitWidth,
+                ),
+                const SizedBox(height: 12.0),
+                Text(
+                  message,
+                  style: TextStyle(color: AppColors.black, fontSize: 14.0),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    } else {
-      await Future.delayed(const Duration(milliseconds: 500));
-      SnackbarUtils.show(isError: true, message);
+        );
+      } else {
+        await Future.delayed(const Duration(milliseconds: 500));
+        SnackbarUtils.show(isError: true, message);
+      }
+    } finally {
+      loadingId.value = "";
     }
-    loadingId.value = "";
   }
 
   bool canClaimMerchandise(MerchandiseModel item) {

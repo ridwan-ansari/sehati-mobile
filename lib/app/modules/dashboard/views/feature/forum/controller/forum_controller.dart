@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
@@ -13,15 +14,21 @@ class ForumController extends GetxController {
   CameraController? cameraController;
   Rx<File?> selectedImage = Rx<File?>(null);
 
+  final TextEditingController contentController = TextEditingController();
+  final TextEditingController commentController = TextEditingController();
+
   var content = <ForumContentModel>[].obs;
   var comments = <ForumComment>[].obs;
 
   var isLoading = false.obs;
   var isCommentLoading = false.obs;
+  var isPosting = false.obs;
   var errorMessage = ''.obs;
   var limit = 20;
   var offset = 0;
   var isMoreDataAvailable = true.obs;
+
+  RxBool get isLoadingDetail => isCommentLoading;
 
   Future<void> fetchForums() async {
     try {
@@ -64,6 +71,8 @@ class ForumController extends GetxController {
     }
   }
 
+  Future<void> fetchForumDetail(String postId) => fetchComments(postId);
+
   Future<void> addComment(String postId, String comment) async {
     final res = await _service.postComment(postId, comment);
     if (res == true) {
@@ -71,6 +80,13 @@ class ForumController extends GetxController {
       await fetchComments(postId);
       await fetchForums();
     }
+  }
+
+  Future<void> postComment(String postId) async {
+    final text = commentController.text.trim();
+    if (text.isEmpty) return;
+    await addComment(postId, text);
+    commentController.clear();
   }
 
   Future<void> likePost(String postId) async {
@@ -97,6 +113,18 @@ class ForumController extends GetxController {
     }
   }
 
+  Future<void> toggleLike(String postId) => likePost(postId);
+
+  Future<void> initializeCamera() async {
+    if (cameraController != null && cameraController!.value.isInitialized) {
+      return;
+    }
+    final cameras = await availableCameras();
+    if (cameras.isEmpty) return;
+    cameraController = CameraController(cameras.first, ResolutionPreset.high);
+    await cameraController!.initialize();
+  }
+
   Future<void> takePhoto() async {
     final XFile? photo = await picker.pickImage(source: ImageSource.camera);
     if (photo != null) selectedImage.value = File(photo.path);
@@ -107,6 +135,24 @@ class ForumController extends GetxController {
     if (photo != null) selectedImage.value = File(photo.path);
   }
 
+  Future<void> submitPost(String filePath) async {
+    try {
+      isPosting.value = true;
+      final ok = await _service.createPost(
+        caption: contentController.text.trim(),
+        filePath: filePath,
+      );
+      if (ok) {
+        contentController.clear();
+        selectedImage.value = null;
+        await fetchForums();
+        Get.offAllNamed('/dashboard');
+      }
+    } finally {
+      isPosting.value = false;
+    }
+  }
+
   void onRefreshData() async {
     await fetchForums();
   }
@@ -115,5 +161,13 @@ class ForumController extends GetxController {
   void onInit() {
     super.onInit();
     fetchForums();
+  }
+
+  @override
+  void onClose() {
+    contentController.dispose();
+    commentController.dispose();
+    cameraController?.dispose();
+    super.onClose();
   }
 }

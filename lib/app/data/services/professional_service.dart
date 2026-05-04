@@ -42,14 +42,14 @@ class ProfessionalService {
       if (response.statusCode == 200) {
         final result = ProfessionalResponse.fromJson(response.data);
         return result.data;
-      } else {
-        SnackbarUtils.show("Failed to load professionals.");
-        return null;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Professional request error: ${e.response?.data ?? e.message}");
-      SnackbarUtils.show("${e.message}");
+      SnackbarUtils.show(
+          e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return null;
     }
   }
@@ -102,18 +102,17 @@ class ProfessionalService {
       EasyLoading.dismiss();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        SnackbarUtils.show(isError: false, "Appointment created successfully!");
+        SnackbarUtils.show(
+            isError: false, response.data['message'] ?? "Success");
         return true;
-      } else {
-        SnackbarUtils.show("Failed to create appointment.");
-        return false;
       }
+      SnackbarUtils.show(response.data['message'] ?? "An error occurred");
+      return false;
     } on DioException catch (e) {
       EasyLoading.dismiss();
       print("❌ Appointment request error: ${e.response?.data ?? e.message}");
-      final data = e.response?.data;
-      final msg = (data is Map) ? (data['message'] ?? e.message) : e.message;
-      SnackbarUtils.show("$msg");
+      SnackbarUtils.show(
+          e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return false;
     }
   }
