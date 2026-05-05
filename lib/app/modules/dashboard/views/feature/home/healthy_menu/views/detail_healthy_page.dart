@@ -3,7 +3,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/api_config.dart';

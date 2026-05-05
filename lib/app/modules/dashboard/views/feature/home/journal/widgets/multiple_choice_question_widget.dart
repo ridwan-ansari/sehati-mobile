@@ -1,6 +1,3 @@
-// ignore_for_file: unnecessary_to_list_in_spreads, avoid_print
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';

@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
-import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';

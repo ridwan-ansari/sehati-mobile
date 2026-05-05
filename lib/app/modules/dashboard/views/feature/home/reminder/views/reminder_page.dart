@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
-import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import '../controllers/reminder_controller.dart';

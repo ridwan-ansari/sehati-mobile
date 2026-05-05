@@ -1,16 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
-import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/comment_bottomsheet.dart';
-import 'package:share_plus/share_plus.dart';
 
 class PostCard extends GetView<ForumController> {
   const PostCard({super.key, required this.post});

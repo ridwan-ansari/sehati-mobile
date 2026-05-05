@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
-import 'package:sehati/app/common/localization/app_strings.dart';
 
 class LoadingUtils {
   static void show([String? status]) {

@@ -6,7 +6,6 @@ import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
-import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/boolean_question_widget.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/multiple_choice_question_widget.dart';
 import '../controllers/exercise_controller.dart';

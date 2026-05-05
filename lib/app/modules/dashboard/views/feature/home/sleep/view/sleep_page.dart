@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/widgets/simple_text_appbar.dart';

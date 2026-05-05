@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sehati/app/common/constants/app_colors.dart';
 
 class MonitoringInputCard extends StatelessWidget {
   final List<Widget> children;
