@@ -2,6 +2,7 @@
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/services/profile_service.dart';
+import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ProfileController extends GetxController {
@@ -13,6 +14,12 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     loadProfile();
+  }
+
+  void changeLanguage(String code) async {
+    final langService = Get.find<LanguageService>();
+    await langService.setLanguage(code);
+    Get.back(); // Close dialog/bottomsheet
   }
 
   Future<void> loadProfile() async {

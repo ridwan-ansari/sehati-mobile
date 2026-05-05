@@ -190,6 +190,8 @@ class AppStrings {
   static const String profileKeySettings = "profile_settings";
   static const String profileKeyChangePhoto = "profile_change_photo";
   static const String profileKeySignOut = "profile_sign_out";
+  static const String profileKeyLanguage = "profile_language";
+  static const String profileKeySelectLanguage = "profile_select_language";
   static const String profileKeyNickname = "profile_nickname";
   static const String profileKeyGenderLabel = "profile_gender_label";
   static const String profileKeyChangePhotoTitle = "profile_change_photo_title";
@@ -526,6 +528,8 @@ class AppStrings {
       "profile_settings": "Settings",
       "profile_change_photo": "Change Photo",
       "profile_sign_out": "Sign Out",
+      "profile_language": "Language",
+      "profile_select_language": "Select Language",
       "profile_nickname": "Nickname",
       "profile_gender_label": "Gender",
       "profile_change_photo_title": "Change Photo",
@@ -876,6 +880,8 @@ class AppStrings {
       "profile_settings": "Pengaturan",
       "profile_change_photo": "Ubah Foto",
       "profile_sign_out": "Keluar",
+      "profile_language": "Bahasa",
+      "profile_select_language": "Pilih Bahasa",
       "profile_nickname": "Nama Panggilan",
       "profile_gender_label": "Jenis Kelamin",
       "profile_change_photo_title": "Ubah Foto",
