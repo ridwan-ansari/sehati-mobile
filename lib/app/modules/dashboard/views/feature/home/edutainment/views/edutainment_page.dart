@@ -151,7 +151,7 @@ class EdutainmentPage extends GetView<EdutainmentController> {
                             const Icon(Icons.timer_outlined, size: 14, color: AppColors.orangeLight),
                             const SizedBox(width: 6),
                             Text(
-                              video.durationSeconds == null ? "N/A" : "${(video.durationSeconds! ~/ 60)} ${AppStrings.get(AppStrings.eduKeyMinutes)}",
+                              video.durationSeconds == null ? AppStrings.get(AppStrings.commonKeyNotSet) : "${(video.durationSeconds! ~/ 60)} ${AppStrings.get(AppStrings.eduKeyMinutes)}",
                               style: const TextStyle(fontSize: 12, color: AppColors.orangeLight, fontWeight: FontWeight.w700),
                             ),
                           ],

@@ -80,14 +80,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ),
             ),
             _DotIndicator(count: _pages.length, current: _page),
-            const SizedBox(height: 32),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.04),
             _CtaButton(
               label: _page < _pages.length - 1
                   ? (Get.find<LanguageService>().isEnglish() ? 'Next' : 'Lanjut')
                   : (Get.find<LanguageService>().isEnglish() ? 'Start' : 'Mulai'),
               onPressed: _page < _pages.length - 1 ? _nextPage : _finish,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.03),
           ],
         ),
       ),
@@ -117,12 +117,12 @@ class _OnboardingSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.08),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(data.icon, size: 120, color: AppColors.orangeLight),
-          const SizedBox(height: 40),
+          Icon(data.icon, size: MediaQuery.of(context).size.width * 0.3, color: AppColors.orangeLight),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           Text(
             data.title,
             style: const TextStyle(
@@ -132,7 +132,7 @@ class _OnboardingSlide extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
           Text(
             data.subtitle,
             style: const TextStyle(

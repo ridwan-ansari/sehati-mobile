@@ -1,5 +1,4 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,6 +7,7 @@ import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/professional_res_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ProfessionalService {
   final Dio _dio = DioFactory.create(
@@ -47,7 +47,7 @@ class ProfessionalService {
       return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ Professional request error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ Professional request error: ${e.response?.data ?? e.message}");
       SnackbarUtils.show(
           e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return null;
@@ -86,7 +86,7 @@ class ProfessionalService {
         "notes": notes ?? "",
       };
 
-      print("BODY : ${body}");
+      AppLogger.log("BODY : ${body}");
       final response = await _dio.post(
         ApiEndpoints.APPOINTMENT,
         data: body,
@@ -110,7 +110,7 @@ class ProfessionalService {
       return false;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ Appointment request error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ Appointment request error: ${e.response?.data ?? e.message}");
       SnackbarUtils.show(
           e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return false;
@@ -139,7 +139,7 @@ class ProfessionalService {
 
       return "$hour:$minute:00";
     } catch (e) {
-      print("❌ TIME PARSE ERROR: $e");
+      AppLogger.log("❌ TIME PARSE ERROR: $e");
       return "00:00:00";
     }
   }

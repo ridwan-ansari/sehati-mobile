@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class GamePlayPage extends StatefulWidget {
   final String linkUrl;
@@ -135,7 +136,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
 
                 // HANDLER UNTUK CAMERA PERMISSION
                 onPermissionRequest: (controller, request) async {
-                  debugPrint('Permission diminta: ${request.resources}');
+                  AppLogger.debug('Permission diminta: ${request.resources}');
 
                   // Cek camera permission
                   if (request.resources.contains(
@@ -181,11 +182,11 @@ class _GamePlayPageState extends State<GamePlayPage> {
                 },
 
                 onReceivedError: (controller, request, error) {
-                  debugPrint('Error: ${error.description}');
+                  AppLogger.debug('Error: ${error.description}');
                 },
 
                 onConsoleMessage: (controller, consoleMessage) {
-                  debugPrint('Console: ${consoleMessage.message}');
+                  AppLogger.debug('Console: ${consoleMessage.message}');
                 },
               ),
             ),

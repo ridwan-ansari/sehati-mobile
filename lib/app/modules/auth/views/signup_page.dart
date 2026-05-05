@@ -21,11 +21,11 @@ class RegisterPage extends GetView<AuthController> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.06),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 24),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -76,16 +76,16 @@ class RegisterPage extends GetView<AuthController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.04),
 
                 // SVG Illustration
                 Center(
                   child: AnimatedIn(
-                    child: AppAssetUtils.svg(AppAssets.logoSehati, width: 250),
+                    child: AppAssetUtils.svg(AppAssets.logoSehati, width: MediaQuery.of(context).size.width * 0.5),
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
                 // === FORM FIELD ===
                 Form(
@@ -124,7 +124,7 @@ class RegisterPage extends GetView<AuthController> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                       AnimatedIn(
                         child: TextFormField(
                           controller: controller.emailController,
@@ -162,7 +162,7 @@ class RegisterPage extends GetView<AuthController> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
                       // Password Field with eye toggle
                       Obx(() {
@@ -215,7 +215,7 @@ class RegisterPage extends GetView<AuthController> {
                           ),
                         );
                       }),
-                      const SizedBox(height: 32),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.04),
 
                       // Button
                       Obx(

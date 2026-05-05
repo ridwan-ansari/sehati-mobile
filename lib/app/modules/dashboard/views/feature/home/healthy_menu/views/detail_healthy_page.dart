@@ -115,9 +115,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                   ),
                   const SizedBox(height: 32),
                   if (widget.recipe.fileUrl.isNotEmpty) ...[
-                    const Text(
-                      "Recipe Guide",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark),
+                    Text(
+                      AppStrings.get(AppStrings.recipeKeyGuide),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark),
                     ),
                     const SizedBox(height: 16),
                     Container(

@@ -6,6 +6,7 @@ import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
+import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/boolean_question_widget.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/multiple_choice_question_widget.dart';
 import '../controllers/exercise_controller.dart';
@@ -17,64 +18,56 @@ class ExerciseView extends GetView<ExerciseController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.richBrown,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          AppStrings.get(AppStrings.menuKeyExerciseHabit),
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
-        }
-
-        if (controller.exerciseList.isEmpty) {
-          return Center(
-            child: Text(AppStrings.get(AppStrings.exerciseKeyNoQuestions)),
-          );
-        }
-
-        int totalSoal = controller.exerciseList.length;
-        int jawabanTerisi = controller.exerciseList
-            .where((q) => q.selectedOption != null || q.answerText != null)
-            .length;
-
-        PageController pageController = PageController();
-
-        return WillPopScope(
-          onWillPop: () async {
-            bool? exit = await DialogUtils.showConfirmDialog(
-              context: context,
-              title: AppStrings.get(AppStrings.exerciseKeyConfirmExit),
-              message: AppStrings.get(AppStrings.exerciseKeyExitMessage),
+      body: SafeArea(
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
+  
+          if (controller.exerciseList.isEmpty) {
+            return Center(
+              child: Text(AppStrings.get(AppStrings.exerciseKeyNoQuestions)),
             );
-            return exit ?? false;
-          },
-          child: Column(
-            children: [
-              _buildProgressHeader(jawabanTerisi, totalSoal),
-              Expanded(
-                child: PageView.builder(
-                  controller: pageController,
-                  itemCount: totalSoal,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final item = controller.exerciseList[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: _buildQuestionCard(item, index, totalSoal, pageController),
-                    );
-                  },
+          }
+  
+          int totalSoal = controller.exerciseList.length;
+          int jawabanTerisi = controller.exerciseList
+              .where((q) => q.selectedOption != null || q.answerText != null)
+              .length;
+  
+          PageController pageController = PageController();
+  
+          return WillPopScope(
+            onWillPop: () async {
+              bool? exit = await DialogUtils.showConfirmDialog(
+                context: context,
+                title: AppStrings.get(AppStrings.exerciseKeyConfirmExit),
+                message: AppStrings.get(AppStrings.exerciseKeyExitMessage),
+              );
+              return exit ?? false;
+            },
+            child: Column(
+              children: [
+                _buildProgressHeader(jawabanTerisi, totalSoal),
+                Expanded(
+                  child: PageView.builder(
+                    controller: pageController,
+                    itemCount: totalSoal,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final item = controller.exerciseList[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: _buildQuestionCard(item, index, totalSoal, pageController),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -82,13 +75,37 @@ class ExerciseView extends GetView<ExerciseController> {
     double progress = filled / total;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
       decoration: const BoxDecoration(
         color: AppColors.richBrown,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Column(
         children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              ),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
+                    child: Text(
+                      AppStrings.get(AppStrings.menuKeyExerciseHabit),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

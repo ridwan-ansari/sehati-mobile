@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class CustomAppbarJournal extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String? title;
   final VoidCallback? onBackPressed;
 
   const CustomAppbarJournal({
     super.key,
-    this.title = "Journal",
+    this.title,
     this.onBackPressed,
   });
 
@@ -20,7 +21,7 @@ class CustomAppbarJournal extends StatelessWidget implements PreferredSizeWidget
         onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
       ),
       title: Text(
-        title,
+        title ?? AppStrings.get(AppStrings.menuKeyJournalTitle),
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,

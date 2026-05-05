@@ -20,6 +20,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final TextEditingController? controller;
   final bool showBackButton;
   final bool showProfile;
+  final bool showLogo;
   final VoidCallback? onBack;
 
   const CustomAppBar({
@@ -32,6 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.showBackButton = true,
     this.showProfile = true,
+    this.showLogo = true,
     this.onBack,
   });
 
@@ -39,7 +41,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize {
     final bool hasTitle = title != null && title!.isNotEmpty;
     final bool hasSearch = controller != null || onSearchChanged != null;
-    return Size.fromHeight(hasTitle && hasSearch ? 140 : 100);
+    final double screenHeight = Get.height;
+    return Size.fromHeight(hasTitle && hasSearch ? screenHeight * 0.18 : screenHeight * 0.12);
   }
 
   @override
@@ -47,11 +50,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final profileController = Get.put(ProfileController(), permanent: true);
     final bool hasTitle = title != null && title!.isNotEmpty;
     final bool hasSearch = controller != null || onSearchChanged != null;
-    final double appBarHeight = hasTitle && hasSearch ? 165 : 125;
+    final double appBarHeight = hasTitle && hasSearch ? Get.height * 0.2 : Get.height * 0.15;
 
     return Container(
       height: appBarHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: Get.width * 0.04,
+        vertical: Get.height * 0.015,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFF3B2B27),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
@@ -67,36 +73,38 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   onPressed: onBack ?? () => Get.back(),
                   icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                 )
-              else
+              else if (showLogo)
                 Tooltip(
                   message: 'Back to Home',
                   child: GestureDetector(
                     onTap: () => Get.offAllNamed('/dashboard'),
                     child: (logoSvg != null && logoSvg!.isNotEmpty)
                         ? Container(
-                            height: 46,
-                            width: 46,
+                            height: Get.width * 0.12,
+                            width: Get.width * 0.12,
                             decoration: BoxDecoration(
                               color: const Color(0xFFFFC107),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(Get.width * 0.02),
                               child: AppAssetUtils.svg(
                                 logoSvg!,
-                                width: 50,
-                                height: 50,
+                                width: Get.width * 0.1,
+                                height: Get.width * 0.1,
                                 color: Colors.black,
                               ),
                             ),
                           )
                         : AppAssetUtils.svg(
                             AppAssets.logoIcon,
-                            width: 50,
-                            height: 50,
+                            width: Get.width * 0.1,
+                            height: Get.width * 0.1,
                           ),
                   ),
-                ),
+                )
+              else
+                SizedBox(width: Get.width * 0.12), // Spacer if no back button and no logo
               if (hasTitle)
                 Expanded(
                   child: Center(
@@ -126,7 +134,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           DialogUtils.showCustomDialog(
                             context: context,
                             content: Container(
-                              height: 192.0,
+                              height: Get.height * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: CachedNetworkImageProvider(
@@ -142,7 +150,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           );
                         },
                     child: CircleAvatar(
-                      radius: 22,
+                      radius: Get.width * 0.05,
                       backgroundColor: Colors.grey.shade200,
                       backgroundImage:
                           (profile != null && profile.picture.isNotEmpty)
@@ -155,12 +163,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   );
                 }))
               else
-                const SizedBox(width: 48), // Spacer to keep title centered
+                SizedBox(width: Get.width * 0.12), // Spacer to keep title centered
             ],
           ),
           if (hasTitle && hasSearch)
             Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 4),
+              padding: EdgeInsets.only(top: Get.height * 0.015, bottom: Get.height * 0.005),
               child: _buildSearchField(),
             ),
         ],
@@ -170,8 +178,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildSearchField() {
     return Container(
-      height: 46,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: Get.height * 0.055,
+      margin: EdgeInsets.symmetric(horizontal: Get.width * 0.04),
       decoration: BoxDecoration(
         color: const Color(0xFFFFC107),
         borderRadius: BorderRadius.circular(25),
@@ -188,9 +196,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           decoration: InputDecoration(
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: Get.width * 0.04,
+              vertical: Get.height * 0.015,
             ),
             hintText: locale.AppStrings.get(locale.AppStrings.commonKeySearchPlaceholder),
             hintStyle: const TextStyle(
@@ -199,11 +207,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             border: InputBorder.none,
             suffixIcon: Padding(
-              padding: const EdgeInsets.only(right: 24),
+              padding: EdgeInsets.only(right: Get.width * 0.06),
               child: AppAssetUtils.svg(
                 AppAssets.searchIcon,
-                width: 18,
-                height: 18,
+                width: Get.width * 0.045,
+                height: Get.width * 0.045,
                 color: Colors.black,
               ),
             ),

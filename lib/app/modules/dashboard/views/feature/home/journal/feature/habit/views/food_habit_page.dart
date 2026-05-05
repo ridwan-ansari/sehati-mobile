@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';
@@ -18,20 +19,12 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.richBrown,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          AppStrings.get(AppStrings.habitKeyFoodHabit),
-          style: const TextStyle(fontWeight: FontWeight.w800),
+      body: SafeArea(
+        child: Obx(
+          () => controller.isLoading.value
+              ? const Center(child: CircularProgressIndicator(color: AppColors.orangeLight))
+              : _buildBody(context),
         ),
-      ),
-      body: Obx(
-        () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator(color: AppColors.orangeLight))
-            : _buildBody(context),
       ),
     );
   }
@@ -68,7 +61,7 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   Widget _buildWelcomeHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
       decoration: const BoxDecoration(
         color: AppColors.richBrown,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
@@ -76,21 +69,47 @@ class FoodHabitPage extends GetView<FoodHabitController> {
       child: AnimatedIn(
         child: Column(
           children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => Get.back(),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
+                      child: Text(
+                        AppStrings.get(AppStrings.habitKeyFoodHabit),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             Text(
               AppStrings.get(AppStrings.habitKeyDailyJournal),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               AppStrings.get(AppStrings.habitKeyConsistency),
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

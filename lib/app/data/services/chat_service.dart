@@ -1,5 +1,4 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -8,6 +7,7 @@ import 'package:sehati/app/data/models/response/chat_room_model.dart';
 import 'package:sehati/app/data/models/response/user_chat_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ChatService {
   late WebSocketChannel channel;
@@ -33,7 +33,7 @@ class ChatService {
       );
 
       if (response.statusCode == 200) {
-        print("➡️ Rooms Response: ${response.data}");
+        AppLogger.log("➡️ Rooms Response: ${response.data}");
 
         final listData = response.data['data'] as List;
         return ChatRoomModel.fromJsonList(listData);
@@ -41,7 +41,7 @@ class ChatService {
 
       return [];
     } on DioException catch (e) {
-      print("❌ ERROR GET ROOMS: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ ERROR GET ROOMS: ${e.response?.data ?? e.message}");
       return [];
     }
   }
@@ -65,7 +65,7 @@ class ChatService {
         ),
       );
 
-      print("➡️ Messages Response: ${response.data}");
+      AppLogger.log("➡️ Messages Response: ${response.data}");
 
       if (response.statusCode == 200) {
         final listData = response.data['data'] as List;
@@ -74,8 +74,8 @@ class ChatService {
 
       return [];
     } on DioException catch (e) {
-      print("❌ ERROR GET MESSAGES: ${e.response?.data ?? e.message}");
-      print("❌ ERROR GET MESSAGES: ${e.response?.statusCode}");
+      AppLogger.log("❌ ERROR GET MESSAGES: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ ERROR GET MESSAGES: ${e.response?.statusCode}");
       return [];
     }
   }
@@ -93,11 +93,11 @@ class ChatService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      print("➡️ SendChat Response: ${response.data}");
+      AppLogger.log("➡️ SendChat Response: ${response.data}");
 
       return response.statusCode == 200;
     } on DioException catch (e) {
-      print("❌ ERROR SEND MESSAGE: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ ERROR SEND MESSAGE: ${e.response?.data ?? e.message}");
       return false;
     }
   }
@@ -124,7 +124,7 @@ class ChatService {
         ),
       );
 
-      print("➡️ Search Users Response: ${response.data}");
+      AppLogger.log("➡️ Search Users Response: ${response.data}");
 
       if (response.statusCode == 200) {
         final listData = response.data['data'] as List;
@@ -133,7 +133,7 @@ class ChatService {
 
       return [];
     } on DioException catch (e) {
-      print("❌ ERROR SEARCH USERS: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ ERROR SEARCH USERS: ${e.response?.data ?? e.message}");
       return [];
     }
   }

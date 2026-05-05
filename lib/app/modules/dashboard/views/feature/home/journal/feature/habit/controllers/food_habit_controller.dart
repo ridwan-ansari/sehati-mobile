@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +5,7 @@ import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/data/services/habit_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class FoodHabitController extends GetxController {
   final frequencyController = TextEditingController();
@@ -38,7 +38,7 @@ class FoodHabitController extends GetxController {
       questions.assignAll(data ?? []);
       groupQuestions();
     } catch (e) {
-      print('Error fetching questions: $e');
+      AppLogger.log('Error fetching questions: $e');
     } finally {
       isLoading.value = false;
     }

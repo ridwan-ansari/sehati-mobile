@@ -1,8 +1,8 @@
-// ignore_for_file: avoid_print
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class AwesomeNotificationService {
   static Future<void> showWsNotification({
@@ -59,11 +59,11 @@ class AwesomeNotificationService {
           controller.textController.clear();
           await AwesomeNotifications().dismiss(action.id!);
         } else {
-          print("⚠️ Reply text is empty or receiver_id missing, not sending.");
+          AppLogger.log("⚠️ Reply text is empty or receiver_id missing, not sending.");
           await AwesomeNotifications().dismiss(action.id!);
         }
       } catch (e) {
-        print("❌ Error handling notification reply: $e");
+        AppLogger.log("❌ Error handling notification reply: $e");
       }
     } else if (action.buttonKeyPressed == 'Open') {
       try {
@@ -81,7 +81,7 @@ class AwesomeNotificationService {
           Get.toNamed("/chatting");
         });
       } catch (e) {
-        print("❌ Error handling notification reply: $e");
+        AppLogger.log("❌ Error handling notification reply: $e");
       }
     }
   }

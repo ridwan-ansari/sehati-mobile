@@ -1,8 +1,8 @@
-// ignore_for_file: avoid_print
 
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/services/profile_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ProfileController extends GetxController {
   final ProfileService _profileService = ProfileService();
@@ -21,12 +21,12 @@ class ProfileController extends GetxController {
       final profile = await _profileService.getProfile();
       if (profile != null) {
         dataProfile.value = profile;
-        print("✅ Profil berhasil dimuat: ${profile.fullname}");
+        AppLogger.log("✅ Profil berhasil dimuat: ${profile.fullname}");
       } else {
-        print("⚠️ Profil tidak ditemukan");
+        AppLogger.log("⚠️ Profil tidak ditemukan");
       }
     } catch (e) {
-      print("❌ Gagal memuat profil: $e");
+      AppLogger.log("❌ Gagal memuat profil: $e");
     } finally {
       isLoading.value = false;
     }
@@ -37,15 +37,15 @@ class ProfileController extends GetxController {
     try {
       final result = await _profileService.uploadProfilePicture(filePath);
       if (result != null) {
-        print("✅ Foto profil berhasil diupdate!");
+        AppLogger.log("✅ Foto profil berhasil diupdate!");
         await loadProfile();
         return true;
       } else {
-        print("⚠️ Gagal mengunggah foto profil");
+        AppLogger.log("⚠️ Gagal mengunggah foto profil");
         return false;
       }
     } catch (e) {
-      print("❌ Upload error: $e");
+      AppLogger.log("❌ Upload error: $e");
       return false;
     }
   }

@@ -1,11 +1,11 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/schedule_res_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ScheduleService {
   final Dio _dio = DioFactory.create(
@@ -37,7 +37,7 @@ class ScheduleService {
         return null;
       }
     } on DioException catch (e) {
-      print("❌ schedule request error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ schedule request error: ${e.response?.data ?? e.message}");
       final msg = e.response?.data['message'] ?? e.message ?? "Failed to load schedules";
       SnackbarUtils.show(msg);
       return null;

@@ -4,7 +4,6 @@ import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/services/language_service.dart';
 import '../controllers/journal_controller.dart';
 
@@ -42,21 +41,59 @@ class JournalPage extends GetView<JournalController> {
 
       return Scaffold(
         backgroundColor: AppColors.surface,
-        appBar: CustomAppBar(
-          title: AppStrings.get(AppStrings.menuKeyDailyJournal),
-          showBackButton: true,
-          onBack: () => Get.offAllNamed('/dashboard'),
-        ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(20),
-          itemCount: journals.length,
-          itemBuilder: (context, index) {
-            final item = journals[index];
-            return _buildJournalCard(item);
-          },
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: journals.length,
+                  itemBuilder: (context, index) {
+                    final item = journals[index];
+                    return _buildJournalCard(item);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
+      decoration: const BoxDecoration(
+        color: AppColors.richBrown,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Get.offAllNamed('/dashboard'),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
+                child: Text(
+                  AppStrings.get(AppStrings.menuKeyDailyJournal),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildJournalCard(Map<String, dynamic> item) {

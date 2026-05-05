@@ -1,3 +1,5 @@
+import 'package:sehati/app/common/utils/app_logger.dart';
+
 // ignore_for_file: avoid_print, constant_identifier_names
 
 import 'dart:typed_data';
@@ -21,14 +23,14 @@ class NotificationService {
     await _plugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        print("🔔 Notification tapped: ${response.payload}");
+        AppLogger.log("🔔 Notification tapped: ${response.payload}");
         if (response.actionId == 'stop_alarm') {
           // Jika Anda menggunakan cancelNotification: true di atas,
           // notifikasi sudah dibatalkan, tetapi Anda bisa menambahkan
           // logika tambahan di sini (misalnya menghentikan suara/vibrasi jika masih berjalan)
-          print("Tombol STOP ditekan di foreground!");
+          AppLogger.log("Tombol STOP ditekan di foreground!");
         } else if (response.actionId == 'open_alarm') {
-          print('open di klik');
+          AppLogger.log('open di klik');
         } else {
           // Tombol notifikasi utama (bukan tombol aksi) yang ditekan
           // Lakukan navigasi ke layar alarm, misalnya:
@@ -106,11 +108,11 @@ class NotificationService {
     if (action.buttonKeyPressed == 'reply') {
       final replyText = action.buttonKeyInput;
 
-      print("🎯 User reply from notification: $replyText");
+      AppLogger.log("🎯 User reply from notification: $replyText");
 
       if (replyText.trim().isNotEmpty) {
         // TODO: Kirim ke WebSocket atau API
-        print("🚀 Sending reply to server: $replyText");
+        AppLogger.log("🚀 Sending reply to server: $replyText");
 
         // contoh:
         // ChatSocketService.instance.sendMessage(replyText);
@@ -121,5 +123,5 @@ class NotificationService {
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
-  debugPrint('🔙 Notification tapped in background: ${response.payload}');
+  AppLogger.debug('🔙 Notification tapped in background: ${response.payload}');
 }

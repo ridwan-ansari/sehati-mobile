@@ -13,6 +13,9 @@ class AppStrings {
   static const String authKeyRegistering = "auth_registering";
   static const String authKeyLoggingIn = "auth_logging_in";
   static const String authKeyVerifyingOtp = "auth_verifying_otp";
+  static const String authKeyResendingOtp = "auth_resending_otp";
+  static const String authKeySendingReset = "auth_sending_reset";
+  static const String authKeyResettingPassword = "auth_resetting_password";
   static const String authKeyRegisterSuccess = "auth_register_success";
   static const String authKeyLoginSuccess = "auth_login_success";
   static const String authKeyOtpSuccess = "auth_otp_success";
@@ -110,6 +113,25 @@ class AppStrings {
   static const String commonKeySuccess = "common_success";
   static const String commonKeyError = "common_error";
   static const String commonKeyTokenNotFound = "common_token_not_found";
+  static const String commonKeyExitPressAgain = "common_exit_press_again";
+  static const String commonKeyUnknown = "common_unknown";
+  static const String commonKeyNotSet = "common_not_set";
+  static const String commonKeyNoDataAvailable = "common_no_data_available";
+  static const String commonKeyInvalidInput = "common_invalid_input";
+  static const String commonKeyClaimingPoint = "common_claiming_point";
+  static const String commonKeyProcessing = "common_processing";
+  static const String commonKeyLoading = "common_loading";
+  static const String commonKeyAutofill = "common_autofill";
+  static const String commonKeyPlay = "common_play";
+  static const String commonKeyClaim = "common_claim";
+
+  // SNACKBAR MESSAGES
+  static const String snackKeyOtpResent = "snack_otp_resent";
+  static const String snackKeyPointClaimed = "snack_point_claimed";
+  static const String snackKeyLoadFailed = "snack_load_failed";
+  static const String snackKeyErrorLoading = "snack_error_loading";
+  static const String appointmentKeyProfNotSelected = "appointment_prof_not_selected";
+  static const String appointmentKeyDetailsIncomplete = "appointment_details_incomplete";
 
   // Reminder
   static const String reminderKeyNoReminders = "reminder_no_reminders";
@@ -170,8 +192,11 @@ class AppStrings {
   static const String profileKeySignOut = "profile_sign_out";
   static const String profileKeyNickname = "profile_nickname";
   static const String profileKeyGenderLabel = "profile_gender_label";
+  static const String profileKeyChangePhotoTitle = "profile_change_photo_title";
+  static const String profileKeySelectedPhoto = "profile_selected_photo";
 
   // Community
+  static const String forumKeyTitle = "forum_title";
   static const String forumKeyTakePhoto = "forum_take_photo";
   static const String forumKeyPostContent = "forum_post_content";
   static const String forumKeyLike = "forum_like";
@@ -181,6 +206,8 @@ class AppStrings {
   static const String forumKeyPosts = "forum_posts";
   static const String forumKeyFollowers = "forum_followers";
   static const String forumKeyFollowing = "forum_following";
+  static const String forumKeyNoPosts = "forum_no_posts";
+  static const String forumKeyNoComments = "forum_no_comments";
 
   // ============= MENU / NAVIGATION STRINGS =============
 
@@ -189,6 +216,7 @@ class AppStrings {
   static const String menuKeyCommunity = "menu_community";
   static const String menuKeySchedule = "menu_schedule";
   static const String menuKeyProfile = "menu_profile";
+  static const String menuKeyJournalTitle = "menu_journal_title";
 
   // Section headers
   static const String menuKeyFeatures = "menu_features";
@@ -249,6 +277,9 @@ class AppStrings {
   static const String menuKeyReward = "menu_reward";
   static const String menuKeyWriteJournal = "menu_write_journal";
   static const String menuKeyPointsReward = "menu_points_reward";
+
+  // Recipes
+  static const String recipeKeyGuide = "recipe_guide";
 
   // ============= COMMON STRINGS =============
   static const String commonKeyEmail = "common_email";
@@ -320,6 +351,9 @@ class AppStrings {
   static const String habitKeyViewMore = "habit_view_more";
   static const String habitKeyIncomplete = "habit_incomplete";
 
+  // Schedule
+  static const String scheduleKeyNoAppointments = "schedule_no_appointments";
+
   // Profile
   static const String profileKeyEditProfile = "profile_edit";
 
@@ -360,6 +394,9 @@ class AppStrings {
       "auth_registering": "Creating your account...",
       "auth_logging_in": "Logging in...",
       "auth_verifying_otp": "Verifying OTP...",
+      "auth_resending_otp": "Resending OTP...",
+      "auth_sending_reset": "Sending reset link...",
+      "auth_resetting_password": "Resetting password...",
       "auth_register_success": "Account created! Please verify your email.",
       "auth_login_success": "Welcome back!",
       "auth_otp_success": "Email verified! You can now log in.",
@@ -491,8 +528,11 @@ class AppStrings {
       "profile_sign_out": "Sign Out",
       "profile_nickname": "Nickname",
       "profile_gender_label": "Gender",
+      "profile_change_photo_title": "Change Photo",
+      "profile_selected_photo": "Selected Photo",
 
       // Community
+      "forum_title": "Feeds",
       "forum_take_photo": "Take Photo",
       "forum_post_content": "Post Content",
       "forum_like": "Like",
@@ -502,12 +542,15 @@ class AppStrings {
       "forum_posts": "Posts",
       "forum_followers": "Followers",
       "forum_following": "Following",
+      "forum_no_posts": "No posts yet.",
+      "forum_no_comments": "No comments yet.",
 
       // Menu / Navigation
       "menu_home": "Home",
-      "menu_community": "Community",
+      "menu_community": "Feeds",
       "menu_schedule": "Schedule",
       "menu_profile": "Profile",
+      "menu_journal_title": "Journal",
       "menu_features": "Features",
       "menu_see_all": "See All",
       "menu_games": "Games",
@@ -572,6 +615,23 @@ class AppStrings {
       "common_success": "Success",
       "common_error": "An error occurred",
       "common_token_not_found": "Token not found. Please log in again.",
+      "common_exit_press_again": "Press back again to exit",
+      "common_unknown": "Unknown",
+      "common_not_set": "Not set",
+      "common_no_data_available": "No data available",
+      "common_invalid_input": "Invalid input",
+      "common_claiming_point": "Claiming point...",
+      "common_processing": "Processing...",
+      "common_loading": "Loading...",
+      "common_autofill": "Autofill",
+      "common_play": "Play",
+      "common_claim": "Claim",
+      "snack_otp_resent": "OTP Resent successfully",
+      "snack_point_claimed": "Point claimed successfully!",
+      "snack_load_failed": "Failed to load data",
+      "snack_error_loading": "Error loading data",
+      "appointment_prof_not_selected": "Professional not selected",
+      "appointment_details_incomplete": "Please complete all appointment details",
       "common_no_rooms": "No Rooms",
       "common_search_placeholder": "Search here...",
 
@@ -667,17 +727,26 @@ class AppStrings {
       "habit_view_more": "View More Questions",
       "habit_incomplete": "Oops! Make sure all questions have been answered.",
 
+      // Schedule
+      "schedule_no_appointments": "No upcoming appointments",
+
       // Menu
       "menu_points_reward": "points",
       "common_points_label": "pts",
       "exercise_finish": "FINISH JOURNAL",
       "exercise_next": "NEXT QUESTION",
+
+      // Recipes
+      "recipe_guide": "Recipe Guide",
     },
     "id": {
       // Auth messages
       "auth_registering": "Membuat akun Anda...",
       "auth_logging_in": "Sedang masuk...",
       "auth_verifying_otp": "Memverifikasi OTP...",
+      "auth_resending_otp": "Mengirim ulang OTP...",
+      "auth_sending_reset": "Mengirim link reset...",
+      "auth_resetting_password": "Mereset kata sandi...",
       "auth_register_success": "Akun dibuat! Silakan verifikasi email Anda.",
       "auth_login_success": "Selamat datang kembali!",
       "auth_otp_success": "Email terverifikasi! Silakan login.",
@@ -809,8 +878,11 @@ class AppStrings {
       "profile_sign_out": "Keluar",
       "profile_nickname": "Nama Panggilan",
       "profile_gender_label": "Jenis Kelamin",
+      "profile_change_photo_title": "Ubah Foto",
+      "profile_selected_photo": "Foto Terpilih",
 
       // Community
+      "forum_title": "Feeds",
       "forum_take_photo": "Ambil Foto",
       "forum_post_content": "Posting Konten",
       "forum_like": "Suka",
@@ -820,25 +892,28 @@ class AppStrings {
       "forum_posts": "Postingan",
       "forum_followers": "Pengikut",
       "forum_following": "Mengikuti",
+      "forum_no_posts": "Belum ada postingan.",
+      "forum_no_comments": "Belum ada komentar.",
 
       // Menu / Navigation
       "menu_home": "Beranda",
-      "menu_community": "Komunitas",
+      "menu_community": "Feeds",
       "menu_schedule": "Jadwal",
       "menu_profile": "Profil",
+      "menu_journal_title": "Jurnal",
       "menu_features": "Fitur",
       "menu_see_all": "Lihat Semua",
       "menu_games": "Permainan",
       "menu_all_games": "Semua Permainan",
       "menu_all_features": "Semua Fitur",
-      "menu_monitoring": "Monitoring",
+      "menu_monitoring": "Pemantauan",
       "menu_appointment": "Konselor",
       "menu_chat_counselor": "Chat dengan Konselor",
       "menu_book_now": "Konsultasi Sekarang",
       "menu_schedule_appointment": "Buat Janji Temu",
       "menu_chat_wa": "Chat via WhatsApp",
       "menu_edutainment": "Edutainment",
-      "menu_game": "Game",
+      "menu_game": "Permainan",
       "menu_journal": "Jurnal",
       "menu_chat": "Obrolan",
       "menu_recipes": "Resep",
@@ -890,6 +965,23 @@ class AppStrings {
       "common_success": "Berhasil",
       "common_error": "Terjadi kesalahan",
       "common_token_not_found": "Token tidak ditemukan. Silakan login kembali.",
+      "common_exit_press_again": "Tekan sekali lagi untuk keluar",
+      "common_unknown": "Tidak diketahui",
+      "common_not_set": "Belum diatur",
+      "common_no_data_available": "Tidak ada data tersedia",
+      "common_invalid_input": "Input tidak valid",
+      "common_claiming_point": "Mengklaim poin...",
+      "common_processing": "Memproses...",
+      "common_loading": "Memuat...",
+      "common_autofill": "Otomatis",
+      "common_play": "Main",
+      "common_claim": "Klaim",
+      "snack_otp_resent": "OTP berhasil dikirim ulang",
+      "snack_point_claimed": "Poin berhasil diklaim!",
+      "snack_load_failed": "Gagal memuat data",
+      "snack_error_loading": "Terjadi kesalahan saat memuat data",
+      "appointment_prof_not_selected": "Profesional belum dipilih",
+      "appointment_details_incomplete": "Harap lengkapi semua detail janji temu",
       "common_no_rooms": "Tidak ada Ruangan",
       "common_search_placeholder": "Cari di sini...",
 
@@ -985,11 +1077,17 @@ class AppStrings {
       "habit_view_more": "Lihat Pertanyaan Lagi",
       "habit_incomplete": "Ups! Pastikan semua pertanyaan telah dijawab.",
 
+      // Schedule
+      "schedule_no_appointments": "Tidak ada jadwal janji temu",
+
       // Menu
       "menu_points_reward": "poin",
       "common_points_label": "poin",
       "exercise_finish": "SELESAIKAN JURNAL",
       "exercise_next": "PERTANYAAN BERIKUTNYA",
+
+      // Recipes
+      "recipe_guide": "Panduan Resep",
     }
   };
 }

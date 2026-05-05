@@ -160,7 +160,7 @@ class GamePage extends GetView<GameController> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                               child: Text(
-                                game.isClaim ? "Play" : "Claim",
+                                game.isClaim ? AppStrings.get(AppStrings.commonKeyPlay) : AppStrings.get(AppStrings.commonKeyClaim),
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
                               ),
                             ),

@@ -1,5 +1,4 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,6 +8,7 @@ import 'package:sehati/app/data/models/request/nutrition_req_model.dart';
 import 'package:sehati/app/data/models/response/nutrition_res_model.dart';
 import 'package:sehati/app/data/models/response/profile_response_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class UserService {
   final Dio _dio = DioFactory.create(
@@ -47,7 +47,7 @@ class UserService {
       return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ Nutrition request error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ Nutrition request error: ${e.response?.data ?? e.message}");
       SnackbarUtils.show(
           e.response?.data?['message'] ?? e.message ?? "An error occurred");
       return null;
@@ -85,7 +85,7 @@ class UserService {
       if (response.data is Map && response.data.containsKey("data")) {
         response.data["data"];
       } else {
-        print("RESPONSE TIDAK PUNYA FIELD 'data' !!!");
+        AppLogger.log("RESPONSE TIDAK PUNYA FIELD 'data' !!!");
       }
 
       // Parsing sesuai format yang benar
@@ -98,7 +98,7 @@ class UserService {
               isError: false, response.data['message'] ?? "Success");
           return result;
         } else {
-          print("❌ DATA BUKAN MAP (tidak bisa diparse NutritionData)");
+          AppLogger.log("❌ DATA BUKAN MAP (tidak bisa diparse NutritionData)");
           SnackbarUtils.show(
               isError: false, response.data['message'] ?? "Success");
           return null;
@@ -137,7 +137,7 @@ class UserService {
       }
       return null;
     } on DioException catch (e) {
-      print("❌ Pagination Error: ${e.response?.data}");
+      AppLogger.log("❌ Pagination Error: ${e.response?.data}");
       return null;
     }
   }
@@ -158,11 +158,11 @@ class UserService {
         final data = ProfileResponse.fromJson(response.data);
         return data.data;
       } else {
-        print("⚠️ GET USER FAILED: ${response.statusMessage}");
+        AppLogger.log("⚠️ GET USER FAILED: ${response.statusMessage}");
         throw Exception("Failed to fetch user data");
       }
     } on DioException catch (e) {
-      print("❌ GET USER ERROR: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ GET USER ERROR: ${e.response?.data ?? e.message}");
       throw Exception("Network error occurred");
     }
   }

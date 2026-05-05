@@ -56,6 +56,15 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    if (Get.arguments != null && Get.arguments is Map) {
+      nameController.text = Get.arguments['fullname'] ?? nameController.text;
+      emailController.text = Get.arguments['email'] ?? emailController.text;
+      phoneController.text = Get.arguments['phone_number'] ?? phoneController.text;
+      dateOfBirth.value = Get.arguments['date_of_birth'] ?? dateOfBirth.value;
+      passwordController.text = Get.arguments['password'] ?? passwordController.text;
+      nicknameController.text = Get.arguments['nickname'] ?? nicknameController.text;
+      selectedGender.value = Get.arguments['gender'] ?? selectedGender.value;
+    }
   }
 
   void togglePasswordVisibility() {
@@ -102,28 +111,36 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isLoading.value = false;
         SnackbarUtils.show(
-          response.data['message'] ?? "Success",
+          response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess),
           isError: false,
         );
         Get.offAllNamed(
           '/verify_otp',
-          arguments: {'email': emailController.text.trim()},
+          arguments: {
+            'fullname': nameController.text.trim(),
+            'email': emailController.text.trim(),
+            'phone_number': phoneController.text.trim(),
+            'date_of_birth': dateOfBirth.value,
+            'password': passwordController.text.trim(),
+            'nickname': nicknameController.text.trim(),
+            'gender': selectedGender.value.toLowerCase(),
+          },
         );
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(response?.data?['message'] ?? "An error occurred");
+        SnackbarUtils.show(response?.data?['message'] ?? AppStrings.get(AppStrings.commonKeyError));
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
       final message =
-          e.response?.data?['message'] ?? e.message ?? "An error occurred";
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(message);
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show("An error occurred");
+      SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyError));
     }
   }
 
@@ -204,7 +221,7 @@ class AuthController extends GetxController {
       EasyLoading.dismiss();
       isLoading.value = false;
       final msg = e.toString().replaceFirst('Exception: ', '');
-      SnackbarUtils.show(msg.isNotEmpty ? msg : "An error occurred");
+      SnackbarUtils.show(msg.isNotEmpty ? msg : AppStrings.get(AppStrings.commonKeyError));
       return false;
     }
   }
@@ -239,7 +256,7 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show("An error occurred");
+      SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyError));
     }
   }
 
@@ -265,7 +282,23 @@ class AuthController extends GetxController {
   }
 
   // Resend OTP
-  Future<void> resendOtp(String email) async {}
+  Future<void> resendOtp() async {
+    isLoading.value = true;
+    try {
+      await _authService.resendOtp(
+        fullname: nameController.text.trim(),
+        email: emailController.text.trim(),
+        phoneNumber: phoneController.text.trim(),
+        dateOfBirth: dateOfBirth.value,
+        password: passwordController.text.trim(),
+        nickname: nicknameController.text.trim(),
+        gender: selectedGender.value.toLowerCase(),
+      );
+    } finally {
+      isLoading.value = false;
+      EasyLoading.dismiss();
+    }
+  }
 
   String? confirmPasswordValidator(String? value) {
     if (value == null || value.isEmpty) return 'Harus diisi';
@@ -300,7 +333,7 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show("An error occurred");
+      SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyError));
     }
   }
 
@@ -342,7 +375,7 @@ class AuthController extends GetxController {
     final heightVal = double.tryParse(heightController.text) ?? 0;
 
     if (weightVal <= 0 || heightVal <= 0) {
-      SnackbarUtils.show("Invalid input");
+      SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyInvalidInput));
       return;
     }
 
@@ -372,7 +405,7 @@ class AuthController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
-      SnackbarUtils.show("An error occurred");
+      SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyError));
     }
   }
 }

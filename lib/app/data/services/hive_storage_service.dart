@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sehati/app/data/models/reminder_model.dart';
 
-class LocalStorageService {
+class HiveStorageService {
   static const _reminderBox = 'reminderBox';
 
   static Future<void> init() async {

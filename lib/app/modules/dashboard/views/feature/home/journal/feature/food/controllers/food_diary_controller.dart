@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +17,7 @@ import 'package:sehati/app/data/services/profile_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/widget/food_diary_chart.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/input_qty_kcal.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/search_list_widget.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class FoodDiaryController extends GetxController {
   final dateController = TextEditingController();
@@ -73,12 +73,12 @@ class FoodDiaryController extends GetxController {
       final profile = await _profileService.getProfile();
       if (profile != null) {
         dataProfile.value = profile;
-        print("✅ Profil berhasil dimuat: ${profile.fullname}");
+        AppLogger.log("✅ Profil berhasil dimuat: ${profile.fullname}");
       } else {
-        print("⚠️ Profil tidak ditemukan");
+        AppLogger.log("⚠️ Profil tidak ditemukan");
       }
     } catch (e) {
-      print("❌ Gagal memuat profil: $e");
+      AppLogger.log("❌ Gagal memuat profil: $e");
     } finally {}
   }
 
@@ -123,7 +123,7 @@ class FoodDiaryController extends GetxController {
         return SearchListWidget<FoodModel>(
           searchC: controllerSearch,
           onSearch: (text) {
-            print(text);
+            AppLogger.log(text);
             if (text.isEmpty) {
               foods.clear();
             } else {
@@ -143,9 +143,9 @@ class FoodDiaryController extends GetxController {
                 final totalKcal = hitungKalori(kaloriPer100g :item.calories , beratGram: gram);
                 final itm = item.copyWith(calories: totalKcal , weightGrams: gram); 
                 addFoodToInput(title, itm);
-                print("Food: ${item.name}");
-                print("Gram: $gram g");
-                print("Total Kcal: $totalKcal kcal");
+                AppLogger.log("Food: ${item.name}");
+                AppLogger.log("Gram: $gram g");
+                AppLogger.log("Total Kcal: $totalKcal kcal");
               },
             );
           },

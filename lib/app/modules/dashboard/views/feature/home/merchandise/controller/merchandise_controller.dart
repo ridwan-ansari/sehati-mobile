@@ -11,6 +11,7 @@ import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/models/response/merchandise_model.dart';
 import 'package:sehati/app/data/services/merchandise_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class MerchandiseController extends GetxController {
   final MerchandiseService _service = MerchandiseService();
@@ -34,7 +35,7 @@ class MerchandiseController extends GetxController {
 
   @override
   void onInit() {
-    debugPrint("💎 MerchandiseController: onInit starting");
+    AppLogger.debug("💎 MerchandiseController: onInit starting");
     super.onInit();
 
     scrollController.addListener(() {
@@ -50,15 +51,15 @@ class MerchandiseController extends GetxController {
     
     // Add a small delay to ensure the UI is ready
     Future.delayed(const Duration(milliseconds: 500), () {
-      debugPrint("💎 MerchandiseController: triggering initial load");
+      AppLogger.debug("💎 MerchandiseController: triggering initial load");
       loadMerchandise();
     });
     
-    debugPrint("💎 MerchandiseController: onInit finished");
+    AppLogger.debug("💎 MerchandiseController: onInit finished");
   }
 
   void _onSearchChanged() {
-    debugPrint("💎 MerchandiseController: search changed to '$searchQuery'");
+    AppLogger.debug("💎 MerchandiseController: search changed to '$searchQuery'");
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -67,7 +68,7 @@ class MerchandiseController extends GetxController {
   }
 
   Future<void> resetAndSearch() async {
-    debugPrint("💎 MerchandiseController: resetAndSearch");
+    AppLogger.debug("💎 MerchandiseController: resetAndSearch");
     offset = 0;
     hasMore = true;
     items.clear();
@@ -75,19 +76,19 @@ class MerchandiseController extends GetxController {
   }
 
   Future<void> loadMerchandise() async {
-    debugPrint("💎 MerchandiseController: loadMerchandise called, isLoading=${isLoading.value}");
+    AppLogger.debug("💎 MerchandiseController: loadMerchandise called, isLoading=${isLoading.value}");
     if (isLoading.value) return;
 
     isLoading.value = true;
     try {
-      debugPrint("💎 MerchandiseController: fetching from service...");
+      AppLogger.debug("💎 MerchandiseController: fetching from service...");
       final result = await _service.getMerchandise(
         limit: limit,
         offset: offset,
         name: searchQuery.value,
       );
 
-      debugPrint("💎 MerchandiseController: fetch result received: ${result?.length ?? 'null'} items");
+      AppLogger.debug("💎 MerchandiseController: fetch result received: ${result?.length ?? 'null'} items");
       if (result != null) {
         if (result.length < limit) {
           hasMore = false;
@@ -95,10 +96,10 @@ class MerchandiseController extends GetxController {
         items.addAll(result);
       }
     } catch (e) {
-      debugPrint("💎 MerchandiseController: ERROR in loadMerchandise: $e");
+      AppLogger.debug("💎 MerchandiseController: ERROR in loadMerchandise: $e");
     } finally {
       isLoading.value = false;
-      debugPrint("💎 MerchandiseController: loadMerchandise finished, isLoading=${isLoading.value}");
+      AppLogger.debug("💎 MerchandiseController: loadMerchandise finished, isLoading=${isLoading.value}");
     }
   }
 

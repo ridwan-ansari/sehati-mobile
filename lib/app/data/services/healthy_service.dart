@@ -1,11 +1,12 @@
-﻿// ignore_for_file: avoid_print
-import 'package:dio/dio.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+﻿import 'package:dio/dio.dart';
+import 'package:sehati/app/common/utils/loading_utils.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/recipe_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class HealthyService {
   final Dio _dio = DioFactory.create();
@@ -42,8 +43,8 @@ class HealthyService {
         throw Exception(response.data['message'] ?? 'Gagal memuat resep');
       }
     } on DioException catch (e) {
-      EasyLoading.dismiss();
-      final msg = e.response?.data?['message'] ?? e.message ?? 'Gagal memuat resep';
+      LoadingUtils.hide();
+      final msg = e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.snackKeyLoadFailed);
       SnackbarUtils.show(isError: true, msg);
       rethrow;
     }
@@ -53,10 +54,10 @@ class HealthyService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return;
       }
-      EasyLoading.show(status: "Claiming point...");
+      LoadingUtils.show(AppStrings.get(AppStrings.commonKeyClaimingPoint));
       final response = await _dio.post(
         "${ApiEndpoints.RECIPE}claim-point",
         data: {"recipe_id": recipeId},
@@ -68,17 +69,17 @@ class HealthyService {
           },
         ),
       );
-      EasyLoading.dismiss();
-      print("CLAIM ${response.statusCode}");
+      LoadingUtils.hide();
+      AppLogger.log("CLAIM ${response.statusCode}");
       if (response.statusCode == 201 || response.statusCode == 200) {
-        SnackbarUtils.show(isError: false, response.data['message'] ?? "Point claimed successfully!");
+        SnackbarUtils.show(isError: false, response.data['message'] ?? AppStrings.get(AppStrings.snackKeyPointClaimed));
       } else {
-        SnackbarUtils.show(response.data['message'] ?? "Failed to claim point");
+        SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
       }
     } on DioException catch (e) {
-      EasyLoading.dismiss();
-      print("❌ [E]-claimPoint: ${e.response?.data ?? e.message}");
-      final msg = e.response?.data?['message'] ?? e.message ?? "Failed to claim point";
+      LoadingUtils.hide();
+      AppLogger.log("❌ [E]-claimPoint: ${e.response?.data ?? e.message}");
+      final msg = e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(isError: true, msg);
     }
   }

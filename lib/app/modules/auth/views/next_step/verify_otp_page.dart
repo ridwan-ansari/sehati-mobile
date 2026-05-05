@@ -140,12 +140,16 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {
-                  // controller.resendOtp(email);
-                },
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        controller.resendOtp();
+                      },
                 child: Text(
                   AppStrings.get(AppStrings.otpKeyResend),
-                  style: const TextStyle(color: Colors.orange),
+                  style: TextStyle(
+                    color: isLoading ? Colors.grey : Colors.orange,
+                  ),
                 ),
               ),
             ],

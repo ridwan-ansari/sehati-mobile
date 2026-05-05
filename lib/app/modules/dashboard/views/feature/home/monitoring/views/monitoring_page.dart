@@ -70,7 +70,7 @@ class MonitoringPage extends GetView<MonitoringController> {
                                 input: MonitoringInputField(
                                   isEdit: true,
                                   controller: controller.imtController,
-                                  hint: 'Autofill',
+                                  hint: AppStrings.get(AppStrings.commonKeyAutofill),
                                 ),
                               ),
                               _buildRow(
@@ -78,7 +78,7 @@ class MonitoringPage extends GetView<MonitoringController> {
                                 input: MonitoringInputField(
                                   isEdit: true,
                                   controller: controller.zScoreController,
-                                  hint: 'Autofill',
+                                  hint: AppStrings.get(AppStrings.commonKeyAutofill),
                                 ),
                               ),
                               _buildRow(
@@ -86,7 +86,7 @@ class MonitoringPage extends GetView<MonitoringController> {
                                 input: MonitoringInputField(
                                   isEdit: true,
                                   controller: controller.idealController,
-                                  hint: 'Autofill',
+                                  hint: AppStrings.get(AppStrings.commonKeyAutofill),
                                 ),
                               ),
                             ],

@@ -1,5 +1,6 @@
 ﻿import 'package:dio/dio.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:sehati/app/common/utils/loading_utils.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -7,6 +8,7 @@ import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/game_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/game/views/game_play_page.dart';
 import 'local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class GameService {
   final Dio _dio = DioFactory.create();
@@ -19,7 +21,7 @@ class GameService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
 
@@ -28,20 +30,20 @@ class GameService {
         queryParameters: {"name": name, "limit": limit, "offset": offset},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      print("Response Data: ${response.data}");
-      print("Response Data: ${response.statusCode}");
+      AppLogger.log("Response Data: ${response.data}");
+      AppLogger.log("Response Data: ${response.statusCode}");
       if (response.statusCode == 200) {
         final List data = response.data['data'];
         return data.map((e) => GameModel.fromJson(e)).toList();
       } else {
-        EasyLoading.dismiss();
+        LoadingUtils.hide();
         SnackbarUtils.show(response.data['message'] ?? "Failed to load games");
         return null;
       }
     } on DioException catch (e) {
-      EasyLoading.dismiss();
-      print("❌ get games error: ${e.response?.data ?? e.message}");
-      print("❌ get games error: ${e.response?.statusCode}");
+      LoadingUtils.hide();
+      AppLogger.log("❌ get games error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ get games error: ${e.response?.statusCode}");
       final msg = e.response?.data?['message'] ?? e.message ?? "Network error";
       SnackbarUtils.show(isError: true, msg);
       return null;
@@ -52,7 +54,7 @@ class GameService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return;
       }
 
@@ -61,16 +63,16 @@ class GameService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
-        EasyLoading.dismiss();
+        LoadingUtils.hide();
         SnackbarUtils.show(
-            isError: false, response.data["message"] ?? "Game claimed successfully");
+            isError: false, response.data["message"] ?? AppStrings.get(AppStrings.commonKeySuccess));
       } else {
-        EasyLoading.dismiss();
-        SnackbarUtils.show(response.data['message'] ?? "Failed to claim game");
+        LoadingUtils.hide();
+        SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
       }
     } on DioException catch (e) {
-      EasyLoading.dismiss();
-      final msg = e.response?.data?['message'] ?? e.message ?? "Network error";
+      LoadingUtils.hide();
+      final msg = e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(isError: true, msg);
     }
   }
@@ -79,17 +81,17 @@ class GameService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return;
       }
 
       final playUrl = "${ApiEndpoints.GAME}$gameId/play";
       Get.to(
-        () => GamePlayPage(linkUrl: playUrl, title: "Play Game", token: token),
+        () => GamePlayPage(linkUrl: playUrl, title: AppStrings.get(AppStrings.menuKeyGame), token: token),
       );
     } catch (e) {
-      EasyLoading.dismiss();
-      SnackbarUtils.show(isError: true, "Error loading game");
+      LoadingUtils.hide();
+      SnackbarUtils.show(isError: true, AppStrings.get(AppStrings.snackKeyErrorLoading));
     }
   }
 }

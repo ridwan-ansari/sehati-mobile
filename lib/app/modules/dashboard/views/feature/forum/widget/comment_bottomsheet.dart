@@ -66,7 +66,7 @@ class CommentBottomSheet extends GetView<ForumController> {
               Icon(Icons.chat_bubble_outline_rounded, size: 48, color: Colors.grey.shade300),
               const SizedBox(height: 12),
               Text(
-                AppStrings.getOr('No comments yet.', 'Belum ada komentar.'),
+                AppStrings.get(AppStrings.forumKeyNoComments),
                 style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600),
               ),
             ],

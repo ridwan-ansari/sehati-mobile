@@ -87,7 +87,7 @@ class _SplashPageState extends State<SplashPage> {
           ),
         ),
         child: Center(
-          child: AppAssetUtils.svg(AppAssets.logoSehati, width: 260),
+          child: AppAssetUtils.svg(AppAssets.logoSehati, width: MediaQuery.of(context).size.width * 0.6),
         ),
       ),
     );

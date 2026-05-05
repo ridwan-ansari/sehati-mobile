@@ -10,6 +10,7 @@ import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentPage extends GetView<AppointmentController> {
@@ -101,6 +102,8 @@ class AppointmentPage extends GetView<AppointmentController> {
   }
 
   Widget _buildCounselorCard(dynamic doctor) {
+    final hasPhone = doctor.phoneNumber != null && doctor.phoneNumber!.isNotEmpty;
+
     return Container(
       width: 170,
       margin: const EdgeInsets.only(right: 16),
@@ -145,22 +148,6 @@ class AppointmentPage extends GetView<AppointmentController> {
                           color: Colors.grey[100],
                           alignment: Alignment.center,
                           child: const Icon(Icons.person, size: 40, color: Colors.grey),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.favorite_border_rounded,
-                          size: 16,
-                          color: Colors.redAccent,
                         ),
                       ),
                     ),

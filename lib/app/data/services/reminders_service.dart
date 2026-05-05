@@ -7,6 +7,7 @@ import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/reminder_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class RemindersService {
   final Dio _dio = DioFactory.create(
@@ -43,7 +44,7 @@ class RemindersService {
       SnackbarUtils.show(response.data['message'] ?? "An error occurred");
       return null;
     } on DioException catch (e) {
-      print("❌ get reminders error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ get reminders error: ${e.response?.data ?? e.message}");
       final msg =
           e.response?.data?['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(msg);
@@ -83,8 +84,8 @@ class RemindersService {
       return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ create reminder error: ${e.response?.statusCode}");
-      print("❌ create reminder error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ create reminder error: ${e.response?.statusCode}");
+      AppLogger.log("❌ create reminder error: ${e.response?.data ?? e.message}");
       final msg =
           e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(msg);
@@ -117,7 +118,7 @@ class RemindersService {
       SnackbarUtils.show(response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError));
       return null;
     } on DioException catch (e) {
-      print("❌ get reminder error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ get reminder error: ${e.response?.data ?? e.message}");
       final msg =
           e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(msg);
@@ -157,7 +158,7 @@ class RemindersService {
       return null;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ update reminder error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ update reminder error: ${e.response?.data ?? e.message}");
       final msg =
           e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(msg);
@@ -195,7 +196,7 @@ class RemindersService {
       return false;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("❌ delete reminder error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ delete reminder error: ${e.response?.data ?? e.message}");
       final msg =
           e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(msg);

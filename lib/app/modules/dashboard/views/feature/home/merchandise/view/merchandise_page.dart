@@ -9,15 +9,16 @@ import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/merchandise/controller/merchandise_controller.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class MerchandisePage extends GetView<MerchandiseController> {
   const MerchandisePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("💎 MerchandisePage: building...");
+    AppLogger.debug("💎 MerchandisePage: building...");
     return Obx(() {
-      debugPrint("💎 MerchandisePage: Obx rebuild, isLoading=${controller.isLoading.value}");
+      AppLogger.debug("💎 MerchandisePage: Obx rebuild, isLoading=${controller.isLoading.value}");
       return Scaffold(
         backgroundColor: AppColors.surface,
         appBar: CustomAppBar(

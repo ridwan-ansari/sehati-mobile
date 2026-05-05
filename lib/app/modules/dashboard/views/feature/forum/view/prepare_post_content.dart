@@ -12,7 +12,8 @@ class PreparePostContentPage extends GetView<ForumController> {
 
   @override
   Widget build(BuildContext context) {
-    final File imageFile = Get.arguments;
+    final dynamic args = Get.arguments;
+    final File imageFile = args is File ? args : File(controller.selectedImage.value?.path ?? '');
 
     return Scaffold(
       backgroundColor: AppColors.surface,

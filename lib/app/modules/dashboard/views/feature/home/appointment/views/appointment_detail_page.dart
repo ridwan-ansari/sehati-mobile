@@ -140,13 +140,34 @@ class _CounselorProfileCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      doctor.fullname ?? '',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            doctor.fullname ?? '',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        if (hasPhone)
+                          GestureDetector(
+                            onTap: () async {
+                              final uri = Uri.parse('https://wa.me/62${doctor.phoneNumber}');
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: AppAssetUtils.svg(
+                              AppAssets.whatsAppIcon,
+                              width: 28,
+                              height: 28,
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -182,40 +203,6 @@ class _CounselorProfileCard extends StatelessWidget {
               ),
             ],
           ),
-          if (hasPhone) ...[
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  await launchUrl(
-                    Uri.parse('https://wa.me/62${doctor.phoneNumber}'),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
-                icon: AppAssetUtils.svg(
-                  AppAssets.whatsAppIcon,
-                  width: 22,
-                  height: 22,
-                  color: Colors.white,
-                ),
-                label: Text(AppStrings.get(AppStrings.menuKeyChatWA)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.whatsapp,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );

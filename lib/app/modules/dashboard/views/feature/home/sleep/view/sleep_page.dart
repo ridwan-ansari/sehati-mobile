@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
+import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_card.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_input_field.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/monitoring/widgets/monitoring_section_header.dart';
@@ -16,19 +17,8 @@ class SleepPage extends GetView<SleepController> {
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.richBrown,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          AppStrings.get(AppStrings.menuKeySleep),
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Get.back(),
-        ),
+      appBar: SimpleTextAppBar(
+        title: AppStrings.get(AppStrings.menuKeySleep),
       ),
       body: RefreshIndicator(
         onRefresh: controller.fetchInitial,

@@ -1,5 +1,4 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
@@ -7,6 +6,7 @@ import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/leaderboard_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class LeaderboardService {
   final Dio _dio = DioFactory.create();
@@ -58,12 +58,12 @@ class LeaderboardService {
         return null;
       }
     } on DioException catch (e) {
-      print("❌ getDashboardNotif error: ${e.response?.data ?? e.message}");
+      AppLogger.log("❌ getDashboardNotif error: ${e.response?.data ?? e.message}");
       final msg = e.response?.data['message'] ?? e.message ?? "An error occurred";
       SnackbarUtils.show(msg);
       return null;
     } catch (e) {
-      print("❌ getDashboardNotif error: $e");
+      AppLogger.log("❌ getDashboardNotif error: $e");
       return null;
     }
   }

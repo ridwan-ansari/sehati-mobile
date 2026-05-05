@@ -1,11 +1,12 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/video_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class EdutainmentService {
   final Dio _dio = DioFactory.create();
@@ -21,7 +22,7 @@ class EdutainmentService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
 
@@ -38,10 +39,10 @@ class EdutainmentService {
         final List data = response.data['data'];
         return data.map((e) => VideoModel.fromJson(e)).toList();
       } else {
-        throw Exception(response.data['message'] ?? 'Gagal memuat data video');
+        throw Exception(response.data['message'] ?? AppStrings.get(AppStrings.snackKeyLoadFailed));
       }
     } on DioException catch (e) {
-      final msg = e.response?.data['message'] ?? e.message ?? 'Gagal memuat data video';
+      final msg = e.response?.data['message'] ?? e.message ?? AppStrings.get(AppStrings.snackKeyLoadFailed);
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -51,7 +52,7 @@ class EdutainmentService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please login.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return false;
       }
 
@@ -67,19 +68,19 @@ class EdutainmentService {
         ),
       );
 
-      print("CLAIM YOUTUBE STATUS : ${response.statusCode}");
-      print("CLAIM YOUTUBE STATUS : ${response.data}");
+      AppLogger.log("CLAIM YOUTUBE STATUS : ${response.statusCode}");
+      AppLogger.log("CLAIM YOUTUBE STATUS : ${response.data}");
       if (response.statusCode == 201) {
         return true;
       }
 
       return false;
     } on DioException catch (e) {
-      print("[E]CLAIM YOUTUBE STATUS : ${e.response?.statusCode}");
-      print("[E]CLAIM YOUTUBE STATUS : ${e.response?.data}");
+      AppLogger.log("[E]CLAIM YOUTUBE STATUS : ${e.response?.statusCode}");
+      AppLogger.log("[E]CLAIM YOUTUBE STATUS : ${e.response?.data}");
       SnackbarUtils.show(
           isError: true,
-          e.response?.data['message'] ?? e.message ?? "An error occurred");
+          e.response?.data['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError));
       return false;
     }
   }

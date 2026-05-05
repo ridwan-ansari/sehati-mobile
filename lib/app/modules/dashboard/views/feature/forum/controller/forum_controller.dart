@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
 import 'package:sehati/app/data/models/forum_comment_model.dart';
 import 'package:sehati/app/data/services/forum_service.dart';
+import 'package:sehati/app/routes/app_routes.dart';
 
 class ForumController extends GetxController {
   final ImagePicker picker = ImagePicker();
@@ -126,8 +127,18 @@ class ForumController extends GetxController {
   }
 
   Future<void> takePhoto() async {
-    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
-    if (photo != null) selectedImage.value = File(photo.path);
+    try {
+      if (cameraController == null || !cameraController!.value.isInitialized) {
+        await initializeCamera();
+      }
+      final XFile? photo = await cameraController?.takePicture();
+      if (photo != null) {
+        selectedImage.value = File(photo.path);
+        Get.toNamed(AppRoutes.PREPARE_POST_CONTENT);
+      }
+    } catch (e) {
+      debugPrint("Error taking photo: $e");
+    }
   }
 
   Future<void> pickFromGallery() async {
@@ -146,7 +157,7 @@ class ForumController extends GetxController {
         contentController.clear();
         selectedImage.value = null;
         await fetchForums();
-        Get.offAllNamed('/dashboard');
+        Get.back(); // Go back to the forum page
       }
     } finally {
       isPosting.value = false;

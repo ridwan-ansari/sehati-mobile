@@ -21,8 +21,8 @@ class DashboardPage extends GetView<DashboardController> {
       labelKey: AppStrings.menuKeyHome,
     ),
     _NavItem(
-      activeIcon: Icons.forum_rounded,
-      inactiveIcon: Icons.forum_outlined,
+      activeIcon: Icons.explore_rounded,
+      inactiveIcon: Icons.explore_outlined,
       labelKey: AppStrings.menuKeyCommunity,
     ),
     _NavItem(
@@ -97,8 +97,11 @@ class _ModernNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        height: 68,
+        margin: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.04,
+          vertical: MediaQuery.of(context).size.height * 0.015,
+        ),
+        height: MediaQuery.of(context).size.height * 0.08,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -111,7 +114,10 @@ class _ModernNavBar extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.02,
+            vertical: MediaQuery.of(context).size.height * 0.01,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(items.length, (i) {

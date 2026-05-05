@@ -24,17 +24,20 @@ class WelcomePage extends StatelessWidget {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.07,
+              vertical: MediaQuery.of(context).size.height * 0.03,
+            ),
             child: Obx(() {
               final langService = Get.find<LanguageService>();
               final isEn = langService.isEnglish();
               return Column(
                 children: [
-                  const SizedBox(height: 32),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.04),
                   AnimatedIn(
-                    child: AppAssetUtils.svg(AppAssets.logoSehati, width: 200),
+                    child: AppAssetUtils.svg(AppAssets.logoSehati, width: MediaQuery.of(context).size.width * 0.4),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.035),
                   AnimatedIn(
                     child: Text(
                       isEn ? 'Welcome\nto Sehati!' : 'Selamat Datang\ndi Sehati!',
@@ -47,7 +50,7 @@ class WelcomePage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.015),
                   AnimatedIn(
                     child: Text(
                       isEn
@@ -57,7 +60,7 @@ class WelcomePage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 52),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.06),
                   AnimatedIn(
                     child: _AuthCard(
                       icon: Icons.login_rounded,
@@ -69,7 +72,7 @@ class WelcomePage extends StatelessWidget {
                       onTap: () => Get.toNamed(AppRoutes.LOGIN),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   AnimatedIn(
                     child: _AuthCard(
                       icon: Icons.person_add_rounded,
@@ -81,7 +84,7 @@ class WelcomePage extends StatelessWidget {
                       onTap: () => Get.toNamed(AppRoutes.INPUTPROFILE),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                 ],
               );
             }),

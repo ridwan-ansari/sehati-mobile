@@ -8,6 +8,7 @@ import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/services/language_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -84,7 +85,7 @@ class _MenuPageState extends State<MenuPage> {
                 ),
               )
             : ListView.builder(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
                 itemCount: grouped.length,
                 itemBuilder: (context, index) {
                   final entry = grouped.entries.elementAt(index);
@@ -92,32 +93,39 @@ class _MenuPageState extends State<MenuPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _CategoryHeader(title: AppStrings.get(entry.key)),
-                      const SizedBox(height: 16),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 0.75,
-                        children: entry.value
-                            .map(
-                              (f) => AnimatedIn(
-                                child: _FeatureItem(
-                                  icon: f['icon']!,
-                                  label: AppStrings.get(f['labelKey']!),
-                                  color: f['color'] as Color,
-                                  shouldAnimate: f['icon'] == AppAssets.reminderIcon,
-                                  onTap: () {
-                                    print("💎 MenuPage: Navigating to ${f['route']}");
-                                    Get.toNamed(f['route']!);
-                                  },
-                                ),
-                              ),
-                            )
-                            .toList(),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width = constraints.maxWidth;
+                          int crossAxisCount = (width / 85).floor();
+                          if (crossAxisCount < 2) crossAxisCount = 2;
+                          return GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: crossAxisCount,
+                            mainAxisSpacing: MediaQuery.of(context).size.height * 0.02,
+                            crossAxisSpacing: MediaQuery.of(context).size.width * 0.03,
+                            childAspectRatio: 0.75,
+                            children: entry.value
+                                .map(
+                                  (f) => AnimatedIn(
+                                    child: _FeatureItem(
+                                      icon: f['icon']!,
+                                      label: AppStrings.get(f['labelKey']!),
+                                      color: f['color'] as Color,
+                                      shouldAnimate: f['icon'] == AppAssets.reminderIcon,
+                                      onTap: () {
+                                        AppLogger.log("💎 MenuPage: Navigating to ${f['route']}");
+                                        Get.toNamed(f['route']!);
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        },
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                     ],
                   );
                 },

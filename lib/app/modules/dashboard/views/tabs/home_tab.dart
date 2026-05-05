@@ -15,6 +15,7 @@ import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/game/controllers/game_controller.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/leaderboard/controller/leaderboard_controller.dart';
 import 'package:sehati/app/routes/app_routes.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -96,7 +97,7 @@ class HomeTab extends StatelessWidget {
                         ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -115,7 +116,10 @@ class _HeroSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.05,
+        vertical: MediaQuery.of(context).size.height * 0.03,
+      ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -130,11 +134,15 @@ class _HeroSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppAssetUtils.svg(AppAssets.logoSehati, width: 54, height: 54),
+              AppAssetUtils.svg(
+                AppAssets.logoSehati,
+                width: MediaQuery.of(context).size.width * 0.12,
+                height: MediaQuery.of(context).size.width * 0.12,
+              ),
               Obx(() => _RankBadge(rank: leader.userRank)),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
           Obx(
             () {
               final langService = Get.find<LanguageService>();
@@ -157,7 +165,7 @@ class _HeroSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
           Obx(
             () {
               final langService = Get.find<LanguageService>();
@@ -172,14 +180,14 @@ class _HeroSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.025),
           _StatsRow(leader: leader),
           Obx(() {
             if (leader.errorMessage.isEmpty) return const SizedBox.shrink();
             final langService = Get.find<LanguageService>();
             final isEn = langService.isEnglish();
             return Padding(
-              padding: const EdgeInsets.only(top: 10),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.015),
               child: Row(
                 children: [
                   Icon(
@@ -504,7 +512,10 @@ class _FeatureGridState extends State<_FeatureGrid> {
       return Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.04,
+              vertical: MediaQuery.of(context).size.height * 0.015,
+            ),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -532,7 +543,7 @@ class _FeatureGridState extends State<_FeatureGrid> {
           ),
           if (_filteredFeatures.isEmpty)
             Padding(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.08),
               child: Center(
                 child: Text(
                   AppStrings.get(AppStrings.menuKeyNoMenuFound),
@@ -541,31 +552,38 @@ class _FeatureGridState extends State<_FeatureGrid> {
               ),
             )
         else
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            crossAxisCount: 4,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.78,
-            children: _filteredFeatures
-                .map(
-                  (f) => AnimatedIn(
-                    child: _FeatureItem(
-                      icon: f['icon'],
-                      label: AppStrings.get(f['labelKey'] as String),
-                      color: f['color'] as Color,
-                      shouldAnimate: f['icon'] == AppAssets.reminderIcon,
-                      onTap: () {
-                        print("💎 HomeTab: Navigating to ${f['route']}");
-                        Get.toNamed(f['route'] as String)
-                          ?.then((_) => widget.leader.onInit());
-                      },
-                    ),
-                  ),
-                )
-                .toList(),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              int crossAxisCount = (width / 90).floor();
+              if (crossAxisCount < 2) crossAxisCount = 2;
+              return GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: MediaQuery.of(context).size.height * 0.02,
+                crossAxisSpacing: MediaQuery.of(context).size.width * 0.03,
+                childAspectRatio: 0.78,
+                children: _filteredFeatures
+                    .map(
+                      (f) => AnimatedIn(
+                        child: _FeatureItem(
+                          icon: f['icon'],
+                          label: AppStrings.get(f['labelKey'] as String),
+                          color: f['color'] as Color,
+                          shouldAnimate: f['icon'] == AppAssets.reminderIcon,
+                          onTap: () {
+                            AppLogger.log("💎 HomeTab: Navigating to ${f['route']}");
+                            Get.toNamed(f['route'] as String)
+                              ?.then((_) => widget.leader.onInit());
+                          },
+                        ),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           ),
         ],
       );

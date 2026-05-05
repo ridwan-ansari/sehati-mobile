@@ -6,6 +6,7 @@ import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ChatSocketService {
   IOWebSocketChannel? _channel;
@@ -24,14 +25,14 @@ class ChatSocketService {
   /// ============================
   Future<bool> connect() async {
     if (_isConnected || _isConnecting) {
-      print("WS: already connected/connecting...");
+      AppLogger.log("WS: already connected/connecting...");
       return _isConnected;
     }
 
     _isConnecting = true;
 
     final token = LocalStorageService.getAccessToken();
-    print("WS CONNECTING... attempt=$_retryAttempts");
+    AppLogger.log("WS CONNECTING... attempt=$_retryAttempts");
 
     try {
       final socket = await WebSocket.connect(
@@ -46,13 +47,13 @@ class ChatSocketService {
       _isConnected = true;
       _retryAttempts = 0;
 
-      print("WS CONNECTED");
+      AppLogger.log("WS CONNECTED");
 
       _listenSocket();
 
       return true;
     } catch (e) {
-      print("WS CONNECT ERROR: $e");
+      AppLogger.log("WS CONNECT ERROR: $e");
       _isConnecting = false;
       _isConnected = false;
 
@@ -70,34 +71,34 @@ class ChatSocketService {
         ChattingController controller = Get.find<ChattingController>();
         controller.getRooms();
         final data = jsonDecode(event);
-        print("WS SERVICE: $data");
+        AppLogger.log("WS SERVICE: $data");
         final message = data['message']; // <-- STRING
         final status = data['status']; // <-- STRING
         final fromId = data['from'];
 
         final routeRoom = controller.currentRoomKey.value.toLowerCase();
         final responRoom = data['room_key'].toString().toLowerCase();
-        print("-------------------------------------------------");
-        print("route :: $routeRoom");
-        print("res ::$responRoom");
-        print("-------------------------------------------------");
+        AppLogger.log("-------------------------------------------------");
+        AppLogger.log("route :: $routeRoom");
+        AppLogger.log("res ::$responRoom");
+        AppLogger.log("-------------------------------------------------");
         if (routeRoom == responRoom) {
-          print("TIDAK DAPAT NOTIF");
+          AppLogger.log("TIDAK DAPAT NOTIF");
         } else {
-          print("DAPAT NOTIF");
+          AppLogger.log("DAPAT NOTIF");
         }
         if (status == null && (routeRoom != responRoom)) {
           controller.getUserById(fromId).then((profile) {
             final name = profile?.nickname ?? "";
-            print('service ws name: ${profile?.toJson()}');
-            print('service ws name: $name');
-            print("Notif name: $name");
-            print("Notif message: $message");
-            print("Notif fromId: $fromId");
-            print("Notif roomKey: ${data['room_key']}");
-            print("Notif roomId: ${data['room_id']}");
-            print("Notif picture: $BASE_URL${profile?.picture}");
-            print("Notif picture: -----------------");
+            AppLogger.log('service ws name: ${profile?.toJson()}');
+            AppLogger.log('service ws name: $name');
+            AppLogger.log("Notif name: $name");
+            AppLogger.log("Notif message: $message");
+            AppLogger.log("Notif fromId: $fromId");
+            AppLogger.log("Notif roomKey: ${data['room_key']}");
+            AppLogger.log("Notif roomId: ${data['room_id']}");
+            AppLogger.log("Notif picture: $BASE_URL${profile?.picture}");
+            AppLogger.log("Notif picture: -----------------");
             controller.showWsNotification(
               title: "@$name",
               body: message,
@@ -112,12 +113,12 @@ class ChatSocketService {
         }
       },
       onDone: () {
-        print("WS CLOSED by server");
+        AppLogger.log("WS CLOSED by server");
         _isConnected = false;
         _scheduleReconnect();
       },
       onError: (e) {
-        print("WS ERROR: $e");
+        AppLogger.log("WS ERROR: $e");
         _isConnected = false;
         _scheduleReconnect();
       },
@@ -136,7 +137,7 @@ class ChatSocketService {
     if (_retryAttempts >= 3) delay = 5;
     if (_retryAttempts >= 6) delay = 10;
 
-    print("WS Reconnect in $delay seconds...");
+    AppLogger.log("WS Reconnect in $delay seconds...");
 
     _reconnectTimer?.cancel();
     _reconnectTimer = Timer(Duration(seconds: delay), () {
@@ -157,7 +158,7 @@ class ChatSocketService {
   /// ============================
   void sendMessage(Map<String, dynamic> data) {
     if (!_isConnected) {
-      print("WS: Not connected. Auto-reconnect...");
+      AppLogger.log("WS: Not connected. Auto-reconnect...");
       connect();
       Future.delayed(const Duration(milliseconds: 500), () {
         if (_isConnected) _channel?.sink.add(jsonEncode(data));
@@ -166,7 +167,7 @@ class ChatSocketService {
     }
 
     final jsonData = jsonEncode(data);
-    print("WS SEND: $jsonData");
+    AppLogger.log("WS SEND: $jsonData");
     _channel!.sink.add(jsonData);
   }
 
@@ -174,7 +175,7 @@ class ChatSocketService {
   /// DISCONNECT MANUAL
   /// ============================
   void disconnect() {
-    print("WS DISCONNECT MANUAL");
+    AppLogger.log("WS DISCONNECT MANUAL");
     _reconnectTimer?.cancel();
     _channel?.sink.close();
     _isConnected = false;

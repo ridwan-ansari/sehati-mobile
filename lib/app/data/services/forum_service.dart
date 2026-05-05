@@ -1,5 +1,4 @@
-﻿// ignore_for_file: avoid_print
-
+﻿
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
@@ -8,6 +7,7 @@ import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/forum_comment_model.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ForumService {
   final Dio _dio = DioFactory.create();
@@ -43,7 +43,7 @@ class ForumService {
     } on DioException catch (e) {
       final msg =
           e.response?.data?['message'] ?? e.message ?? 'An error occurred';
-      print("Error: $msg");
+      AppLogger.log("Error: $msg");
       SnackbarUtils.show(isError: true, msg);
       return null;
     }
@@ -195,9 +195,9 @@ class ForumService {
       return false;
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      print("status: ${e.response?.statusCode}");
-      print("data  : ${e.response?.data}");
-      print("error : ${e.message}");
+      AppLogger.log("status: ${e.response?.statusCode}");
+      AppLogger.log("data  : ${e.response?.data}");
+      AppLogger.log("error : ${e.message}");
 
       final msg =
           e.response?.data?["message"] ?? e.message ?? "An error occurred";

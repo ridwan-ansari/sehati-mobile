@@ -8,6 +8,7 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/widgets/simple_text_appbar.dart';
 import 'package:sehati/app/data/enum/activity_level.dart';
 import 'package:sehati/app/data/enum/food.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/feature/food/widget/food_diary_chart.dart';
@@ -21,43 +22,35 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.richBrown,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          AppStrings.get(AppStrings.menuKeyFoodDiary),
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildWelcomeHeader(),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDatePicker(context),
-                  const SizedBox(height: 24),
-                  HeaderTitleWidget(title: AppStrings.getOr("Record Your Meals", "Catat Makananmu")),
-                  const SizedBox(height: 16),
-                  _buildMealSection(context),
-                  const SizedBox(height: 24),
-                  HeaderTitleWidget(title: AppStrings.getOr("Nutritional Analysis", "Analisis Gizi")),
-                  const SizedBox(height: 16),
-                  _buildAnalysisSection(),
-                  const SizedBox(height: 24),
-                  HeaderTitleWidget(title: AppStrings.getOr("Weekly Progress", "Progres Mingguan")),
-                  const SizedBox(height: 16),
-                  _buildChartSection(),
-                  const SizedBox(height: 40),
-                ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildWelcomeHeader(),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDatePicker(context),
+                    const SizedBox(height: 24),
+                    HeaderTitleWidget(title: AppStrings.getOr("Record Your Meals", "Catat Makananmu")),
+                    const SizedBox(height: 16),
+                    _buildMealSection(context),
+                    const SizedBox(height: 24),
+                    HeaderTitleWidget(title: AppStrings.getOr("Nutritional Analysis", "Analisis Gizi")),
+                    const SizedBox(height: 16),
+                    _buildAnalysisSection(),
+                    const SizedBox(height: 24),
+                    HeaderTitleWidget(title: AppStrings.getOr("Weekly Progress", "Progres Mingguan")),
+                    const SizedBox(height: 16),
+                    _buildChartSection(),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -66,7 +59,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
   Widget _buildWelcomeHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
       decoration: const BoxDecoration(
         color: AppColors.richBrown,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
@@ -74,21 +67,47 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
       child: AnimatedIn(
         child: Column(
           children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => Get.back(),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
+                      child: Text(
+                        AppStrings.get(AppStrings.menuKeyFoodDiary),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             Text(
               AppStrings.get(AppStrings.foodKeyWelcome),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               AppStrings.get(AppStrings.foodKeyWelcomeSub),
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

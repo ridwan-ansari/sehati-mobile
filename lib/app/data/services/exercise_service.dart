@@ -1,4 +1,5 @@
 ﻿import 'package:dio/dio.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -13,7 +14,7 @@ class ExerciseService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return null;
       }
       final response = await _dio.get(
@@ -25,12 +26,12 @@ class ExerciseService {
         final List data = response.data['data'];
         return data.map((e) => ExerciseQuestionModel.fromJson(e)).toList();
       } else {
-        throw Exception(response.data['message'] ?? 'Gagal memuat soal');
+        throw Exception(response.data['message'] ?? AppStrings.get(AppStrings.snackKeyLoadFailed));
       }
     } on DioException catch (e) {
       SnackbarUtils.show(
           isError: true,
-          e.response?.data['message'] ?? e.message ?? 'Gagal memuat soal');
+          e.response?.data['message'] ?? e.message ?? AppStrings.get(AppStrings.snackKeyLoadFailed));
       rethrow;
     }
   }
@@ -42,7 +43,7 @@ class ExerciseService {
     try {
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
-        SnackbarUtils.show("Token not found. Please log in again.");
+        SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return false;
       }
 
@@ -55,17 +56,17 @@ class ExerciseService {
       if (response.statusCode == 201) {
         SnackbarUtils.show(
             isError: false,
-            response.data['message'] ?? "Answer sent successfully");
+            response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess));
         return true;
       } else {
         SnackbarUtils.show(
-          response.data['message'] ?? "Failed to send reply",
+          response.data['message'] ?? AppStrings.get(AppStrings.commonKeyError),
         );
         return false;
       }
     } on DioException catch (e) {
       SnackbarUtils.show(
-          e.response?.data['message'] ?? e.message ?? "Failed to send reply");
+          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError));
       return false;
     }
   }

@@ -37,20 +37,23 @@ class _LoginPageState extends State<LoginPage> {
             _background(),
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
                 child: Form(
                   key: controller.formKeyLogin,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 60),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                       AnimatedIn(
-                        child: Text(
-                          AppStrings.getOr("Welcome", "Selamat Datang"),
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            AppStrings.getOr("Welcome", "Selamat Datang"),
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
@@ -65,14 +68,14 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 40),
                           child: AppAssetUtils.svg(
                             AppAssets.logoSehati,
-                            width: 260,
+                            width: MediaQuery.of(context).size.width * 0.6,
                           ),
                         ),
                       ),
@@ -108,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                       Obx(() {
                         return AnimatedIn(
                           child: TextFormField(
@@ -151,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }),
 
-                      const SizedBox(height: 32),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.04),
                       Obx(
                         () => AnimatedIn(
                           child: AppButton(
@@ -170,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                       TextButton(
                         onPressed: () => Get.toNamed("/forgot_password"),
                         child: Text(
@@ -178,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

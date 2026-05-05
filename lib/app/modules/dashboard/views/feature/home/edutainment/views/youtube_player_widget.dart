@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class YoutubePlayerWidget extends StatefulWidget {
   final String videoId;
@@ -61,7 +62,7 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
         _controller.value.playerState == PlayerState.ended) {
       isEndedTriggered = true;
       if (_watchedDuration.inSeconds >= totalDuration.inSeconds - 3) {
-      print("SELESAI");
+      AppLogger.log("SELESAI");
         widget.onVideoEnded?.call();
       }
     }

@@ -40,8 +40,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AppAssetUtils.svg(AppAssets.logoSehati, width: 140),
-                  const SizedBox(height: 40),
+                  AppAssetUtils.svg(AppAssets.logoSehati, width: MediaQuery.of(context).size.width * 0.3),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   const Text(
                     'Choose Your Language',
                     style: TextStyle(
@@ -59,9 +59,9 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                       color: Colors.grey,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.06),
                     child: Column(
                       children: [
                         _LanguageCard(
@@ -71,7 +71,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                           isSelected: _selectedLanguage == 'en',
                           onTap: () => setState(() => _selectedLanguage = 'en'),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                         _LanguageCard(
                           flag: '🇮🇩',
                           label: 'Bahasa Indonesia',
@@ -86,7 +86,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.06),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,

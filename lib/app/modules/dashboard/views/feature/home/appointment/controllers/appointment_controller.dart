@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/models/response/professional_res_model.dart';
 import 'package:sehati/app/data/services/professional_service.dart';
 
@@ -50,7 +51,7 @@ class AppointmentController extends GetxController {
     final map = <String, List<ProfessionalData>>{};
 
     for (final item in profeeesionalList) {
-      final key = item.specialization ?? "Unknown";
+      final key = item.specialization ?? AppStrings.get(AppStrings.commonKeyUnknown);
 
       if (!map.containsKey(key)) {
         map[key] = [];
@@ -140,12 +141,12 @@ class AppointmentController extends GetxController {
   /// =====================================
   Future<void> submitAppointment({required String professionalId}) async {
     if (professionalId.isEmpty) {
-      SnackbarUtils.show("Professional not selected");
+      SnackbarUtils.show(AppStrings.get(AppStrings.appointmentKeyProfNotSelected));
       return;
     }
 
     if (!isValid) {
-      SnackbarUtils.show("Please complete all appointment details");
+      SnackbarUtils.show(AppStrings.get(AppStrings.appointmentKeyDetailsIncomplete));
       return;
     }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:sehati/app/common/localization/app_strings.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
@@ -51,7 +52,7 @@ class DashboardController extends GetxController {
                     const Icon(Icons.info_outline, color: Colors.grey, size: 18),
                     const SizedBox(width: 8),
                     Text(
-                      'Press back again to exit',
+                      AppStrings.get(AppStrings.commonKeyExitPressAgain),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[800],

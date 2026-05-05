@@ -1,9 +1,10 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sehati/app/data/services/notification_service.dart';
+import 'package:sehati/app/data/services/local_storage_service.dart';
+import 'package:sehati/app/data/services/hive_storage_service.dart';
 import 'package:sehati/app/data/services/ws/chat_socket_service.dart';
 import 'package:sehati/app/services/awesome_notifications_service.dart';
 import 'package:sehati/main_config.dart';
@@ -19,6 +20,10 @@ void main() async {
   await GetStorage.init();
   Get.put(ThemeController());
   await LocalStorageService.init();
+  await HiveStorageService.init();
+  
+  configLoading();
+  
   await AwesomeNotifications().initialize(
     null,
     [
@@ -34,16 +39,23 @@ void main() async {
   AwesomeNotifications().setListeners(
     onActionReceivedMethod: AwesomeNotificationService.onActionReceived,
   );
-  configLoading();
   runApp(const MRAApp());
 }
 
 void configLoading() {
   EasyLoading.instance
-    ..indicatorType = EasyLoadingIndicatorType.circle
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.dark
-    ..maskType = EasyLoadingMaskType.black
-    ..userInteractions = false;
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..progressColor = Colors.white
+    ..backgroundColor = Colors.green
+    ..indicatorColor = Colors.white
+    ..textColor = Colors.white
+    ..maskColor = Colors.blue.withOpacity(0.5)
+    ..userInteractions = true
+    ..dismissOnTap = false;
 }
 
 class MRAApp extends StatelessWidget {
@@ -62,9 +74,9 @@ class MRAApp extends StatelessWidget {
         themeMode: themeController.isDarkMode.value
             ? ThemeMode.dark
             : ThemeMode.light,
-        builder: EasyLoading.init(),
         initialRoute: AppRoutes.SPLASH,
         getPages: AppPages.routes,
+        builder: EasyLoading.init(),
       ),
     );
   }
