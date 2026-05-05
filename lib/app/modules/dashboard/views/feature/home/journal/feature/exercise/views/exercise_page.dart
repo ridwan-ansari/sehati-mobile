@@ -34,8 +34,6 @@ class ExerciseView extends GetView<ExerciseController> {
               .where((q) => q.selectedOption != null || q.answerText != null)
               .length;
   
-          PageController pageController = PageController();
-  
           return WillPopScope(
             onWillPop: () async {
               bool? exit = await DialogUtils.showConfirmDialog(
@@ -50,14 +48,14 @@ class ExerciseView extends GetView<ExerciseController> {
                 _buildProgressHeader(jawabanTerisi, totalSoal),
                 Expanded(
                   child: PageView.builder(
-                    controller: pageController,
+                    controller: controller.pageController,
                     itemCount: totalSoal,
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       final item = controller.exerciseList[index];
                       return Padding(
                         padding: const EdgeInsets.all(20),
-                        child: _buildQuestionCard(item, index, totalSoal, pageController),
+                        child: _buildQuestionCard(item, index, totalSoal, controller.pageController),
                       );
                     },
                   ),

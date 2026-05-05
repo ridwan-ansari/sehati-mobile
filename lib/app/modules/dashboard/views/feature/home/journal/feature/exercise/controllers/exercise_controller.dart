@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:sehati/app/data/models/response/exercise_question_model.dart';
 import 'package:sehati/app/data/services/exercise_service.dart';
@@ -5,9 +6,11 @@ import 'package:sehati/app/data/services/exercise_service.dart';
 class ExerciseController extends GetxController {
   final ExerciseService _service = ExerciseService();
 
+  final pageController = PageController();
   final isLoading = false.obs;
   final RxList<ExerciseQuestionModel> exerciseList =
       <ExerciseQuestionModel>[].obs;
+
   Future<void> fetchExerciseQuestions() async {
     try {
       isLoading.value = true;
@@ -73,8 +76,8 @@ class ExerciseController extends GetxController {
 
   @override
   void onClose() {
+    pageController.dispose();
     super.onClose();
-
     exerciseList.clear();
   }
 }

@@ -90,32 +90,3 @@ class PostCard extends GetView<ForumController> {
     );
   }
 }
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.label, required this.color, required this.onTap});
-  final String icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            AppAssetUtils.svg(icon, width: 20, height: 20, color: color),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

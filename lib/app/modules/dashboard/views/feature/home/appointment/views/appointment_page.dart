@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -99,8 +97,7 @@ class AppointmentPage extends GetView<AppointmentController> {
   }
 
   Widget _buildCounselorCard(dynamic doctor) {
-    final hasPhone = doctor.phoneNumber != null && doctor.phoneNumber!.isNotEmpty;
-
+    
     return Container(
       width: 170,
       margin: const EdgeInsets.only(right: 16),
