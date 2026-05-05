@@ -12,7 +12,6 @@ import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sehati/app/modules/profile/widgets/change_photo_dialog.dart';
 import 'package:sehati/app/services/notification_service.dart';
-import 'package:sehati/app/modules/dashboard/controllers/dashboard_controller.dart';
 
 class ProfileTab extends GetView<ProfileController> {
   const ProfileTab({super.key});

@@ -1,11 +1,8 @@
 import 'package:sehati/app/common/utils/app_logger.dart';
 
-// ignore_for_file: avoid_print, constant_identifier_names
-
 import 'dart:typed_data';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -25,16 +22,10 @@ class NotificationService {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         AppLogger.log("🔔 Notification tapped: ${response.payload}");
         if (response.actionId == 'stop_alarm') {
-          // Jika Anda menggunakan cancelNotification: true di atas,
-          // notifikasi sudah dibatalkan, tetapi Anda bisa menambahkan
-          // logika tambahan di sini (misalnya menghentikan suara/vibrasi jika masih berjalan)
           AppLogger.log("Tombol STOP ditekan di foreground!");
         } else if (response.actionId == 'open_alarm') {
           AppLogger.log('open di klik');
         } else {
-          // Tombol notifikasi utama (bukan tombol aksi) yang ditekan
-          // Lakukan navigasi ke layar alarm, misalnya:
-          // Navigator.of(context).pushNamed('/alarm-detail');
         }
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,

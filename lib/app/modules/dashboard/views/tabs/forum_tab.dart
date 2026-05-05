@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
-import 'package:sehati/app/common/utils/app_asset_utils.dart';
-import 'package:sehati/app/common/widgets/app_error_widget.dart';
-import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/widget/post_card.dart';
 import 'package:sehati/app/routes/app_routes.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';
-import 'package:sehati/app/modules/dashboard/controllers/dashboard_controller.dart';
 
 class ForumTab extends GetView<ForumController> {
   const ForumTab({super.key});

@@ -1,6 +1,5 @@
 ﻿
 import 'package:dio/dio.dart';
-import 'package:dio/dio.dart';
 import 'package:sehati/app/common/utils/loading_utils.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
