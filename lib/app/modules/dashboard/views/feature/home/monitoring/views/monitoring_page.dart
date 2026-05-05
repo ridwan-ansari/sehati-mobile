@@ -20,7 +20,6 @@ class MonitoringPage extends GetView<MonitoringController> {
       appBar: CustomAppBar(
         logoSvg: AppAssets.monitoringIcon,
         title: AppStrings.get(AppStrings.menuKeyMonitoring),
-        onSearchChanged: (_) {},
         showBackButton: true,
       ),
       body: RefreshIndicator(
