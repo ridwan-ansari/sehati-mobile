@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/forum_content_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/forum/controller/forum_controller.dart';

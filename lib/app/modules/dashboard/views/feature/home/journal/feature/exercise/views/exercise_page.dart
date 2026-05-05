@@ -41,7 +41,7 @@ class ExerciseView extends GetView<ExerciseController> {
                 title: AppStrings.get(AppStrings.exerciseKeyConfirmExit),
                 message: AppStrings.get(AppStrings.exerciseKeyExitMessage),
               );
-              return exit ?? false;
+              return exit;
             },
             child: Column(
               children: [
