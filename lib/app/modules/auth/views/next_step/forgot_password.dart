@@ -6,7 +6,6 @@ import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
 import 'package:sehati/app/common/utils/validator.dart';
-import 'package:sehati/app/common/widgets/app_button.dart';
 import 'package:sehati/app/modules/auth/controllers/auth_controller.dart';
 
 import 'package:sehati/app/common/constants/app_colors.dart';

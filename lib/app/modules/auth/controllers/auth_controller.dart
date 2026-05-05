@@ -212,7 +212,7 @@ class AuthController extends GetxController {
         isLoading.value = false;
       }
       return response;
-    } on DioException catch (e) {
+    } on DioException {
       EasyLoading.dismiss();
       isLoading.value = false;
       // Snackbar is already shown in AuthService.verifyOtp
@@ -249,7 +249,7 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isLoading.value = false;
       }
-    } on DioException catch (e) {
+    } on DioException {
       EasyLoading.dismiss();
       isLoading.value = false;
       // Snackbar is already shown in AuthService.login
@@ -272,7 +272,7 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         LocalStorageService.setAccessToken(newAccess);
       }
-    } on DioException catch (e) {
+    } on DioException {
       EasyLoading.dismiss();
       isLoading.value = false;
       // Snackbar is already shown in AuthService.refreshToken
@@ -326,7 +326,7 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isLoading.value = false;
       }
-    } on DioException catch (e) {
+    } on DioException {
       EasyLoading.dismiss();
       isLoading.value = false;
       // Snackbar is already shown in AuthService.forgotPassword
