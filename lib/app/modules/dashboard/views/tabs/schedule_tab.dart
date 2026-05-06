@@ -22,49 +22,49 @@ class ScheduleTab extends GetView<ScheduleController> {
             },
             child: controller.isLoading.value && controller.schedules.isEmpty
                 ? const Center(child: CircularProgressIndicator(color: AppColors.orangeLight))
-                : Column(
-                    children: [
-                      Expanded(
-                        child: controller.schedules.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.calendar_today_outlined,
-                                        size: MediaQuery.of(context).size.width * 0.15,
-                                        color: Colors.grey.shade300),
-                                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                                    Text(
-                                      AppStrings.get(AppStrings.scheduleKeyNoAppointments),
-                                      style: TextStyle(
-                                          color: Colors.grey.shade400, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
+                : controller.schedules.isEmpty
+                    ? SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.calendar_today_outlined,
+                                    size: MediaQuery.of(context).size.width * 0.15,
+                                    color: Colors.grey.shade300),
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                                Text(
+                                  AppStrings.get(AppStrings.scheduleKeyNoAppointments),
+                                  style: TextStyle(
+                                      color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                                 ),
-                              )
-                            : ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                padding: EdgeInsets.fromLTRB(
-                                  MediaQuery.of(context).size.width * 0.05,
-                                  MediaQuery.of(context).size.width * 0.05,
-                                  MediaQuery.of(context).size.width * 0.05,
-                                  MediaQuery.of(context).size.height * 0.15,
-                                ),
-                                itemCount: controller.schedules.length,
-                                itemBuilder: (context, index) {
-                                  final schedule = controller.schedules[index];
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context).size.height * 0.02),
-                                    child: AnimatedIn(
-                                      child: ScheduleCardWidget(shedule: schedule),
-                                    ),
-                                  );
-                                },
-                              ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          MediaQuery.of(context).size.width * 0.05,
+                          MediaQuery.of(context).size.width * 0.05,
+                          MediaQuery.of(context).size.width * 0.05,
+                          MediaQuery.of(context).size.height * 0.15,
+                        ),
+                        itemCount: controller.schedules.length,
+                        itemBuilder: (context, index) {
+                          final schedule = controller.schedules[index];
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).size.height * 0.02),
+                            child: AnimatedIn(
+                              child: ScheduleCardWidget(shedule: schedule),
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
           );
         }),
       ),

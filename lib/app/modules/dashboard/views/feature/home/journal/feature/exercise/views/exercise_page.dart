@@ -7,6 +7,7 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/dialog_utils.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/boolean_question_widget.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/journal_success_view.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/multiple_choice_question_widget.dart';
 import '../controllers/exercise_controller.dart';
 
@@ -21,6 +22,21 @@ class ExerciseView extends GetView<ExerciseController> {
         child: Obx(() {
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
+
+          if (controller.isSubmittedToday.value) {
+            return Column(
+              children: [
+                _buildSimpleHeader(),
+                Expanded(
+                  child: JournalSuccessView(
+                    title: AppStrings.get(AppStrings.habitKeyCompletedTitle),
+                    message: AppStrings.get(AppStrings.habitKeyCompletedMsg),
+                    onBack: () => Get.back(),
+                  ),
+                ),
+              ],
+            );
           }
   
           if (controller.exerciseList.isEmpty) {
@@ -64,6 +80,40 @@ class ExerciseView extends GetView<ExerciseController> {
             ),
           );
         }),
+      ),
+    );
+  }
+
+  Widget _buildSimpleHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
+      decoration: const BoxDecoration(
+        color: AppColors.richBrown,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
+                child: Text(
+                  AppStrings.get(AppStrings.menuKeyExerciseHabit),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -21,7 +21,7 @@ class ProfileService {
         SnackbarUtils.show("Token not found. Please log in again.");
         return null;
       }
-      EasyLoading.show(status: "Loading profile...");
+      EasyLoading.show();
 
       final response = await _dio.get(
         ApiEndpoints.USER_PROFILE,
@@ -57,7 +57,7 @@ class ProfileService {
   // ==============================
   Future<Map<String, dynamic>?> uploadProfilePicture(String filePath) async {
     try {
-      EasyLoading.show(status: "Mengunggah foto...");
+      EasyLoading.show();
 
       final token = LocalStorageService.getAccessToken();
 

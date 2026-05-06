@@ -30,4 +30,21 @@ class LocalStorageService {
   static Future<void> init() async {
     await GetStorage.init();
   }
+
+  // --- Habit Submission Tracking ---
+  static Future<void> setLastHabitSubmit(String date) async {
+    await _box.write('last_habit_submit', date);
+  }
+
+  static String? getLastHabitSubmit() {
+    return _box.read('last_habit_submit');
+  }
+
+  static Future<void> setLastExerciseSubmit(String date) async {
+    await _box.write('last_exercise_submit', date);
+  }
+
+  static String? getLastExerciseSubmit() {
+    return _box.read('last_exercise_submit');
+  }
 }

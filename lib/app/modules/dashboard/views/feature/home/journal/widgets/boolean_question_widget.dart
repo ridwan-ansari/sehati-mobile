@@ -149,26 +149,28 @@ class BooleanQuestionWidget extends StatelessWidget {
           flex: 2,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: index == totalSoal - 1 
-                  ? (semuaTerisi ? const Color(0xFF2196F3) : Colors.grey.shade300)
-                  : const Color(0xFF2196F3),
+              backgroundColor: question.selectedOption != null 
+                  ? const Color(0xFF2196F3) 
+                  : Colors.grey.shade300,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            onPressed: () {
-              if (index < totalSoal - 1) {
-                pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else if (semuaTerisi) {
-                controller.submitAllAnswers();
-              }
-            },
+            onPressed: question.selectedOption == null 
+              ? null 
+              : () {
+                if (index < totalSoal - 1) {
+                  pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                } else if (semuaTerisi) {
+                  controller.submitAllAnswers();
+                }
+              },
             child: Text(
-              index == totalSoal - 1 ? AppStrings.get(AppStrings.exerciseKeyFinish) : AppStrings.get(AppStrings.exerciseKeyNext),
+              index == totalSoal - 1 ? AppStrings.get(AppStrings.commonKeySubmit) : AppStrings.get(AppStrings.exerciseKeyNext),
               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
             ),
           ),

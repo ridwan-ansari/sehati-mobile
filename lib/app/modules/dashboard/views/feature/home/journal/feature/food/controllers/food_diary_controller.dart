@@ -45,12 +45,18 @@ class FoodDiaryController extends GetxController {
     super.onInit();
     loadProfile();
     for (var type in FoodType.values) {
-      expanded[type.label] = false.obs;
+      expanded[type.value] = false.obs;
     }
     dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
     selectedDate.value = dateController.text;
     loadData();
     loadLatestNutrition();
+  }
+
+  Future<void> initData() async {
+    await loadProfile();
+    await loadData();
+    await loadLatestNutrition();
   }
 
   bool isExpanded(String key) {
@@ -115,6 +121,7 @@ class FoodDiaryController extends GetxController {
   Future<FoodModel?> openFoodDialog(
     BuildContext context, {
     required String title,
+    required String key,
   }) async {
     final result = DialogUtils.showSearchDialog<FoodModel>(
       context: context,
@@ -142,7 +149,7 @@ class FoodDiaryController extends GetxController {
               onSubmit: (gram, totalKcal) {
                 final totalKcal = hitungKalori(kaloriPer100g :item.calories , beratGram: gram);
                 final itm = item.copyWith(calories: totalKcal , weightGrams: gram); 
-                addFoodToInput(title, itm);
+                addFoodToInput(key, itm);
                 AppLogger.log("Food: ${item.name}");
                 AppLogger.log("Gram: $gram g");
                 AppLogger.log("Total Kcal: $totalKcal kcal");

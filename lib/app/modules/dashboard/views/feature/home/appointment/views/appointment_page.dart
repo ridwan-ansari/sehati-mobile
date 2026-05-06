@@ -20,49 +20,62 @@ class AppointmentPage extends GetView<AppointmentController> {
         title: AppStrings.get(AppStrings.menuKeyAppointment),
         showBackButton: true,
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
-        }
+      body: RefreshIndicator(
+        color: AppColors.orangeLight,
+        onRefresh: () async => controller.loadProfessionals(),
+        child: Obx(() {
+          if (controller.isLoading.value && controller.profeeesionalList.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
 
-        return controller.profeeesionalList.isEmpty
-            ? Center(
-                child: Text(
-                  AppStrings.getOr('No counselors available', 'Belum ada konselor tersedia'),
-                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
-                ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                itemCount: controller.groupedBySpecialization.length,
-                itemBuilder: (context, index) {
-                  final entry = controller.groupedBySpecialization.entries.elementAt(index);
-                  final specialization = entry.key;
-                  final counselors = entry.value;
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionHeader(specialization),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 250,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: counselors.length,
-                          itemBuilder: (context, idx) {
-                            final doctor = counselors[idx];
-                            return _buildCounselorCard(doctor);
-                          },
+          return controller.profeeesionalList.isEmpty
+              ? Center(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: Center(
+                        child: Text(
+                          AppStrings.getOr('No counselors available', 'Belum ada konselor tersedia'),
+                          style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
                         ),
                       ),
-                      const SizedBox(height: 32),
-                    ],
-                  );
-                },
-              );
-      }),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  itemCount: controller.groupedBySpecialization.length,
+                  itemBuilder: (context, index) {
+                    final entry = controller.groupedBySpecialization.entries.elementAt(index);
+                    final specialization = entry.key;
+                    final counselors = entry.value;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionHeader(specialization),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 250,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: counselors.length,
+                            itemBuilder: (context, idx) {
+                              final doctor = counselors[idx];
+                              return _buildCounselorCard(doctor);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    );
+                  },
+                );
+        }),
+      ),
     );
   }
 

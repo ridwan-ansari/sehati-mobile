@@ -275,6 +275,9 @@ class AppStrings {
   static const String menuKeyFoodDiary = "menu_food_diary";
   static const String menuKeyFoodHabit = "menu_food_habit";
   static const String menuKeyExerciseHabit = "menu_exercise_habit";
+  static const String habitKeyCompletedTitle = "habit_completed_title";
+  static const String habitKeyCompletedMsg = "habit_completed_msg";
+  static const String habitKeyBackToJournal = "habit_back_to_journal";
   static const String menuKeyStartJournalling = "menu_start_journalling";
   static const String menuKeyReward = "menu_reward";
   static const String menuKeyWriteJournal = "menu_write_journal";
@@ -473,7 +476,7 @@ class AppStrings {
       "nutrition_select_date": "Select Date",
       "nutrition_welcome": "Welcome to your self-monitoring page!",
       "nutrition_bodyweight_monitoring": "Bodyweight Monitoring",
-      "nutrition_date_measurement": "Date of measurement",
+      "nutrition_date_measurement": "Date of Measurement",
       "nutrition_no_data": "No data yet. Start tracking above!",
       "nutrition_weekly_reminder": "Record your body weight at least once a week!",
 
@@ -614,8 +617,8 @@ class AppStrings {
       "common_submit": "Submit",
       "common_next": "Next",
       "common_back": "Back",
-      "common_yes": "YES",
-      "common_no": "NO",
+      "common_yes": "Yes",
+      "common_no": "No",
       "common_success": "Success",
       "common_error": "An error occurred",
       "common_token_not_found": "Token not found. Please log in again.",
@@ -687,15 +690,15 @@ class AppStrings {
       // Food
       "food_no_data_chart": "There are currently no food diaries available.",
       "food_energy_expenditure": "Energy Expenditure",
-      "food_total_daily_needs": "Total daily needs",
+      "food_total_daily_needs": "Total Daily Needs",
       "food_target_intake": "Target Intake",
-      "food_daily_goal": "Daily goal",
+      "food_daily_goal": "Daily Goal",
       "food_actual_intake": "Actual Intake",
-      "food_energy_consumed": "Energy consumed",
-      "food_analyze_save": "ANALYZE & SAVE JOURNAL",
-      "food_requirement_kcal": "Requirement(Kcal)",
-      "food_target_kcal": "Target(Kcal)",
-      "food_actual_kcal": "Actual(Kcal)",
+      "food_energy_consumed": "Energy Consumed",
+      "food_analyze_save": "Analyze & Save Journal",
+      "food_requirement_kcal": "Requirement (Kcal)",
+      "food_target_kcal": "Target (Kcal)",
+      "food_actual_kcal": "Actual (Kcal)",
       "food_welcome": "Welcome to Your Food Diary!",
       "food_welcome_sub": "Track your nutrition to reach your goals.",
       "food_journal_date": "Journal Date",
@@ -723,9 +726,12 @@ class AppStrings {
 
       // Habit
       "habit_daily_journal": "Daily Food Habit Journal",
+      "habit_completed_title": "Today's Journal Complete!",
+      "habit_completed_msg": "Thank you for recording your habits today. Keep up the spirit for a healthier life!",
+      "habit_back_to_journal": "Back to Journal",
       "habit_consistency": "Consistency is key to a healthier life.",
-      "habit_submit": "SUBMIT JOURNAL",
-      "habit_complete_all": "COMPLETE ALL",
+      "habit_submit": "Submit Journal",
+      "habit_complete_all": "Complete All",
       "habit_food_habit": "Food Habit",
       "habit_show_less": "Show Less",
       "habit_view_more": "View More Questions",
@@ -737,8 +743,8 @@ class AppStrings {
       // Menu
       "menu_points_reward": "points",
       "common_points_label": "pts",
-      "exercise_finish": "FINISH JOURNAL",
-      "exercise_next": "NEXT QUESTION",
+      "exercise_finish": "Finish Journal",
+      "exercise_next": "Next",
 
       // Recipes
       "recipe_guide": "Recipe Guide",
@@ -810,7 +816,7 @@ class AppStrings {
       "nutrition_title": "Atur Target Nutrisi",
       "nutrition_page_title": "Status Gizi",
       "nutrition_weight": "Berat Badan (kg)",
-      "nutrition_height": " Tinggi Badan (cm)",
+      "nutrition_height": "Tinggi Badan (cm)",
       "nutrition_calculate": "Hitung",
       "nutrition_bmi": "BMI",
       "nutrition_status_label": "Status Gizi",
@@ -825,7 +831,7 @@ class AppStrings {
       "nutrition_select_date": "Pilih Tanggal",
       "nutrition_welcome": "Selamat datang di halaman pemantauan diri!",
       "nutrition_bodyweight_monitoring": "Pemantauan Berat Badan",
-      "nutrition_date_measurement": "Tanggal pengukuran",
+      "nutrition_date_measurement": "Tanggal Pengukuran",
       "nutrition_no_data": "Belum ada data. Mulai melacak di atas!",
       "nutrition_weekly_reminder": "Catat berat badan Anda minimal seminggu sekali!",
 
@@ -966,8 +972,8 @@ class AppStrings {
       "common_submit": "Kirim",
       "common_next": "Lanjut",
       "common_back": "Kembali",
-      "common_yes": "YA",
-      "common_no": "TIDAK",
+      "common_yes": "Ya",
+      "common_no": "Tidak",
       "common_success": "Berhasil",
       "common_error": "Terjadi kesalahan",
       "common_token_not_found": "Token tidak ditemukan. Silakan login kembali.",
@@ -1039,15 +1045,15 @@ class AppStrings {
       // Food
       "food_no_data_chart": "Belum ada catatan makanan yang tersedia saat ini.",
       "food_energy_expenditure": "Pengeluaran Energi",
-      "food_total_daily_needs": "Kebutuhan harian total",
+      "food_total_daily_needs": "Kebutuhan Harian Total",
       "food_target_intake": "Target Asupan",
-      "food_daily_goal": "Target harian",
+      "food_daily_goal": "Target Harian",
       "food_actual_intake": "Asupan Aktual",
-      "food_energy_consumed": "Energi yang dikonsumsi",
-      "food_analyze_save": "ANALISIS & SIMPAN JURNAL",
-      "food_requirement_kcal": "Kebutuhan(Kcal)",
-      "food_target_kcal": "Target(Kcal)",
-      "food_actual_kcal": "Aktual(Kcal)",
+      "food_energy_consumed": "Energi yang Dikonsumsi",
+      "food_analyze_save": "Analisis & Simpan Jurnal",
+      "food_requirement_kcal": "Kebutuhan (Kcal)",
+      "food_target_kcal": "Target (Kcal)",
+      "food_actual_kcal": "Aktual (Kcal)",
       "food_welcome": "Selamat Datang di Catatan Makanan Anda!",
       "food_welcome_sub": "Pantau nutrisi Anda untuk mencapai tujuan Anda.",
       "food_journal_date": "Tanggal Jurnal",
@@ -1075,9 +1081,12 @@ class AppStrings {
 
       // Habit
       "habit_daily_journal": "Jurnal Kebiasaan Makan Harian",
+      "habit_completed_title": "Jurnal Hari Ini Selesai!",
+      "habit_completed_msg": "Terima kasih sudah mencatat kebiasaanmu hari ini. Teruskan semangatmu untuk hidup lebih sehat!",
+      "habit_back_to_journal": "Kembali ke Jurnal",
       "habit_consistency": "Konsistensi adalah kunci hidup yang lebih sehat.",
-      "habit_submit": "SIMPAN JURNAL",
-      "habit_complete_all": "LENGKAPI SEMUA",
+      "habit_submit": "Simpan Jurnal",
+      "habit_complete_all": "Lengkapi Semua",
       "habit_food_habit": "Kebiasaan Makan",
       "habit_show_less": "Tampilkan Lebih Sedikit",
       "habit_view_more": "Lihat Pertanyaan Lagi",
@@ -1089,8 +1098,8 @@ class AppStrings {
       // Menu
       "menu_points_reward": "poin",
       "common_points_label": "poin",
-      "exercise_finish": "SELESAIKAN JURNAL",
-      "exercise_next": "PERTANYAAN BERIKUTNYA",
+      "exercise_finish": "Selesaikan Jurnal",
+      "exercise_next": "Lanjut",
 
       // Recipes
       "recipe_guide": "Panduan Resep",

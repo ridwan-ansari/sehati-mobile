@@ -65,7 +65,7 @@ class SleepService {
         return false;
       }
 
-      EasyLoading.show(status: "Saving sleep record...");
+      EasyLoading.show();
       AppLogger.log("body data ; ${request.toJson()}");
 
       if (request.targetSleep <= 0) {

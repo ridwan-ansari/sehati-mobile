@@ -20,37 +20,49 @@ class ChattingPage extends GetView<ChattingController> {
           Get.offAllNamed('/dashboard');
         },
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (controller.chatRooms.isEmpty) {
-          return Center(child: Text(AppStrings.get(AppStrings.commonKeyNoRooms)));
-        }
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: ListView.separated(
-            itemCount: controller.chatRooms.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final room = controller.chatRooms[index];
-              return RoomChatCardWidget(
-                room: room,
-                onTap: () => Get.toNamed(
-                  '/chat_private',
-                  arguments: {
-                    "room_key": room.roomKey,
-                    "receiver_id": room.receiverId,
-                    "receiver_name": room.receiverName,
-                    "receiver_picture": room.receiverPicture,
-                    "room_id": room.roomId,
-                  },
+      body: RefreshIndicator(
+        onRefresh: () async => controller.loadChatRooms(),
+        child: Obx(() {
+          if (controller.isLoading.value && controller.chatRooms.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (controller.chatRooms.isEmpty) {
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(child: Text(AppStrings.get(AppStrings.commonKeyNoRooms))),
                 ),
-              );
-            },
-          ),
-        );
-      }),
+              ),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: controller.chatRooms.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final room = controller.chatRooms[index];
+                return RoomChatCardWidget(
+                  room: room,
+                  onTap: () => Get.toNamed(
+                    '/chat_private',
+                    arguments: {
+                      "room_key": room.roomKey,
+                      "receiver_id": room.receiverId,
+                      "receiver_name": room.receiverName,
+                      "receiver_picture": room.receiverPicture,
+                      "room_id": room.roomId,
+                    },
+                  ),
+                );
+              },
+            ),
+          );
+        }),
+      ),
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF3B2B27),

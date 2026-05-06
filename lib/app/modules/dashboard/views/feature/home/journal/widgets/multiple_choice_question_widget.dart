@@ -166,26 +166,28 @@ class _MultipleChoiceQuestionWidgetState
           flex: 2,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.index == widget.totalSoal - 1 
-                  ? (semuaTerisi ? const Color(0xFF2196F3) : Colors.grey.shade300)
-                  : const Color(0xFF2196F3),
+              backgroundColor: widget.question.selectedOption != null 
+                  ? const Color(0xFF2196F3) 
+                  : Colors.grey.shade300,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            onPressed: () {
-              if (widget.index < widget.totalSoal - 1) {
-                widget.pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else if (semuaTerisi) {
-                widget.controller.submitAllAnswers();
-              }
-            },
+            onPressed: widget.question.selectedOption == null 
+              ? null 
+              : () {
+                if (widget.index < widget.totalSoal - 1) {
+                  widget.pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                } else if (semuaTerisi) {
+                  widget.controller.submitAllAnswers();
+                }
+              },
             child: Text(
-              widget.index == widget.totalSoal - 1 ? AppStrings.get(AppStrings.exerciseKeyFinish) : AppStrings.get(AppStrings.exerciseKeyNext),
+              widget.index == widget.totalSoal - 1 ? AppStrings.get(AppStrings.commonKeySubmit) : AppStrings.get(AppStrings.exerciseKeyNext),
               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
             ),
           ),

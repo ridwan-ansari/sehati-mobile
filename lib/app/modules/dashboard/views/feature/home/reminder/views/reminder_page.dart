@@ -20,35 +20,46 @@ class ReminderPage extends GetView<ReminderController> {
         onSearchChanged: (_) {},
         showBackButton: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(
-              () => controller.reminders.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade300),
-                          const SizedBox(height: 16),
-                          Text(
-                            AppStrings.get(AppStrings.reminderKeyNoReminders),
-                            style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600),
+      body: RefreshIndicator(
+        color: AppColors.orangeLight,
+        onRefresh: () async => controller.getReminderServer(),
+        child: Column(
+          children: [
+            Expanded(
+              child: Obx(
+                () => controller.reminders.isEmpty
+                    ? Center(
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade300),
+                                const SizedBox(height: 16),
+                                Text(
+                                  AppStrings.get(AppStrings.reminderKeyNoReminders),
+                                  style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(20),
+                        itemCount: controller.reminders.length,
+                        itemBuilder: (context, index) {
+                          final reminder = controller.reminders[index];
+                          return _buildReminderCard(context, reminder);
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: controller.reminders.length,
-                      itemBuilder: (context, index) {
-                        final reminder = controller.reminders[index];
-                        return _buildReminderCard(context, reminder);
-                      },
-                    ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed('/add_reminder'),

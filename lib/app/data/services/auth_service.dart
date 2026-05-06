@@ -55,7 +55,7 @@ class AuthService {
   /// VERIFY OTP
   Future<bool> verifyOtp({required String email, required String code}) async {
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.authKeyVerifyingOtp));
+      LoadingUtils.show();
       final response = await _dio.post(
         ApiEndpoints.VERIFY_ACCOUNT,
         queryParameters: {"email": email, "code": code},
@@ -94,7 +94,7 @@ class AuthService {
     required String gender,
   }) async {
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.authKeyResendingOtp));
+      LoadingUtils.show();
       final response = await _dio.post(
         ApiEndpoints.REGISTER,
         data: {
@@ -135,7 +135,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.authKeyLoggingIn));
+      LoadingUtils.show();
       final response = await _dio.post(
         ApiEndpoints.LOGIN,
         data: {'email': email, 'password': password},
@@ -214,7 +214,7 @@ class AuthService {
   /// RESET PASSWORD
   Future<bool> forgotPassword({required String email}) async {
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.authKeySendingReset));
+      LoadingUtils.show();
       final response = await _dio.post(
         '${ApiEndpoints.RESET_PASSWORD}?email=$email',
         options: Options(headers: {'Accept': 'application/json'}),
@@ -248,7 +248,7 @@ class AuthService {
     required String confirmPassword,
   }) async {
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.authKeyResettingPassword));
+      LoadingUtils.show();
       final data = {
         'email': email,
         'code': otp,

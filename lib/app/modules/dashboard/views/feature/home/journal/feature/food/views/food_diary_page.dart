@@ -20,33 +20,38 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildWelcomeHeader(),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDatePicker(context),
-                    const SizedBox(height: 24),
-                    HeaderTitleWidget(title: AppStrings.getOr("Record Your Meals", "Catat Makananmu")),
-                    const SizedBox(height: 16),
-                    _buildMealSection(context),
-                    const SizedBox(height: 24),
-                    HeaderTitleWidget(title: AppStrings.getOr("Nutritional Analysis", "Analisis Gizi")),
-                    const SizedBox(height: 16),
-                    _buildAnalysisSection(),
-                    const SizedBox(height: 24),
-                    HeaderTitleWidget(title: AppStrings.getOr("Weekly Progress", "Progres Mingguan")),
-                    const SizedBox(height: 16),
-                    _buildChartSection(),
-                    const SizedBox(height: 40),
-                  ],
+        child: RefreshIndicator(
+          color: AppColors.orangeLight,
+          onRefresh: () async => controller.initData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                _buildWelcomeHeader(),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDatePicker(context),
+                      const SizedBox(height: 24),
+                      HeaderTitleWidget(title: AppStrings.getOr("Record Your Meals", "Catat Makananmu")),
+                      const SizedBox(height: 16),
+                      _buildMealSection(context),
+                      const SizedBox(height: 24),
+                      HeaderTitleWidget(title: AppStrings.getOr("Nutritional Analysis", "Analisis Gizi")),
+                      const SizedBox(height: 16),
+                      _buildAnalysisSection(),
+                      const SizedBox(height: 24),
+                      HeaderTitleWidget(title: AppStrings.getOr("Weekly Progress", "Progres Mingguan")),
+                      const SizedBox(height: 16),
+                      _buildChartSection(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -208,8 +213,8 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
 
   Widget _buildMealItem(BuildContext context, FoodType type) {
     return Obx(() {
-      final items = controller.getFoods(type.label);
-      final expanded = controller.isExpanded(type.label);
+      final items = controller.getFoods(type.value);
+      final expanded = controller.isExpanded(type.value);
       final visibleItems = expanded ? items : items.take(2).toList();
 
       return Column(
@@ -225,7 +230,7 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                onPressed: () => controller.openFoodDialog(context, title: type.label),
+                onPressed: () => controller.openFoodDialog(context, title: type.label, key: type.value),
                 icon: const Icon(Icons.add_circle_rounded, color: Colors.green),
               ),
             ],
@@ -253,14 +258,14 @@ class FoodDiaryPage extends GetView<FoodDiaryController> {
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.redAccent, size: 20),
-                    onPressed: () => controller.removeFood(type.label, item),
+                    onPressed: () => controller.removeFood(type.value, item),
                   ),
                 ],
               ),
             )),
             if (items.length > 2)
               TextButton(
-                onPressed: () => controller.toggleExpand(type.label),
+                onPressed: () => controller.toggleExpand(type.value),
                 child: Text(
                   expanded ? AppStrings.get(AppStrings.foodKeyShowLess) : "${AppStrings.get(AppStrings.foodKeyViewAll)} ${items.length} ${AppStrings.get(AppStrings.foodKeyItems)}",
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.orangeLight),

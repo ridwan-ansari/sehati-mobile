@@ -57,7 +57,7 @@ class HealthyService {
         SnackbarUtils.show(AppStrings.get(AppStrings.commonKeyTokenNotFound));
         return;
       }
-      LoadingUtils.show(AppStrings.get(AppStrings.commonKeyClaimingPoint));
+      LoadingUtils.show();
       final response = await _dio.post(
         "${ApiEndpoints.RECIPE}claim-point",
         data: {"recipe_id": recipeId},

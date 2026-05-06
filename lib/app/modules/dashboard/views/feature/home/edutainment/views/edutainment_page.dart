@@ -24,52 +24,65 @@ class EdutainmentPage extends GetView<EdutainmentController> {
         controller: controller.searchController,
         showBackButton: true,
       ),
-      body: Builder(builder: (context) {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
-        }
+      body: RefreshIndicator(
+        color: AppColors.orangeLight,
+        onRefresh: () => controller.loadVideos(reset: true),
+        child: Builder(builder: (context) {
+          if (controller.isLoading.value && controller.videos.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
 
-        if (controller.errorMessage.isNotEmpty) {
-          return AppErrorWidget(
-            message: controller.errorMessage.value,
-            onRetry: () => controller.loadVideos(reset: true),
-          );
-        }
+          if (controller.errorMessage.isNotEmpty && controller.videos.isEmpty) {
+            return AppErrorWidget(
+              message: controller.errorMessage.value,
+              onRetry: () => controller.loadVideos(reset: true),
+            );
+          }
 
-        if (controller.videos.isEmpty) {
-          return Center(
-            child: Text(
-              AppStrings.get(AppStrings.eduKeyNoVideos),
-              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
-            ),
-          );
-        }
-
-        return Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                controller: controller.scrollController,
-                padding: const EdgeInsets.all(20),
-                itemCount: controller.hasMore.value
-                    ? controller.videos.length + 1
-                    : controller.videos.length,
-                itemBuilder: (context, index) {
-                  if (index == controller.videos.length) {
-                    return const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
-                    );
-                  }
-
-                  final video = controller.videos[index];
-                  return buildVideoCard(context, video);
-                },
+          if (controller.videos.isEmpty) {
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(
+                    child: Text(
+                      AppStrings.get(AppStrings.eduKeyNoVideos),
+                      style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            );
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: controller.scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  itemCount: controller.hasMore.value
+                      ? controller.videos.length + 1
+                      : controller.videos.length,
+                  itemBuilder: (context, index) {
+                    if (index == controller.videos.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
+                      );
+                    }
+
+                    final video = controller.videos[index];
+                    return buildVideoCard(context, video);
+                  },
+                ),
+              ),
+            ],
+          );
+        }),
+      ),
     ));
   }
 

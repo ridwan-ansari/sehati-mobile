@@ -1,15 +1,33 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:sehati/app/data/models/response/exercise_question_model.dart';
 import 'package:sehati/app/data/services/exercise_service.dart';
+import 'package:sehati/app/data/services/local_storage_service.dart';
 
 class ExerciseController extends GetxController {
   final ExerciseService _service = ExerciseService();
 
   final pageController = PageController();
   final isLoading = false.obs;
+  final isSubmittedToday = false.obs;
   final RxList<ExerciseQuestionModel> exerciseList =
       <ExerciseQuestionModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkSubmissionStatus();
+    fetchExerciseQuestions();
+  }
+
+  void checkSubmissionStatus() {
+    final lastSubmit = LocalStorageService.getLastExerciseSubmit();
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    if (lastSubmit == today) {
+      isSubmittedToday.value = true;
+    }
+  }
 
   Future<void> fetchExerciseQuestions() async {
     try {
@@ -64,14 +82,10 @@ class ExerciseController extends GetxController {
     final success = await _service.submitExerciseAnswersBatch(answers: answers);
 
     if (success) {
-      Get.toNamed('/journal');
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      await LocalStorageService.setLastExerciseSubmit(today);
+      isSubmittedToday.value = true;
     }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchExerciseQuestions();
   }
 
   @override

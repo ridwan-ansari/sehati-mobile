@@ -26,7 +26,7 @@ class ProfessionalService {
         return null;
       }
 
-      EasyLoading.show(status: "Loading professionals...");
+      EasyLoading.show();
 
       final response = await _dio.get(
         ApiEndpoints.PROFESSIONAL_LIST,
@@ -70,7 +70,7 @@ class ProfessionalService {
         return false;
       }
 
-      EasyLoading.show(status: "Creating appointment...");
+      EasyLoading.show();
 
       // Convert date: dd/MM/yy → yyyy-MM-dda
       final dateParts = appointmentDate.split("/");

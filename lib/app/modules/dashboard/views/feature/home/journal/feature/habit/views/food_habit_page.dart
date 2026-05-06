@@ -9,6 +9,7 @@ import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/header_title.dart';
+import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/journal_success_view.dart';
 import '../controllers/food_habit_controller.dart';
 
 class FoodHabitPage extends GetView<FoodHabitController> {
@@ -19,45 +20,61 @@ class FoodHabitPage extends GetView<FoodHabitController> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
-        child: Obx(
-          () => controller.isLoading.value
-              ? const Center(child: CircularProgressIndicator(color: AppColors.orangeLight))
-              : _buildBody(context),
-        ),
-      ),
-    );
-  }
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
 
-  Widget _buildBody(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildWelcomeHeader(),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          if (controller.isSubmittedToday.value) {
+            return Column(
               children: [
-                _buildDateField(),
-                const SizedBox(height: 24),
-                HeaderTitleWidget(title: AppStrings.getOr("Habit Questionnaire", "Kuesioner Kebiasaan")),
-                const SizedBox(height: 16),
-                ...controller.groupedQuestions.entries.map((entry) {
-                  return _buildCategorySection(entry.key, entry.value);
-                }).toList(),
-                const SizedBox(height: 32),
-                _buildSubmitButton(),
-                const SizedBox(height: 40),
+                _buildSimpleHeader(),
+                Expanded(
+                  child: JournalSuccessView(
+                    title: AppStrings.get(AppStrings.habitKeyCompletedTitle),
+                    message: AppStrings.get(AppStrings.habitKeyCompletedMsg),
+                    onBack: () => Get.back(),
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+
+          if (controller.groupedQuestions.isEmpty) {
+            return const Center(child: Text("No questions available"));
+          }
+
+          final categories = controller.groupedQuestions.keys.toList();
+          final totalSteps = categories.length;
+          final currentStep = controller.currentPage.value;
+
+          return Column(
+            children: [
+              _buildProgressHeader(currentStep, totalSteps),
+              Expanded(
+                child: PageView.builder(
+                  controller: controller.pageController,
+                  onPageChanged: controller.onPageChanged,
+                  itemCount: totalSteps,
+                  physics: const NeverScrollableScrollPhysics(), // Force navigation via buttons
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final questions = controller.groupedQuestions[category]!;
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: _buildCategoryCard(category, questions, index, totalSteps),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
 
-  Widget _buildWelcomeHeader() {
+  Widget _buildSimpleHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
@@ -65,96 +82,88 @@ class FoodHabitPage extends GetView<FoodHabitController> {
         color: AppColors.richBrown,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
-      child: AnimatedIn(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => Get.back(),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 48),
+                child: Text(
+                  AppStrings.get(AppStrings.habitKeyFoodHabit),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 48), // Balancing IconButton width
-                      child: Text(
-                        AppStrings.get(AppStrings.habitKeyFoodHabit),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressHeader(int current, int total) {
+    double progress = (current + 1) / total;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(12, 12, 24, 24),
+      decoration: const BoxDecoration(
+        color: AppColors.richBrown,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              ),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 48),
+                    child: Text(
+                      AppStrings.get(AppStrings.habitKeyFoodHabit),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppStrings.get(AppStrings.habitKeyDailyJournal),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              AppStrings.get(AppStrings.habitKeyConsistency),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppStrings.get(AppStrings.habitKeyDailyJournal),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateField() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+              Text(
+                "${current + 1} / $total",
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.calendar_today_rounded, color: Color(0xFF4CAF50), size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.get(AppStrings.foodKeyJournalDate),
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  TimeUtils.formatShortDate(DateTime.now()),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark),
-                ),
-              ],
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
+              color: const Color(0xFF4CAF50),
             ),
           ),
         ],
@@ -162,76 +171,100 @@ class FoodHabitPage extends GetView<FoodHabitController> {
     );
   }
 
-  Widget _buildCategorySection(String title, List<HabitQuestionModel> questions) {
-    return Obx(() {
-      final isExpanded = controller.expandedCategories[title] ?? false;
-      final shownQuestions = isExpanded ? questions : questions.take(1).toList();
-
-      return Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+  Widget _buildCategoryCard(String title, List<HabitQuestionModel> questions, int index, int total) {
+    return AnimatedIn(
+      child: Obx(() {
+        // ignore: unused_local_variable
+        final _ = controller.questions.value;
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
-              child: Text(
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 title,
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
-                  fontSize: 14,
+                  fontSize: 18,
                   color: Color(0xFF2E7D32),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  ...shownQuestions.map((q) => _buildQuestionItem(q)).toList(),
-                  if (questions.length > 1)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: TextButton(
-                        onPressed: () => controller.toggleCategory(title),
-                        child: Text(
-                          isExpanded ? AppStrings.get(AppStrings.habitKeyShowLess) : "${AppStrings.get(AppStrings.foodKeyViewAll)} ${questions.length - 1} ${AppStrings.get(AppStrings.habitKeyViewMore)}",
-                          style: const TextStyle(
-                            color: Color(0xFF4CAF50),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: questions.length,
+                  itemBuilder: (context, qIndex) => _buildQuestionItem(questions[qIndex]),
+                ),
               ),
+              const SizedBox(height: 24),
+              _buildNavigation(index, total, questions),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildNavigation(int index, int total, List<HabitQuestionModel> questionsInCategory) {
+    final allAnsweredInCategory = questionsInCategory.every((q) => q.selectedOption != null);
+    final isLastStep = index == total - 1;
+    final allQuestionsAnswered = controller.questions.every((q) => q.selectedOption != null);
+
+    return Row(
+      children: [
+        if (index > 0)
+          Expanded(
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: BorderSide(color: Colors.grey.shade300),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: controller.previousPage,
+              child: Text(AppStrings.get(AppStrings.commonKeyBack),
+                  style: const TextStyle(color: AppColors.textMedium, fontWeight: FontWeight.w700)),
             ),
-          ],
+          ),
+        if (index > 0) const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: Colors.grey.shade300,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            onPressed: !allAnsweredInCategory
+                ? null
+                : (isLastStep
+                    ? (allQuestionsAnswered ? controller.submitAllAnswers : null)
+                    : controller.nextPage),
+            child: Text(
+              isLastStep ? AppStrings.get(AppStrings.habitKeySubmit) : AppStrings.get(AppStrings.commonKeyNext),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+            ),
+          ),
         ),
-      );
-    });
+      ],
+    );
   }
 
   Widget _buildQuestionItem(HabitQuestionModel question) {
-    final bool? currentValue = question.selectedOption == null
-        ? null
-        : question.selectedOption == "yes";
+    final bool? currentValue = question.selectedOption == null ? null : question.selectedOption == "yes";
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -259,31 +292,6 @@ class FoodHabitPage extends GetView<FoodHabitController> {
             },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    final total = controller.questions.length;
-    final filled = controller.questions.where((q) => q.selectedOption != null).length;
-    final enabled = total == filled;
-
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        onPressed: enabled ? controller.submitAllAnswers : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF4CAF50),
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.shade300,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-        child: Text(
-          enabled ? AppStrings.get(AppStrings.habitKeySubmit) : "${AppStrings.get(AppStrings.habitKeyCompleteAll)} ($filled/$total)",
-          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-        ),
       ),
     );
   }

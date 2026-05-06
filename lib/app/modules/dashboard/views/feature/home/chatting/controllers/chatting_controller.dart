@@ -133,6 +133,10 @@ class ChattingController extends GetxController {
     }
   }
 
+  Future<void> loadChatRooms() async {
+    await getRooms();
+  }
+
   Future<void> loadMessages({
     required String roomKey,
     bool refresh = true,

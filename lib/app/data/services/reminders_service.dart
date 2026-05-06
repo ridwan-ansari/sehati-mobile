@@ -55,7 +55,7 @@ class RemindersService {
   // POST create reminder
   Future<ReminderResponse?> createReminder(Reminder reminder) async {
     try {
-      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyCreating));
+      EasyLoading.show();
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         EasyLoading.dismiss();
@@ -129,7 +129,7 @@ class RemindersService {
   // UPDATE reminder by id
   Future<ReminderResponse?> updateReminder(Reminder reminder) async {
     try {
-      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyUpdating));
+      EasyLoading.show();
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         EasyLoading.dismiss();
@@ -169,7 +169,7 @@ class RemindersService {
   // DELETE reminder by id
   Future<bool> deleteReminder(String id) async {
     try {
-      EasyLoading.show(status: AppStrings.get(AppStrings.reminderKeyDeleting));
+      EasyLoading.show();
       final token = LocalStorageService.getAccessToken();
       if (token == null || token.isEmpty) {
         EasyLoading.dismiss();

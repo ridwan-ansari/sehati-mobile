@@ -26,31 +26,38 @@ class ForumTab extends GetView<ForumController> {
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && controller.content.isEmpty) {
           return const Center(child: CircularProgressIndicator(color: AppColors.richBrown));
-        }
-
-        if (controller.content.isEmpty) {
-          return _buildEmptyState(context);
         }
 
         return RefreshIndicator(
           color: AppColors.richBrown,
           onRefresh: () async => controller.onRefreshData(),
-          child: ListView.builder(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).size.height * 0.01,
-              bottom: MediaQuery.of(context).size.height * 0.15,
-            ),
-            itemCount: controller.content.length,
-            itemBuilder: (context, index) {
-              final item = controller.content[index];
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04, vertical: MediaQuery.of(context).size.height * 0.008),
-                child: PostCard(post: item),
-              );
-            },
-          ),
+          child: controller.content.isEmpty
+              ? SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: _buildEmptyState(context),
+                  ),
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.01,
+                    bottom: MediaQuery.of(context).size.height * 0.15,
+                  ),
+                  itemCount: controller.content.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.content[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                          vertical: MediaQuery.of(context).size.height * 0.008),
+                      child: PostCard(post: item),
+                    );
+                  },
+                ),
         );
       }),
     );

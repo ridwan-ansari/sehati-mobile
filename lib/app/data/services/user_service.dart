@@ -65,7 +65,7 @@ class UserService {
         return null;
       }
 
-      EasyLoading.show(status: "Saving nutrition data...");
+      EasyLoading.show();
 
       final response = await _dio.post(
         ApiEndpoints.USER_NUTRITION,

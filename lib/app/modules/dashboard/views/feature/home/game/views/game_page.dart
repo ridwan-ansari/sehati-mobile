@@ -23,33 +23,46 @@ class GamePage extends GetView<GameController> {
         onSearchChanged: (value) {},
         showBackButton: true,
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
-        }
-        if (controller.errorMessage.isNotEmpty) {
-          return AppErrorWidget(
-            message: controller.errorMessage.value,
-            onRetry: controller.fetchGames,
+      body: RefreshIndicator(
+        color: AppColors.orangeLight,
+        onRefresh: () => controller.fetchGames(),
+        child: Obx(() {
+          if (controller.isLoading.value && controller.games.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
+          if (controller.errorMessage.isNotEmpty) {
+            return AppErrorWidget(
+              message: controller.errorMessage.value,
+              onRetry: controller.fetchGames,
+            );
+          }
+          if (controller.games.isEmpty) {
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(
+                    child: Text(
+                      AppStrings.get(AppStrings.menuKeyNoGamesYet),
+                      style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            itemCount: controller.games.length,
+            itemBuilder: (context, index) {
+              final game = controller.games[index];
+              return _buildGameCard(game);
+            },
           );
-        }
-        if (controller.games.isEmpty) {
-          return Center(
-            child: Text(
-              AppStrings.get(AppStrings.menuKeyNoGamesYet),
-              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
-            ),
-          );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(20),
-          itemCount: controller.games.length,
-          itemBuilder: (context, index) {
-            final game = controller.games[index];
-            return _buildGameCard(game);
-          },
-        );
-      }),
+        }),
+      ),
     );
   }
 

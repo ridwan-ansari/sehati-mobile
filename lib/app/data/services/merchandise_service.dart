@@ -67,7 +67,7 @@ class MerchandiseService {
     }
 
     try {
-      LoadingUtils.show(AppStrings.get(AppStrings.commonKeyProcessing));
+      LoadingUtils.show();
       var response = await _dio.post(
         '${ApiEndpoints.MERCHANDISE}/claim',
         data: FormData.fromMap({'merchandise_id': merchId}),

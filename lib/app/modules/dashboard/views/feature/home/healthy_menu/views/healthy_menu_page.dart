@@ -25,40 +25,53 @@ class HealthyMenuPage extends GetView<HealthyMenuController> {
         onSearchChanged: controller.onSearchChanged,
         showBackButton: true,
       ),
-      body: Builder(builder: (context) {
-        if (controller.isLoading.value && controller.recipes.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
-        }
-        if (controller.errorMessage.isNotEmpty && controller.recipes.isEmpty) {
-          return AppErrorWidget(
-            message: controller.errorMessage.value,
-            onRetry: () => controller.fetchRecipes(reset: true),
-          );
-        }
-        if (controller.recipes.isEmpty) {
-          return Center(
-            child: Text(
-              AppStrings.getOr("No recipes found.", "Resep tidak ditemukan."),
-              style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
-            ),
-          );
-        }
+      body: RefreshIndicator(
+        color: AppColors.orangeLight,
+        onRefresh: () => controller.fetchRecipes(reset: true),
+        child: Builder(builder: (context) {
+          if (controller.isLoading.value && controller.recipes.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.orangeLight));
+          }
+          if (controller.errorMessage.isNotEmpty && controller.recipes.isEmpty) {
+            return AppErrorWidget(
+              message: controller.errorMessage.value,
+              onRetry: () => controller.fetchRecipes(reset: true),
+            );
+          }
+          if (controller.recipes.isEmpty) {
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(
+                    child: Text(
+                      AppStrings.getOr("No recipes found.", "Resep tidak ditemukan."),
+                      style: const TextStyle(color: Colors.black45, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
 
-        return ListView.builder(
-          controller: controller.scrollController,
-          padding: const EdgeInsets.all(20),
-          itemCount: controller.recipes.length + (controller.isLoading.value ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == controller.recipes.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
-              );
-            }
-            return _RecipeCard(recipe: controller.recipes[index]);
-          },
-        );
-      }),
+          return ListView.builder(
+            controller: controller.scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            itemCount: controller.recipes.length + (controller.isLoading.value ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == controller.recipes.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator(color: AppColors.orangeLight)),
+                );
+              }
+              return _RecipeCard(recipe: controller.recipes[index]);
+            },
+          );
+        }),
+      ),
     ));
   }
 }

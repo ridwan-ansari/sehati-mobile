@@ -94,7 +94,7 @@ class AuthController extends GetxController {
   Future<void> register() async {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyRegistering));
+    EasyLoading.show();
 
     try {
       final response = await _authService.registerUser(
@@ -198,7 +198,7 @@ class AuthController extends GetxController {
   Future<bool> verifyOtp(String email, String otp) async {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyVerifyingOtp));
+    EasyLoading.show();
     try {
       final response = await _authService.verifyOtp(email: email, code: otp);
       if (response == true) {
@@ -230,7 +230,7 @@ class AuthController extends GetxController {
   Future<void> login(String email, String password) async {
     FocusScope.of(Get.context!).unfocus();
     isLoading.value = true;
-    EasyLoading.show(status: AppStrings.get(AppStrings.authKeyLoggingIn));
+    EasyLoading.show();
 
     try {
       final data = await _authService.login(email: email, password: password);
@@ -312,7 +312,7 @@ class AuthController extends GetxController {
     if (emailController.text.isEmpty) return;
 
     isLoading.value = true;
-    EasyLoading.show(status: "Reset Password...");
+    EasyLoading.show();
 
     try {
       final response = await _authService.forgotPassword(email: email);
@@ -340,7 +340,7 @@ class AuthController extends GetxController {
   Future<void> resetPasswordConfirm(String email, String code) async {
     if (!formKeyForgot.currentState!.validate()) return;
     isLoading.value = true;
-    EasyLoading.show(status: "Forgot Password ...");
+    EasyLoading.show();
     try {
       final response = await _authService.confirmForgotPassword(
         email: email,
@@ -380,7 +380,7 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
-    EasyLoading.show(status: AppStrings.get(AppStrings.nutritionKeyCalculate));
+    EasyLoading.show();
 
     try {
       final request = NutritionCreateRequest(

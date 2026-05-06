@@ -28,9 +28,9 @@ class YesNoSwitch extends StatelessWidget {
       onTap: () => onChanged(!(value ?? false)),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 70,
+        width: 80,
         height: 36,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: _backgroundColor(),
           borderRadius: BorderRadius.circular(40),
@@ -47,12 +47,16 @@ class YesNoSwitch extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Text(
-              _labelText(),
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+            Flexible(
+              child: Text(
+                _labelText(),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

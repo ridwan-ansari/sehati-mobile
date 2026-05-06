@@ -29,7 +29,13 @@ class HomeTab extends StatelessWidget {
       return SafeArea(
         child: RefreshIndicator(
           color: AppColors.orangeLight,
-          onRefresh: () => leader.fetchLeaderboard(),
+          onRefresh: () async {
+            await Future.wait([
+              leader.fetchLeaderboard(),
+              leader.fetchUsername(),
+              gameController.fetchGames(),
+            ]);
+          },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
