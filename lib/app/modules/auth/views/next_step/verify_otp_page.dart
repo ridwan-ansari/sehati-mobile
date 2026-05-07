@@ -17,8 +17,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   String _otpCode = '';
   bool _isComplete = false;
 
-  // Timestamp of last onSubmit — used to ignore spurious onCodeChanged
-  // callbacks fired by the package immediately after onSubmit
   int _submitTimestamp = 0;
   static const int _graceMs = 300;
 
@@ -30,7 +28,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
   void _onCodeChanged(String code) {
     final elapsed = DateTime.now().millisecondsSinceEpoch - _submitTimestamp;
-    if (elapsed < _graceMs) return; // ignore post-submit internal callbacks
+    if (elapsed < _graceMs) return;
     setState(() {
       _otpCode = code;
       _isComplete = false;
@@ -50,7 +48,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     final email = Get.arguments?['email'] ?? "";
 
     final screenWidth = MediaQuery.of(context).size.width;
-    final fieldWidth = ((screenWidth - 48) / 6).clamp(36.0, 52.0);
+    final fieldWidth = (screenWidth / 6).clamp(36.0, 52.0);
 
     return Obx(() {
       Get.find<LanguageService>().currentLanguage.value;
@@ -67,15 +65,18 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
           centerTitle: true,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(0.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              Text(
-                AppStrings.get(AppStrings.otpKeyMessage),
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  AppStrings.get(AppStrings.otpKeyMessage),
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -97,7 +98,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                 focusedBorderColor: Colors.orange,
                 borderRadius: BorderRadius.circular(12),
                 showFieldAsBox: true,
-                fieldWidth: fieldWidth,
+                fieldWidth: fieldWidth - 8,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 textStyle: const TextStyle(
                   fontSize: 20,
@@ -109,33 +110,40 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
               ),
               const SizedBox(height: 32),
 
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      (_isComplete && !isLoading) ? Colors.orange : Colors.grey.shade300,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: (_isComplete && !isLoading)
+                        ? Colors.orange
+                        : Colors.grey.shade300,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                onPressed: (_isComplete && !isLoading)
-                    ? () async {
-                        await controller.verifyOtp(email, _otpCode);
-                      }
-                    : null,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+                  onPressed: (_isComplete && !isLoading)
+                      ? () async {
+                          await controller.verifyOtp(email, _otpCode);
+                        }
+                      : null,
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          AppStrings.get(AppStrings.otpKeyVerify),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
-                      )
-                    : Text(
-                        AppStrings.get(AppStrings.otpKeyVerify),
-                        style: const TextStyle(fontSize: 18, color: Colors.white),
-                      ),
+                ),
               ),
 
               const SizedBox(height: 16),
