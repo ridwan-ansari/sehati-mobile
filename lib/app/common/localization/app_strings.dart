@@ -684,7 +684,7 @@ class AppStrings {
       "exercise_no_questions": "No exercise questions available",
       "exercise_confirm_exit": "Confirm Exit",
       "exercise_exit_message": "By exiting, your current progress will be lost. Are you sure?",
-      "exercise_daily_quiz": "Daily Exercise Quiz",
+      "exercise_weekly_quiz": "Weekly Exercise Journal",
       "exercise_unknown_type": "Unknown question type",
 
       // Food
@@ -1039,7 +1039,7 @@ class AppStrings {
       "exercise_no_questions": "Belum ada pertanyaan olahraga tersedia",
       "exercise_confirm_exit": "Konfirmasi Keluar",
       "exercise_exit_message": "Dengan keluar, kemajuan Anda saat ini akan hilang. Apakah Anda yakin?",
-      "exercise_daily_quiz": "Kuis Olahraga Harian",
+      "exercise_daily_quiz": "Jurnal Olahraga Mingguan",
       "exercise_unknown_type": "Tipe pertanyaan tidak diketahui",
 
       // Food

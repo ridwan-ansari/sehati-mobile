@@ -40,14 +40,19 @@ class _SplashPageState extends State<SplashPage> {
 
     if (token != null && token.isNotEmpty) {
       await _refreshToken();
+
+      if (LocalStorageService.getAccessToken() == null) {
+        Get.offAllNamed(AppRoutes.LOGIN);
+        return;
+      }
+
       final nutritionData = await _userService.getUserNutrition();
-      
+
+      if (LocalStorageService.getAccessToken() == null) {
+        return;
+      }
+
       if (nutritionData == null) {
-        // If there was an error (e.g. 401), _refreshToken or getUserNutrition 
-        // might have already handled it or we should retry/go to login.
-        // For now, we just go to dashboard if token exists, 
-        // or let the user stay on splash if it's a transient error.
-        // But the safest is to go to dashboard and let the specific page handle errors.
         Get.offAllNamed(AppRoutes.DASHBOARD);
         return;
       }

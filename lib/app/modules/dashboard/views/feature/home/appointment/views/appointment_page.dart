@@ -6,6 +6,7 @@ import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/widgets/custom_appbar.dart';
 import 'package:sehati/app/data/config/api_config.dart';
+import 'package:sehati/app/data/models/response/professional_res_model.dart';
 import '../controllers/appointment_controller.dart';
 
 class AppointmentPage extends GetView<AppointmentController> {
@@ -109,8 +110,7 @@ class AppointmentPage extends GetView<AppointmentController> {
     );
   }
 
-  Widget _buildCounselorCard(dynamic doctor) {
-    
+  Widget _buildCounselorCard(ProfessionalData doctor) {
     return Container(
       width: 170,
       margin: const EdgeInsets.only(right: 16),

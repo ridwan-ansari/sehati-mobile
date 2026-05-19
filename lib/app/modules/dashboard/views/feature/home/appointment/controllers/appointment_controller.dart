@@ -41,7 +41,8 @@ class AppointmentController extends GetxController {
     selectedDate.value = '';
     selectedTime.value = '';
     meetInOffice.value = false;
-    meetByZoom.value = false;
+    // Office option is hidden for now — online (Zoom) is the only method.
+    meetByZoom.value = true;
   }
 
   /// =====================================
@@ -154,7 +155,7 @@ class AppointmentController extends GetxController {
       professionalId: professionalId,
       appointmentDate: selectedDate.value,
       appointmentTime: selectedTime.value,
-      notes: meetInOffice.value ? "Meet in office" : "Meet via zoom",
+      notes: "Meet via zoom",
     );
 
     if (success) {

@@ -8,10 +8,12 @@ import 'package:sehati/app/common/constants/app_assets.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 import 'package:sehati/app/common/utils/app_asset_utils.dart';
+import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/models/response/professional_res_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/appointment_controller.dart';
+import '../utils/appointment_schedule_formatter.dart';
 
 class AppointmentDetailPage extends GetView<AppointmentController> {
   const AppointmentDetailPage({super.key});
@@ -65,7 +67,7 @@ class AppointmentDetailPage extends GetView<AppointmentController> {
                 children: [
                   _DatePickerRow(controller: controller, doctor: doctor),
                   const Divider(height: 32, thickness: 1),
-                  _TimePickerRow(controller: controller),
+                  _TimePickerRow(controller: controller, doctor: doctor),
                   const Divider(height: 32, thickness: 1),
                   _MeetingOptions(controller: controller),
                 ],
@@ -187,16 +189,7 @@ class _CounselorProfileCard extends StatelessWidget {
                     ),
                     if (doctor.bio != null && doctor.bio!.isNotEmpty) ...[
                       const SizedBox(height: 12),
-                      Text(
-                        doctor.bio!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.7),
-                          height: 1.5,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      _ExpandableBio(text: doctor.bio!),
                     ],
                   ],
                 ),
@@ -205,6 +198,74 @@ class _CounselorProfileCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ExpandableBio extends StatefulWidget {
+  const _ExpandableBio({required this.text});
+
+  final String text;
+
+  @override
+  State<_ExpandableBio> createState() => _ExpandableBioState();
+}
+
+class _ExpandableBioState extends State<_ExpandableBio> {
+  static const int _collapsedLines = 3;
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bodyStyle = TextStyle(
+      fontSize: 12,
+      color: Colors.white.withValues(alpha: 0.7),
+      height: 1.5,
+    );
+    final actionStyle = const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w800,
+      color: Colors.white,
+      height: 1.5,
+      decoration: TextDecoration.underline,
+      decorationColor: Colors.white70,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final painter = TextPainter(
+          text: TextSpan(text: widget.text, style: bodyStyle),
+          maxLines: _collapsedLines,
+          textDirection: Directionality.of(context),
+        )..layout(maxWidth: constraints.maxWidth);
+
+        final overflows = painter.didExceedMaxLines;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.text,
+              style: bodyStyle,
+              maxLines: _expanded ? null : _collapsedLines,
+              overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            ),
+            if (overflows) ...[
+              const SizedBox(height: 6),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _expanded = !_expanded),
+                child: Text(
+                  _expanded
+                      ? AppStrings.getOr('Show less', 'Sembunyikan')
+                      : AppStrings.getOr('Read more', 'Selengkapnya'),
+                  style: actionStyle,
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -223,64 +284,60 @@ class _DatePickerRow extends StatelessWidget {
           value: controller.selectedDate.value.isEmpty
               ? AppStrings.getOr('Pick a date', 'Pilih tanggal')
               : controller.selectedDate.value,
-          onTap: () async {
-            if (doctor.availableDays == null) return;
-
-            DateTime getNearestAvailable(DateTime start, AvailableDays days) {
-              DateTime d = start;
-              for (int i = 0; i < 365; i++) {
-                final w = d.weekday;
-                final ok = (w == DateTime.monday && days.monday == true) ||
-                    (w == DateTime.tuesday && days.tuesday == true) ||
-                    (w == DateTime.wednesday && days.wednesday == true) ||
-                    (w == DateTime.thursday && days.thursday == true) ||
-                    (w == DateTime.friday && days.friday == true) ||
-                    (w == DateTime.saturday && days.saturday == true) ||
-                    (w == DateTime.sunday && days.sunday == true);
-                if (ok) return d;
-                d = d.add(const Duration(days: 1));
-              }
-              return start;
-            }
-
-            final avail = doctor.availableDays!;
-            final initial = getNearestAvailable(DateTime.now(), avail);
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: initial,
-              firstDate: DateTime.now(),
-              lastDate: DateTime(2100),
-              builder: (ctx, child) => Theme(
-                data: Theme.of(ctx).copyWith(
-                  colorScheme: const ColorScheme.light(
-                    primary: AppColors.orangeLight,
-                    onSurface: AppColors.textDark,
-                  ),
-                ),
-                child: child!,
-              ),
-              selectableDayPredicate: (day) {
-                return (day.weekday == DateTime.monday && avail.monday == true) ||
-                    (day.weekday == DateTime.tuesday && avail.tuesday == true) ||
-                    (day.weekday == DateTime.wednesday && avail.wednesday == true) ||
-                    (day.weekday == DateTime.thursday && avail.thursday == true) ||
-                    (day.weekday == DateTime.friday && avail.friday == true) ||
-                    (day.weekday == DateTime.saturday && avail.saturday == true) ||
-                    (day.weekday == DateTime.sunday && avail.sunday == true);
-              },
-            );
-            if (picked != null) {
-              controller.selectedDate.value = DateFormat('dd/MM/yy').format(picked);
-            }
-          },
+          onTap: () => _pickDate(context),
         ));
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final hours = doctor.availableHours;
+    if (hours == null || hours.isEmpty) {
+      SnackbarUtils.show(AppStrings.getOr(
+        'The professional has not set their availability schedule yet.',
+        'Profesional belum mengatur jadwal ketersediaan.',
+      ));
+      return;
+    }
+
+    DateTime nearestAvailable(DateTime start) {
+      var d = start;
+      for (var i = 0; i < 365; i++) {
+        if (hours.isOpenOnWeekday(d.weekday)) return d;
+        d = d.add(const Duration(days: 1));
+      }
+      return start;
+    }
+
+    final initial = nearestAvailable(DateTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.orangeLight,
+            onSurface: AppColors.textDark,
+          ),
+        ),
+        child: child!,
+      ),
+      selectableDayPredicate: (day) => hours.isOpenOnWeekday(day.weekday),
+    );
+
+    if (picked != null) {
+      controller.selectedDate.value = DateFormat('dd/MM/yy').format(picked);
+      // Reset time: the new day may have a different availability window.
+      controller.selectedTime.value = '';
+    }
   }
 }
 
 class _TimePickerRow extends StatelessWidget {
-  const _TimePickerRow({required this.controller});
+  const _TimePickerRow({required this.controller, required this.doctor});
 
   final AppointmentController controller;
+  final ProfessionalData doctor;
 
   @override
   Widget build(BuildContext context) {
@@ -290,25 +347,131 @@ class _TimePickerRow extends StatelessWidget {
           value: controller.selectedTime.value.isEmpty
               ? AppStrings.getOr('Pick a time', 'Pilih waktu')
               : controller.selectedTime.value,
-          onTap: () async {
-            final picked = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay.now(),
-              builder: (ctx, child) => Theme(
-                data: Theme.of(ctx).copyWith(
-                  colorScheme: const ColorScheme.light(
-                    primary: AppColors.orangeLight,
-                    onSurface: AppColors.textDark,
+          onTap: () => _pickTime(context),
+        ));
+  }
+
+  Future<void> _pickTime(BuildContext context) async {
+    if (controller.selectedDate.value.isEmpty) {
+      SnackbarUtils.show(AppStrings.getOr(
+        'Please pick a date first.',
+        'Silakan pilih tanggal terlebih dahulu.',
+      ));
+      return;
+    }
+
+    final date = DateFormat('dd/MM/yy').parse(controller.selectedDate.value);
+    final window = doctor.availableHours?.forWeekday(date.weekday);
+    if (window == null) {
+      SnackbarUtils.show(AppStrings.getOr(
+        'The professional is not available on the selected day.',
+        'Profesional tidak tersedia pada hari yang dipilih.',
+      ));
+      return;
+    }
+
+    final slots = AppointmentScheduleFormatter.generateSlots(window);
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => _SlotPickerSheet(
+        weekdayLabel: AppointmentScheduleFormatter.localizedDay(date.weekday),
+        window: window,
+        slots: slots,
+        initiallySelected: controller.selectedTime.value,
+      ),
+    );
+
+    if (picked != null) {
+      controller.selectedTime.value = picked;
+    }
+  }
+}
+
+class _SlotPickerSheet extends StatelessWidget {
+  const _SlotPickerSheet({
+    required this.weekdayLabel,
+    required this.window,
+    required this.slots,
+    required this.initiallySelected,
+  });
+
+  final String weekdayLabel;
+  final DayHours window;
+  final List<String> slots;
+  final String initiallySelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              '${AppStrings.getOr('Available', 'Tersedia')} $weekdayLabel: ${window.start} – ${window.end}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (slots.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    AppStrings.getOr('No slots available', 'Tidak ada slot tersedia'),
+                    style: const TextStyle(color: Colors.black54),
                   ),
                 ),
-                child: child!,
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: slots.map((slot) {
+                  final selected = slot == initiallySelected;
+                  return ChoiceChip(
+                    label: Text(slot),
+                    selected: selected,
+                    selectedColor: AppColors.orangeLight,
+                    backgroundColor: AppColors.orangeLight.withValues(alpha: 0.08),
+                    labelStyle: TextStyle(
+                      color: selected ? Colors.white : AppColors.textDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    side: BorderSide(
+                      color: selected
+                          ? AppColors.orangeLight
+                          : AppColors.orangeLight.withValues(alpha: 0.3),
+                    ),
+                    onSelected: (_) => Navigator.of(context).pop(slot),
+                  );
+                }).toList(),
               ),
-            );
-            if (picked != null) {
-              controller.selectedTime.value = picked.format(context);
-            }
-          },
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -388,92 +551,47 @@ class _MeetingOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.getOr('Meeting Method', 'Metode Pertemuan'),
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textMedium,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _MeetToggle(
-                    label: AppStrings.getOr('Office', 'Kantor'),
-                    value: controller.meetInOffice.value,
-                    activeColor: Colors.green,
-                    onChanged: controller.toggleMeetInOffice,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _MeetToggle(
-                    label: 'Zoom',
-                    value: controller.meetByZoom.value,
-                    activeColor: Colors.deepPurple,
-                    onChanged: controller.toggleMeetByZoom,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ));
-  }
-}
-
-class _MeetToggle extends StatelessWidget {
-  const _MeetToggle({
-    required this.label,
-    required this.value,
-    required this.activeColor,
-    required this.onChanged,
-  });
-
-  final String label;
-  final bool value;
-  final Color activeColor;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: value ? activeColor : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: value ? activeColor : Colors.grey.shade300,
-            width: 1.5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppStrings.getOr('Meeting Method', 'Metode Pertemuan'),
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textMedium,
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              value ? Icons.check_circle_rounded : Icons.circle_outlined,
-              color: value ? Colors.white : Colors.grey.shade400,
-              size: 18,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: value ? Colors.white : Colors.grey.shade600,
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.deepPurple, width: 1.5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.videocam_rounded,
+                color: Colors.white,
+                size: 20,
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              Text(
+                AppStrings.getOr('Online (Zoom)', 'Online (Zoom)'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

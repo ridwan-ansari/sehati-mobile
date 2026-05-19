@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/common/utils/loading_utils.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
 import 'package:sehati/app/data/config/api_config.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
-import 'package:get/get.dart' as go;
 import 'package:sehati/app/common/utils/app_logger.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
 
@@ -200,12 +198,7 @@ class AuthService {
     } on DioException catch (e) {
       AppLogger.log("❌ REFRESH TOKEN ERROR: ${e.response?.data ?? e.message}");
       if (e.response?.statusCode == 401) {
-        LocalStorageService.clearTokens();
-        final msg = e.response?.data?['message'] ??
-            e.message ??
-            "Session expired, please login again";
-        SnackbarUtils.show(msg);
-        go.Get.toNamed('/login');
+        await LocalStorageService.clearTokens();
       }
       return null;
     }
