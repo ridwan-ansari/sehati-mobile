@@ -5,10 +5,8 @@ import 'package:get/get.dart';
 import 'package:sehati/app/common/animations/animated_in.dart';
 import 'package:sehati/app/common/constants/app_colors.dart';
 import 'package:sehati/app/common/localization/app_strings.dart';
-import 'package:sehati/app/common/utils/time_utils.dart';
 import 'package:sehati/app/data/models/response/habit_question_model.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/custom_switch.dart';
-import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/header_title.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/journal/widgets/journal_success_view.dart';
 import '../controllers/food_habit_controller.dart';
 
@@ -174,8 +172,9 @@ class FoodHabitPage extends GetView<FoodHabitController> {
   Widget _buildCategoryCard(String title, List<HabitQuestionModel> questions, int index, int total) {
     return AnimatedIn(
       child: Obx(() {
+        // Subscribe to list mutations so the card rebuilds when answers change.
         // ignore: unused_local_variable
-        final _ = controller.questions.value;
+        final _ = controller.questions.length;
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
