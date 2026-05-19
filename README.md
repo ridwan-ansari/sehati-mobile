@@ -38,3 +38,41 @@ flutter run
 ```
 
 For Flutter documentation, visit [flutter.dev](https://flutter.dev).
+
+## Release Build
+
+All release builds are obfuscated. The Dart compiler requires a `--split-debug-info` directory whenever `--obfuscate` is used — keep the generated symbol files; they are needed to de-symbolicate crash reports later.
+
+### Android — Split APK per ABI (obfuscated)
+
+```bash
+flutter build apk --release --split-per-abi --obfuscate --split-debug-info=build/symbols/android
+```
+
+Output (one APK per CPU architecture):
+
+```
+build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+build/app/outputs/flutter-apk/app-x86_64-release.apk
+```
+
+### Android — App Bundle (obfuscated, recommended for Play Store)
+
+```bash
+flutter build appbundle --release \
+  --obfuscate \
+  --split-debug-info=build/symbols/android
+```
+
+Output: `build/app/outputs/bundle/release/app-release.aab`
+
+### iOS — IPA (obfuscated)
+
+```bash
+flutter build ipa --release \
+  --obfuscate \
+  --split-debug-info=build/symbols/ios
+```
+
+> ⚠️ Always archive the `build/symbols/` directory together with the release artifact. Without it, crash stack traces from obfuscated builds cannot be decoded.
