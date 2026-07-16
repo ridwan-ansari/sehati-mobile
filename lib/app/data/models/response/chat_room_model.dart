@@ -8,6 +8,7 @@ class ChatRoomModel {
   final String? receiverPicture;
   final String? lastMessage;
   final String? lastMessageTime;
+  final String? tokenFcm;
 
   ChatRoomModel({
     required this.roomId,
@@ -17,6 +18,7 @@ class ChatRoomModel {
     this.receiverPicture,
     this.lastMessage,
     this.lastMessageTime,
+    this.tokenFcm,
   });
 
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class ChatRoomModel {
       receiverPicture: json['receiver_picture'],
       lastMessage: json['latest_message'],
       lastMessageTime: json['latest_message_created_at'],
+      tokenFcm: json['token_fcm'],
     );
   }
 

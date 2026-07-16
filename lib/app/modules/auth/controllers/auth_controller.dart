@@ -1,8 +1,11 @@
 // ignore_for_file: deprecated_member_use, prefer_is_empty
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:sehati/app/data/config/dio_factory.dart';
+import 'package:sehati/app/data/config/api_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -14,6 +17,7 @@ import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/data/services/user_service.dart';
 import 'package:sehati/app/routes/app_routes.dart';
+import 'package:sehati/app/common/utils/app_logger.dart';
 
 class AuthController extends GetxController {
   final _authService = AuthService();
@@ -59,10 +63,13 @@ class AuthController extends GetxController {
     if (Get.arguments != null && Get.arguments is Map) {
       nameController.text = Get.arguments['fullname'] ?? nameController.text;
       emailController.text = Get.arguments['email'] ?? emailController.text;
-      phoneController.text = Get.arguments['phone_number'] ?? phoneController.text;
+      phoneController.text =
+          Get.arguments['phone_number'] ?? phoneController.text;
       dateOfBirth.value = Get.arguments['date_of_birth'] ?? dateOfBirth.value;
-      passwordController.text = Get.arguments['password'] ?? passwordController.text;
-      nicknameController.text = Get.arguments['nickname'] ?? nicknameController.text;
+      passwordController.text =
+          Get.arguments['password'] ?? passwordController.text;
+      nicknameController.text =
+          Get.arguments['nickname'] ?? nicknameController.text;
       selectedGender.value = Get.arguments['gender'] ?? selectedGender.value;
     }
   }
@@ -111,7 +118,8 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isLoading.value = false;
         SnackbarUtils.show(
-          response.data['message'] ?? AppStrings.get(AppStrings.commonKeySuccess),
+          response.data['message'] ??
+              AppStrings.get(AppStrings.commonKeySuccess),
           isError: false,
         );
         Get.offAllNamed(
@@ -129,13 +137,18 @@ class AuthController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
-        SnackbarUtils.show(response?.data?['message'] ?? AppStrings.get(AppStrings.commonKeyError));
+        SnackbarUtils.show(
+          response?.data?['message'] ??
+              AppStrings.get(AppStrings.commonKeyError),
+        );
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;
       final message =
-          e.response?.data?['message'] ?? e.message ?? AppStrings.get(AppStrings.commonKeyError);
+          e.response?.data?['message'] ??
+          e.message ??
+          AppStrings.get(AppStrings.commonKeyError);
       SnackbarUtils.show(message);
     } catch (e) {
       EasyLoading.dismiss();
@@ -221,7 +234,9 @@ class AuthController extends GetxController {
       EasyLoading.dismiss();
       isLoading.value = false;
       final msg = e.toString().replaceFirst('Exception: ', '');
-      SnackbarUtils.show(msg.isNotEmpty ? msg : AppStrings.get(AppStrings.commonKeyError));
+      SnackbarUtils.show(
+        msg.isNotEmpty ? msg : AppStrings.get(AppStrings.commonKeyError),
+      );
       return false;
     }
   }
@@ -238,7 +253,29 @@ class AuthController extends GetxController {
       if (data != null) {
         EasyLoading.dismiss();
         isLoading.value = false;
-        // Snackbar is already shown in AuthService.login
+        try {
+          String? fcmToken = await FirebaseMessaging.instance.getToken();
+          print('FCM Token: $fcmToken');
+
+          if (fcmToken != null) {
+            final dio = DioFactory.create();
+            final accessToken = LocalStorageService.getAccessToken();
+            await dio.post(
+              ApiEndpoints.SAVE_TOKEN_FCM,
+              data: {"token_fcm": fcmToken},
+              options: Options(
+                headers: {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer $accessToken",
+                },
+              ),
+            );
+            AppLogger.log("Berhasil POST FCM Token");
+          }
+        } catch (e) {
+          AppLogger.log("Failed to register FCM token after login: $e");
+        }
+
         var nutritionData = await _userService.getUserNutrition();
         if (nutritionData?.length == 0) {
           Get.toNamed(AppRoutes.NUTRITION);
@@ -321,7 +358,6 @@ class AuthController extends GetxController {
         EasyLoading.dismiss();
         isConfirmForgotPass.value = true;
         isLoading.value = false;
-        // Snackbar is already shown in AuthService.forgotPassword
       } else {
         EasyLoading.dismiss();
         isLoading.value = false;
@@ -329,7 +365,6 @@ class AuthController extends GetxController {
     } on DioException {
       EasyLoading.dismiss();
       isLoading.value = false;
-      // Snackbar is already shown in AuthService.forgotPassword
     } catch (e) {
       EasyLoading.dismiss();
       isLoading.value = false;

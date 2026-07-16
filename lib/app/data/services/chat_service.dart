@@ -1,4 +1,3 @@
-﻿
 import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:sehati/app/data/config/api_config.dart';
@@ -6,17 +5,11 @@ import 'package:sehati/app/data/models/response/chat_message_model.dart';
 import 'package:sehati/app/data/models/response/chat_room_model.dart';
 import 'package:sehati/app/data/models/response/user_chat_model.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:sehati/app/common/utils/app_logger.dart';
 
 class ChatService {
-  late WebSocketChannel channel;
   final Dio _dio = DioFactory.create(includeContentType: false);
-  ChatService() {
-    channel = WebSocketChannel.connect(
-      Uri.parse('wss://sehatiapps.web.id/ws/chat'),
-    );
-  }
+  ChatService();
 
   /// GET CHAT ROOMS
   Future<List<ChatRoomModel>> getChatRooms({
@@ -31,7 +24,7 @@ class ChatService {
         queryParameters: {"limit": limit, "offset": offset},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-
+      AppLogger.log("Response CHAT: ${response.data}");
       if (response.statusCode == 200) {
         AppLogger.log("➡️ Rooms Response: ${response.data}");
 
@@ -101,6 +94,7 @@ class ChatService {
       return false;
     }
   }
+
   Future<List<UserChatModel>> searchUsers({
     required String query,
     int limit = 20,
@@ -111,11 +105,7 @@ class ChatService {
 
       final response = await _dio.get(
         ApiEndpoints.SEARCH_USERS,
-        queryParameters: {
-          "keyword": query,
-          "limit": limit,
-          "offset": offset,
-        },
+        queryParameters: {"keyword": query, "limit": limit, "offset": offset},
         options: Options(
           headers: {
             'Accept': 'application/json',
@@ -137,10 +127,8 @@ class ChatService {
       return [];
     }
   }
-  
-  Stream get stream => channel.stream;
 
   void dispose() {
-    channel.sink.close();
+    // Dispose resources if any
   }
 }

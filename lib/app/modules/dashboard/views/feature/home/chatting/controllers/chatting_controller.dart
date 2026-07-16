@@ -11,8 +11,11 @@ import 'package:sehati/app/data/models/response/user_chat_model.dart';
 import 'package:sehati/app/data/repositories/chat_repository.dart';
 import 'package:sehati/app/data/services/chat_service.dart';
 import 'package:sehati/app/data/services/user_service.dart';
+import 'package:sehati/app/data/services/profile_service.dart';
 import 'package:sehati/app/data/services/ws/chat_socket_service.dart';
-import 'package:sehati/app/services/awesome_notifications_service.dart';
+import 'package:sehati/app/services/notification_api_service.dart';
+
+import '../../../../../../../common/utils/app_logger.dart';
 
 class ChattingController extends GetxController {
   final ChatService _chatService = ChatService();
@@ -90,14 +93,18 @@ class ChattingController extends GetxController {
       limit: _chatLimit,
     );
 
-    final converted = messages.map((e) => ChatMessageModel(
-          id: e.id,
-          message: e.message,
-          senderId: e.senderId,
-          receiverId: e.receiverId,
-          createdAt: e.createdAt,
-          type: e.type,
-        )).toList();
+    final converted = messages
+        .map(
+          (e) => ChatMessageModel(
+            id: e.id,
+            message: e.message,
+            senderId: e.senderId,
+            receiverId: e.receiverId,
+            createdAt: e.createdAt,
+            type: e.type,
+          ),
+        )
+        .toList();
 
     chats.addAll(converted);
     _chatHasMore = converted.length == _chatLimit;
@@ -157,14 +164,18 @@ class ChattingController extends GetxController {
         limit: _chatLimit,
       );
 
-      final converted = messages.map((e) => ChatMessageModel(
-            id: e.id,
-            message: e.message,
-            senderId: e.senderId,
-            receiverId: e.receiverId,
-            createdAt: e.createdAt,
-            type: e.type,
-          )).toList();
+      final converted = messages
+          .map(
+            (e) => ChatMessageModel(
+              id: e.id,
+              message: e.message,
+              senderId: e.senderId,
+              receiverId: e.receiverId,
+              createdAt: e.createdAt,
+              type: e.type,
+            ),
+          )
+          .toList();
 
       chats.addAll(converted);
       _chatHasMore = converted.length == _chatLimit;
@@ -181,6 +192,40 @@ class ChattingController extends GetxController {
 
     repo.sendChat(ChatMessage(to: receiverId, message: text));
     scrollToBottom();
+
+    // Trigger notification to backend
+    try {
+      final profile = await ProfileService().getProfile();
+      if (profile != null) {
+        String? receiverTokenFcm;
+        String actualRoomId = '';
+        final roomIndex = chatRooms.indexWhere(
+          (r) => r.receiverId == receiverId,
+        );
+        if (roomIndex != -1) {
+          receiverTokenFcm = chatRooms[roomIndex].tokenFcm;
+          actualRoomId = chatRooms[roomIndex].roomId;
+        } else {
+          final userIndex = userList.indexWhere((u) => u.id == receiverId);
+          if (userIndex != -1) {
+            receiverTokenFcm = userList[userIndex].tokenFcm;
+          }
+        }
+
+        await NotificationApiService.sendChatNotification(
+          receiverId: receiverId,
+          senderId: profile.id?.toString() ?? '',
+          senderName: profile.fullname,
+          message: text,
+          roomKey: currentRoomKey.value,
+          roomId: actualRoomId,
+          senderPicture: profile.picture,
+          receiverTokenFcm: receiverTokenFcm,
+        );
+      }
+    } catch (e) {
+      AppLogger.error('Error triggering chat notification: $e');
+    }
   }
 
   void onSearchChanged(String query) {
@@ -247,27 +292,7 @@ class ChattingController extends GetxController {
 
   void clearReply() => replyChat.value = null;
 
-  Future<void> showWsNotification({
-    required String title,
-    required String body,
-    required String imageUrl,
-    required String receiverId,
-    required String roomKey,
-    required String receiverName,
-    required String receiverPicture,
-    required String roomId,
-  }) async {
-    AwesomeNotificationService.showWsNotification(
-      title: title,
-      body: body,
-      imageUrl: imageUrl,
-      receiverId: receiverId,
-      roomKey: roomKey,
-      receiverName: receiverName,
-      receiverPicture: receiverPicture,
-      roomId: roomId,
-    );
-  }
+
 
   Future<ProfileData?> getUserById(String userId) async {
     try {

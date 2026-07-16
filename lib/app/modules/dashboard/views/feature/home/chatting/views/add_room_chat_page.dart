@@ -36,7 +36,9 @@ class AddRoomChatPage extends GetView<ChattingController> {
                       const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final user = controller.userList[index];
-                    final imageUrl = "$BASE_URL${user.picture}";
+                    final imageUrl = (user.picture.isNotEmpty)
+                        ? "$BASE_URL${user.picture}"
+                        : "";
                     return ContactCardWidget(
                       profileUrl: imageUrl,
                       name: user.fullname,

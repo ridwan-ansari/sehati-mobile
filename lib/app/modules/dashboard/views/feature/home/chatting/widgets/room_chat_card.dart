@@ -21,7 +21,7 @@ class RoomChatCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = room.receiverPicture != null
+    final imageUrl = (room.receiverPicture != null && room.receiverPicture!.isNotEmpty)
         ? "$BASE_URL${room.receiverPicture}"
         : null;
 

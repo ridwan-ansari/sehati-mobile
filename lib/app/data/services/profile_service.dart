@@ -1,5 +1,4 @@
-﻿
-import 'package:dio/dio.dart';
+﻿import 'package:dio/dio.dart';
 import 'package:sehati/app/data/config/dio_factory.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sehati/app/common/utils/snackbar_utils.dart';
@@ -40,13 +39,18 @@ class ProfileService {
         return data.data;
       } else {
         AppLogger.log("⚠️ Failed to fetch profile: ${response.statusMessage}");
-        SnackbarUtils.show(response.data['message'] ?? "Failed to load profile.");
+        SnackbarUtils.show(
+          response.data['message'] ?? "Failed to load profile.",
+        );
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
-      AppLogger.log("❌ Profile request error: ${e.response?.data ?? e.message}");
-      final msg = e.response?.data['message'] ?? e.message ?? "Network error occurred.";
+      AppLogger.log(
+        "❌ Profile request error: ${e.response?.data ?? e.message}",
+      );
+      final msg =
+          e.response?.data['message'] ?? e.message ?? "Network error occurred.";
       SnackbarUtils.show(msg);
       return null;
     }
@@ -81,9 +85,12 @@ class ProfileService {
 
       EasyLoading.dismiss();
       AppLogger.log('upload [icture : ${response.statusCode}]');
-      if (response.statusCode == 201 ) {
+      if (response.statusCode == 201) {
         AppLogger.log("✅ UPLOAD FOTO BERHASIL: ${response.data}");
-        SnackbarUtils.show(isError: false, response.data['message'] ?? "Foto profil berhasil diperbarui");
+        SnackbarUtils.show(
+          isError: false,
+          response.data['message'] ?? "Foto profil berhasil diperbarui",
+        );
         return response.data;
       } else {
         AppLogger.log("⚠️ UPLOAD FOTO GAGAL: ${response.statusMessage}");
@@ -93,7 +100,10 @@ class ProfileService {
     } on DioException catch (e) {
       EasyLoading.dismiss();
       AppLogger.log("❌ UPLOAD FOTO ERROR: ${e.response?.data ?? e.message}");
-      final msg = e.response?.data['message'] ?? e.message ?? "Terjadi kesalahan saat mengunggah foto";
+      final msg =
+          e.response?.data['message'] ??
+          e.message ??
+          "Terjadi kesalahan saat mengunggah foto";
       SnackbarUtils.show(msg);
       return null;
     }
@@ -125,13 +135,18 @@ class ProfileService {
         return response.data;
       } else {
         AppLogger.log("⚠️ USER LIST FAILED: ${response.statusMessage}");
-        SnackbarUtils.show(response.data['message'] ?? "Gagal memuat daftar pengguna");
+        SnackbarUtils.show(
+          response.data['message'] ?? "Gagal memuat daftar pengguna",
+        );
         return null;
       }
     } on DioException catch (e) {
       EasyLoading.dismiss();
       AppLogger.log("❌ USER LIST ERROR: ${e.response?.data ?? e.message}");
-      final msg = e.response?.data['message'] ?? e.message ?? "Terjadi kesalahan saat memuat data pengguna";
+      final msg =
+          e.response?.data['message'] ??
+          e.message ??
+          "Terjadi kesalahan saat memuat data pengguna";
       SnackbarUtils.show(msg);
       return null;
     }

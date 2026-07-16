@@ -7,6 +7,8 @@ import 'package:sehati/app/data/services/auth_service.dart';
 import 'package:sehati/app/data/services/language_service.dart';
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/data/services/user_service.dart';
+import 'package:sehati/app/services/fcm_service.dart';
+import 'package:sehati/app/services/awesome_notifications_service.dart';
 import '../routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -54,6 +56,7 @@ class _SplashPageState extends State<SplashPage> {
 
       if (nutritionData == null) {
         Get.offAllNamed(AppRoutes.DASHBOARD);
+        _handlePendingNotifications();
         return;
       }
 
@@ -61,7 +64,9 @@ class _SplashPageState extends State<SplashPage> {
         Get.offAllNamed(AppRoutes.NUTRITION);
         return;
       }
+      
       Get.offAllNamed(AppRoutes.DASHBOARD);
+      _handlePendingNotifications();
     } else {
       final prefs = await SharedPreferences.getInstance();
       final hasSelectedLanguage = prefs.getBool('has_selected_language') ?? false;
@@ -76,6 +81,23 @@ class _SplashPageState extends State<SplashPage> {
         hasSeenOnboarding ? AppRoutes.WELCOME : AppRoutes.ONBOARDING,
       );
     }
+  }
+
+  void _handlePendingNotifications() {
+    // Memberikan waktu yang lebih panjang (1.2 detik) agar animasi transisi Get.offAllNamed 
+    // selesai sepenuhnya. Jika terlalu cepat, Get.toNamed akan diabaikan oleh GetX.
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      debugPrint("SplashPage: Executing pending notifications...");
+      if (FCMService.pendingInitialMessage != null) {
+        debugPrint("SplashPage: Routing FCM pending message");
+        FCMService.handleNotificationClick(FCMService.pendingInitialMessage!);
+        FCMService.pendingInitialMessage = null;
+      } else if (AwesomeNotificationService.pendingInitialAction != null) {
+        debugPrint("SplashPage: Routing AwesomeNotifications pending action");
+        AwesomeNotificationService.executeAction(AwesomeNotificationService.pendingInitialAction!);
+        AwesomeNotificationService.pendingInitialAction = null;
+      }
+    });
   }
 
   Future<void> _refreshToken() async {

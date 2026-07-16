@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "841408062880",
+    "project_id": "sehati-b5d43",
+    "storage_bucket": "sehati-b5d43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841408062880:android:737436b45396840b8eb0c5",
+        "android_client_info": {
+          "package_name": "com.mra.sehati"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB3S_MCZvQw65v-Rw0GGP8t2HhZAEg6_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

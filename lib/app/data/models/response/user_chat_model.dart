@@ -3,12 +3,14 @@ class UserChatModel {
   final String fullname;
   final String picture;
   final String nickname;
+  final String? tokenFcm;
 
   UserChatModel({
     required this.id,
     required this.fullname,
     required this.picture,
     required this.nickname,
+    this.tokenFcm,
   });
 
   factory UserChatModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class UserChatModel {
       fullname: json['fullname'] ?? '',
       picture: json['picture'] ?? '',
       nickname: json['nickname'] ?? '',
+      tokenFcm: json['token_fcm'],
     );
   }
   static List<UserChatModel> fromJsonList(List<dynamic> jsonList) {

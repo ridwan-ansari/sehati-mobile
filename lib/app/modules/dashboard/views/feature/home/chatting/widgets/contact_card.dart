@@ -52,26 +52,32 @@ class ContactCardWidget extends StatelessWidget {
                     ),
                   ),
             const SizedBox(width: 16.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnimatedIn(
-                  child: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnimatedIn(
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
-                const SizedBox(height: 4.0),
-                AnimatedIn(
-                  child: Text(
-                    status,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  const SizedBox(height: 4.0),
+                  AnimatedIn(
+                    child: Text(
+                      status,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
-import 'package:sehati/app/data/config/api_config.dart';
+
 import 'package:sehati/app/data/services/local_storage_service.dart';
 import 'package:sehati/app/modules/dashboard/views/feature/home/chatting/controllers/chatting_controller.dart';
 import 'package:web_socket_channel/io.dart';
@@ -72,7 +72,7 @@ class ChatSocketService {
         controller.getRooms();
         final data = jsonDecode(event);
         AppLogger.log("WS SERVICE: $data");
-        final message = data['message']; // <-- STRING
+
         final status = data['status']; // <-- STRING
         final fromId = data['from'];
 
@@ -82,33 +82,10 @@ class ChatSocketService {
         AppLogger.log("route :: $routeRoom");
         AppLogger.log("res ::$responRoom");
         AppLogger.log("-------------------------------------------------");
-        if (routeRoom == responRoom) {
-          AppLogger.log("TIDAK DAPAT NOTIF");
-        } else {
-          AppLogger.log("DAPAT NOTIF");
-        }
+
         if (status == null && (routeRoom != responRoom)) {
           controller.getUserById(fromId).then((profile) {
-            final name = profile?.nickname ?? "";
-            AppLogger.log('service ws name: ${profile?.toJson()}');
-            AppLogger.log('service ws name: $name');
-            AppLogger.log("Notif name: $name");
-            AppLogger.log("Notif message: $message");
-            AppLogger.log("Notif fromId: $fromId");
-            AppLogger.log("Notif roomKey: ${data['room_key']}");
-            AppLogger.log("Notif roomId: ${data['room_id']}");
-            AppLogger.log("Notif picture: $BASE_URL${profile?.picture}");
-            AppLogger.log("Notif picture: -----------------");
-            controller.showWsNotification(
-              title: "@$name",
-              body: message,
-              imageUrl: "$BASE_URL${profile?.picture}",
-              receiverId: fromId,
-              roomKey: data['room_key'],
-              receiverName: name,
-              receiverPicture: "$BASE_URL${profile?.picture}",
-              roomId: data['room_id'],
-            );
+
           });
         }
       },

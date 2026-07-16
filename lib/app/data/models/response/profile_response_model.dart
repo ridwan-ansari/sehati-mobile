@@ -25,6 +25,7 @@ class ProfileResponse {
 }
 
 class ProfileData {
+  final String? id;
   final String fullname;
   final String picture;
   final String nickname;
@@ -35,8 +36,10 @@ class ProfileData {
   final int? achievementPoints;
   final int? creditPoints;
   final int? rank;
+  final String? tokenFcm;
 
   ProfileData({
+    this.id,
     required this.fullname,
     required this.picture,
     required this.nickname,
@@ -47,10 +50,12 @@ class ProfileData {
     this.achievementPoints,
     this.creditPoints,  
     this.rank,
+    this.tokenFcm,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
     return ProfileData(
+      id: json["id"]?.toString() ?? json["user_id"]?.toString(),
       fullname: json["fullname"] ?? "",
       picture: (json["picture"] ?? "").toString(),
       nickname: json["nickname"] ?? "",
@@ -61,10 +66,12 @@ class ProfileData {
       achievementPoints: json["achievement_points"],
       creditPoints: json["credit_points"],
       rank: json["rank"],
+      tokenFcm: json["token_fcm"],
     );
   }
 
   Map<String, dynamic> toJson() => {
+    "id": id,
     "fullname": fullname,
     "picture": picture,
     "nickname": nickname,
@@ -75,5 +82,6 @@ class ProfileData {
     "achievement_points": achievementPoints,
     "credit_points": creditPoints,
     "rank": rank,
+    "token_fcm": tokenFcm,
   };
 }

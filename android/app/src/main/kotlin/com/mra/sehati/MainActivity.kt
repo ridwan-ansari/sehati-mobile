@@ -1,4 +1,4 @@
-package com.example.sehati
+package com.mra.sehati
 
 import io.flutter.embedding.android.FlutterActivity
 

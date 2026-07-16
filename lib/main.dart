@@ -1,3 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:sehati/app/services/fcm_service.dart';
+import 'package:sehati/firebase_options.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,32 +17,66 @@ import 'app/routes/app_routes.dart';
 import 'app/common/themes/app_theme.dart';
 import 'app/global_controllers/theme_controller.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("Handling a background message: ${message.messageId}");
+
+  // IMPORTANT: We must initialize AwesomeNotifications in the background isolate
+  await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+      channelKey: 'ws_channel',
+      channelName: 'WebSocket Chat',
+      channelDescription: 'Channel untuk notifikasi chat',
+      importance: NotificationImportance.Max,
+    ),
+  ]);
+
+  if (message.notification != null) {
+    // Catatan: Kita tidak memanggil AwesomeNotifications di sini (background)
+    // karena Firebase (OS Android) sudah secara otomatis memunculkan 
+    // system tray notification jika payload berisi object `notification`.
+    // Jika kita memanggilnya, akan terjadi notifikasi ganda (Double Notification).
+    
+    // Namun kita tetap bisa melakukan proses background lain di sini jika diperlukan.
+    debugPrint("FCM Background: Notifikasi akan ditampilkan oleh sistem.");
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await MainConfig().configureLocalTimeZone();
   Get.put(ChatSocketService(), permanent: true);
   await GetStorage.init();
   Get.put(ThemeController());
   await LocalStorageService.init();
   await HiveStorageService.init();
-  
+
   configLoading();
-  
-  await AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-        channelKey: 'ws_channel',
-        channelName: 'WebSocket Chat',
-        channelDescription: 'Channel untuk notifikasi chat',
-        importance: NotificationImportance.Max,
-      )
-    ],
-  );
+
+  await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+      channelKey: 'ws_channel',
+      channelName: 'WebSocket Chat',
+      channelDescription: 'Channel untuk notifikasi chat',
+      importance: NotificationImportance.Max,
+    ),
+  ]);
 
   AwesomeNotifications().setListeners(
     onActionReceivedMethod: AwesomeNotificationService.onActionReceived,
   );
+
+  // Initialize FCM service to ask permission and listen in foreground
+  await FCMService.init();
+
   runApp(const MRAApp());
 }
 

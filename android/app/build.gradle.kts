@@ -3,6 +3,9 @@ import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -14,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.sehati"
+    namespace = "com.mra.sehati"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -29,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.sehati"
+        applicationId = "com.mra.sehati"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -67,5 +70,4 @@ flutter {
 
 dependencies {
     add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.1.4")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }
